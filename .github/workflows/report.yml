@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print event Information
+      - name: Print event information
         env:
           CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
@@ -24,9 +24,7 @@ jobs:
           # and the workflow may continue and not be completed yet
           workflow_conclusion: "completed,in_progress"
           run_id: ${{ github.event.client_payload.run_id }}
-          # run number from the workflow
-          ##run_number: 34
-          # Directory where to extract artifacts
+          run_number: ${{ github.event.client_payload.run_number }}
           path: downloads
           
       # temp step to check download. delete me in final version
