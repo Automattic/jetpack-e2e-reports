@@ -4,13 +4,14 @@ on: repository_dispatch
 
 jobs:
   get-results:
+    name: "Create new test reports"
     runs-on: ubuntu-latest
 
     steps:
       - name: Print event Information
         run: |
           echo "Event '${{ github.event.action }}' received from '${{ github.event.client_payload.repository }}'"
-          echo "run_id '${{ github.event.client_payload.run_id }}'"
+          echo ${{ toJson(github.event.client_payload) }}
           
       - name: Download test artifacts
         uses: dawidd6/action-download-artifact@v2
@@ -26,8 +27,27 @@ jobs:
           # Directory where to extract artifacts
           path: downloads
           
+      # temp step to check download. delete me in final version
       - name: Upload test artifacts
         uses: actions/upload-artifact@v2
         with:
           name: test-output
           path: downloads
+          
+      - name: Checkout reports branch
+        run: echo "Checkout reports branch"
+        
+      - name: Copy new test results
+        run: echo "Copy new test results"
+        
+      - name: Clean up old results
+        run: echo "Clean up old results"
+        
+      - name: Generate new test report
+        run: echo "Generate new test report"
+        
+      - name: Push changes
+        run: echo "Push changes"
+        
+      - name: Send notification
+        run: echo "Send Slack notification"
