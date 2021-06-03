@@ -16,6 +16,9 @@ jobs:
           echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
 
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Setup Allure
         run: |
           pwd
@@ -40,9 +43,6 @@ jobs:
         with:
           name: test-output
           path: downloads
-
-      - name: Checkout
-        uses: actions/checkout@v2
 
       - name: Generate new test report
         run: ./bin/generate-report.sh
