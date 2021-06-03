@@ -10,10 +10,10 @@ ALLURE_DOWNLOAD_URL=https://github.com/allure-framework/allure2/releases/downloa
 
 echo "Installing Allure $ALLURE_VERSION"
 wget --no-verbose -O allure.zip $ALLURE_DOWNLOAD_URL \
-  && unzip allure.zip -d . \
+  && unzip allure.zip -d ../ \
   && rm -rf allure.zip \
 
-ALLURE_PATH=$PWD/allure-$ALLURE_VERSION/bin
+ALLURE_PATH=../allure-$ALLURE_VERSION/bin
 
 # Test Allure installation
 export PATH="$ALLURE_PATH:$PATH"

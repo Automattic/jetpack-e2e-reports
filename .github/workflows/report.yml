@@ -33,7 +33,7 @@ jobs:
           workflow: e2e-tests.yml
           workflow_conclusion: "completed"
           run_id: ${{ github.event.client_payload.run_id }}
-          path: downloads
+          path: ../downloads
 
       # temp step to check download. delete me in final version
 #      - name: Upload test artifacts
@@ -44,7 +44,7 @@ jobs:
 
       - name: Generate new test report
         env:
-          RESULTS_PATH: downloads
+          RESULTS_PATH: ../downloads
           PR_NUMBER: ${{ github.event.client_payload.pr }}
           BRANCH: ${{ github.event.client_payload.branch }}
         run: ./bin/generate-report.sh
