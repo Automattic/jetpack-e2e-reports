@@ -26,4 +26,4 @@ export PATH="$ALLURE_PATH:$PATH"
 allure --version
 
 # Add Allure in Github PATH to make it available to all subsequent actions in the current job
-#echo "$ALLURE_PATH" >> "$GITHUB_PATH"
+echo "$ALLURE_PATH" >> "$GITHUB_PATH"
