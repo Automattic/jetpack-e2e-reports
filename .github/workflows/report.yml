@@ -14,39 +14,34 @@ jobs:
         run: |
           echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
-          
+
+      - name: Setup Allure
+        run: ./bin/install-allure.sh
+
       - name: Wait for while
         run: sleep 30s
-          
+
       - name: Download test artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
           repo: ${{ github.event.client_payload.repository }}
           workflow: e2e-tests.yml
-          # We may want to trigger this immediatly after test artefacts are uploaded 
-          # and the workflow may continue and not be completed yet
           workflow_conclusion: "completed"
           run_id: ${{ github.event.client_payload.run_id }}
           path: downloads
-          
+
       # temp step to check download. delete me in final version
       - name: Upload test artifacts
         uses: actions/upload-artifact@v2
         with:
           name: test-output
           path: downloads
-          
-      - name: Checkout reports branch
-        run: echo "Checkout reports branch"
-        
-      - name: Copy new test results
-        run: echo "Copy new test results"
-        
-      - name: Clean up old results
-        run: echo "Clean up old results"
-        
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Generate new test report
-        run: echo "Generate new test report"
-        
+        run: ./bin/generate-report.sh
+
       - name: Push changes
-        run: echo "Push changes"
+        run: ./bin/push-report.sh
