@@ -2,7 +2,8 @@
 
 set -eo pipefail
 
+sudo apt-add-repository ppa:qameta/allure
+sudo apt-get update
+
 echo "Installing Allure"
-apt-add-repository ppa:qameta/allure
-apt-get update
-apt-get install allure
+sudo apt-get install allure
