@@ -24,7 +24,7 @@ if [[ -z "$PR_NUMBER" ]]; then
 	if [[ -z "$BRANCH" ]]; then
 	echo "::error::PR_NUMBER or BRANCH is not defined"
   exit 1
+  fi
 fi
-
 
 ls -la
