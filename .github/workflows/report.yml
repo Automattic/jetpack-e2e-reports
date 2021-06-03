@@ -22,28 +22,24 @@ jobs:
       - name: Setup Allure
         env:
           DESTINATION_PATH: ../
-        run: |
-          ./bin/install-allure.sh
+        run: ./bin/install-allure.sh
 
       # Sometimes artefacts are not yet ready and waiting a few seconds helps
-      - name: Wait for a while
-        run: sleep 30s
+#      - name: Wait for a while
+#        run: sleep 30s
 
       - name: Download test artifacts
         uses: dawidd6/action-download-artifact@v2
+        env:
+          REPO: ${{ github.event.client_payload.repository }}
+          WORKFLOW: e2e-tests.yml
+          RUN_ID: 899973190 # I should be ${{ github.event.client_payload.run_id }}
         with:
-          repo: ${{ github.event.client_payload.repository }}
-          workflow: e2e-tests.yml
+          repo: $REPO
+          workflow: $WORKFLOW
           workflow_conclusion: "completed"
-          run_id: ${{ github.event.client_payload.run_id }}
+          run_id: $RUN_ID
           path: ../downloads
-
-      # temp step to check download. delete me in final version
-#      - name: Upload test artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: test-output
-#          path: downloads
 
       - name: Generate new test report
         env:
