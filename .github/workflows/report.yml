@@ -20,7 +20,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Allure
-        run: ./bin/install-allure.sh
+        run: |
+          ./bin/install-allure.sh
 
       - name: Wait for while
         run: sleep 30s
@@ -35,11 +36,11 @@ jobs:
           path: downloads
 
       # temp step to check download. delete me in final version
-      - name: Upload test artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-output
-          path: downloads
+#      - name: Upload test artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: test-output
+#          path: downloads
 
       - name: Generate new test report
         run: ./bin/generate-report.sh

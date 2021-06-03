@@ -11,6 +11,8 @@ wget --no-verbose -O allure.zip $ALLURE_DOWNLOAD_URL \
   && unzip allure.zip -d . \
   && rm -rf allure.zip \
 
-export PATH="${PWD}/allure-$ALLURE_VERSION/bin:$PATH"
-
+ALLURE_PATH=$PWD/allure-$ALLURE_VERSION/bin
+export PATH="$ALLURE_PATH:$PATH"
 allure --version
+
+echo "$ALLURE_PATH" >> "$GITHUB_PATH"
