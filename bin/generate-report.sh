@@ -32,17 +32,13 @@ else
 fi
 
 # Copy new results into final results path
-echo "Creating target results dir $TARGET_RESULTS_PATH"
+echo "Creating target results dir '$TARGET_RESULTS_PATH'"
 mkdir -p "$TARGET_RESULTS_PATH"
-ls -la "$TARGET_RESULTS_PATH"
 
 for d in "$RESULTS_PATH"/*; do
-    echo "$(basename "$d")"
-    cp -R "$d/allure-results" "$TARGET_RESULTS_PATH/"
+    echo "Copy results from $d"
+    cp -R "$(basename "$d")/allure-results" "$TARGET_RESULTS_PATH/"
 done
-
-echo "$TARGET_RESULTS_PATH"
-ls -la "$TARGET_RESULTS_PATH"
 
 echo "Generating new report for $TARGET_RESULTS_PATH"
 cd "$TARGET_RESULTS_PATH"
