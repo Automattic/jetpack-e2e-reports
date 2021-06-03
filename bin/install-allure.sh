@@ -21,7 +21,8 @@ wget --no-verbose -O allure.zip $ALLURE_DOWNLOAD_URL \
 ALLURE_PATH=$(realpath $DESTINATION_PATH/allure-$ALLURE_VERSION/bin)
 
 # Test Allure installation
-#export PATH="$ALLURE_PATH:$PATH"
+echo "$ALLURE_PATH"
+export PATH="$ALLURE_PATH:$PATH"
 allure --version
 
 # Add Allure in Github PATH to make it available to all subsequent actions in the current job
