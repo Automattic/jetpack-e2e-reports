@@ -3,18 +3,6 @@ name: Get test results
 on:
   repository_dispatch:
 
-  workflow_dispatch:
-    inputs:
-      run_id:
-        description: 'Run id'
-        required: true
-        default: 'false'
-      repository:
-        description: 'Repository (org/repo)'
-        required: true
-        default: 'false'
-
-
 jobs:
   report:
     name: "Create new test reports"
@@ -29,7 +17,7 @@ jobs:
           echo $CLIENT_PAYLOAD
 
       - name: Setup Allure
-        run: ./bin/install-allure.sh
+        run: sh bin/install-allure.sh
 
       - name: Wait for while
         run: sleep 30s
