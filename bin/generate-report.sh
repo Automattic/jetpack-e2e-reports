@@ -28,3 +28,4 @@ if [[ -z "$PR_NUMBER" ]]; then
 fi
 
 ls -la
+ls -la ../
