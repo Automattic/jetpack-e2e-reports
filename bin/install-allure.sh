@@ -2,8 +2,12 @@
 
 set -eo pipefail
 
-sudo apt-add-repository ppa:qameta/allure
-sudo apt-get update
+javac -version
 
 echo "Installing Allure"
-sudo apt-get install allure
+ALLURE_VERSION=2.14.0
+ALLURE_DOWNLOAD_URL=https://github.com/allure-framework/allure2/releases/download/$ALLURE_VERSION/allure-$ALLURE_VERSION.zip
+wget -O /tmp/allure.zip $ALLURE_DOWNLOAD_URL \
+  && unzip /tmp/allure.zip -d /
+
+allure --version
