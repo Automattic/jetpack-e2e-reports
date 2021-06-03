@@ -43,6 +43,10 @@ jobs:
 #          path: downloads
 
       - name: Generate new test report
+        env:
+          RESULTS_PATH: downloads
+          PR_NUMBER: ${{ github.event.client_payload.pr }}
+          BRANCH: ${{ github.event.client_payload.branch }}
         run: ./bin/generate-report.sh
 
       - name: Push changes
