@@ -22,10 +22,29 @@ if [[ -z "$PR_NUMBER" ]]; then
 	echo "PR_NUMBER is not defined, using BRANCH"
 
 	if [[ -z "$BRANCH" ]]; then
-	echo "::error::PR_NUMBER or BRANCH is not defined"
-  exit 1
+	  echo "::error::PR_NUMBER or BRANCH is not defined"
+    exit 1
+  else
+    TARGET_RESULTS_PATH="reports/$BRANCH"
   fi
+else
+  TARGET_RESULTS_PATH="reports/$PR_NUMBER"
 fi
 
-ls -la
-ls -la ../
+# Copy new results into final results path
+echo "Creating target results dir $TARGET_RESULTS_PATH"
+mkdir -p "$TARGET_RESULTS_PATH"
+ls -la "$TARGET_RESULTS_PATH"
+
+for d in "$RESULTS_PATH"/*; do
+    echo "$(basename "$d")"
+    cp -R "$d/allure-results" "$TARGET_RESULTS_PATH/"
+done
+
+echo "$TARGET_RESULTS_PATH"
+ls -la "$TARGET_RESULTS_PATH"
+
+echo "Generating new report for $TARGET_RESULTS_PATH"
+cd "$TARGET_RESULTS_PATH"
+allure generate --clean --output report
+
