@@ -5,15 +5,20 @@ set -eo pipefail
 # Test Java installation
 java -version
 
+if [[ -z "$DESTINATION_PATH" ]]; then
+	echo "::error::DESTINATION_PATH must be set"
+	exit 1
+fi
+
 ALLURE_VERSION=2.14.0
 ALLURE_DOWNLOAD_URL=https://github.com/allure-framework/allure2/releases/download/$ALLURE_VERSION/allure-$ALLURE_VERSION.zip
 
-echo "Installing Allure $ALLURE_VERSION"
+echo "Installing Allure $ALLURE_VERSION in $DESTINATION_PATH"
 wget --no-verbose -O allure.zip $ALLURE_DOWNLOAD_URL \
-  && unzip allure.zip -d ../ \
+  && unzip allure.zip -d "$DESTINATION_PATH" \
   && rm -rf allure.zip \
 
-ALLURE_PATH=../allure-$ALLURE_VERSION/bin
+ALLURE_PATH=$DESTINATION_PATH/allure-$ALLURE_VERSION/bin
 
 # Test Allure installation
 export PATH="$ALLURE_PATH:$PATH"
