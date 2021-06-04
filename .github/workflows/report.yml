@@ -25,8 +25,11 @@ jobs:
         run: ./bin/install-allure.sh
 
        # Sometimes artefacts are not yet ready and waiting a few seconds helps
-      - name: Wait for a while
-        run: sleep 40s
+      - name: Wait for a artifacts to be available
+        env:
+          RUN_ID: ${{ github.event.client_payload.run_id }}
+          REPOSITORY: ${{ github.event.client_payload.repository }}
+        run: ./bin/wait-for-artifacts.sh
 
       - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
