@@ -1,62 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Fri Jun 04 15:01:35 UTC 2021","Fri Jun 04 15:01:39 UTC 2021","4549","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectInstalledPlugins();
-  const pluginsPage = await _plugins.default.init(page);
-  await (0, _utilsHelper.execWpCommand)(
-    ""wp transient set activated_jetpack true 120""
-  );
-  await pluginsPage.reload();
-
-  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
-};
-
-```
-"
-"passed","Fri Jun 04 15:03:43 UTC 2021","Fri Jun 04 15:03:48 UTC 2021","5333","specs","","pro-blocks.test.js","","","WordAds block","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _testSetup.step)(
-    ""Can visit the block editor and add a WordAds block"",
-    async () => {
-      await blockEditor.waitForAvailableBlock(_wordAds.default.name());
-      blockId = await blockEditor.insertBlock(
-        _wordAds.default.name(),
-        _wordAds.default.title()
-      );
-      await blockEditor.selectPostTitle();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can switch to Wide Skyscraper ad format"",
-    async () => {
-      const adBlock = new _wordAds.default(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can publish a post and assert that WordAds block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _postFrontend.default.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wordAds.default)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Fri Jun 04 15:01:31 UTC 2021","Fri Jun 04 15:01:39 UTC 2021","8087","specs","","search.test.js","","","Can display different result formats","
+"passed","Fri Jun 04 15:12:09 UTC 2021","Fri Jun 04 15:12:17 UTC 2021","8210","specs","","search.test.js","","","Can display different result formats","
 ### Test
 ```typescript
 async () => {
@@ -95,39 +38,75 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:04:40 UTC 2021","Fri Jun 04 15:04:49 UTC 2021","9107","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Fri Jun 04 15:12:06 UTC 2021","Fri Jun 04 15:12:07 UTC 2021","503","specs","","search.test.js","","","Can open and close overlay","
 ### Test
 ```typescript
 async () => {
-  const eventId = ""112691417062"";
+  await (0, _testSetup.step)(""Can press enter to to open overlay"", async () => {
+    await homepage.pressEnterInSearchInput();
+    await homepage.waitForSearchResponse();
+
+    expect(await homepage.isOverlayVisible()).toBeTruthy();
+  });
   await (0, _testSetup.step)(
-    ""Can visit the block editor and add a Eventbrite block"",
+    ""Can click the cross to close the overlay"",
     async () => {
-      const blockId = await blockEditor.insertBlock(
-        _eventbrite.default.name(),
-        _eventbrite.default.title()
+      await homepage.clickCrossToCloseOverlay();
+      expect(await homepage.isOverlayVisible()).toBeFalsy();
+    }
+  );
+};
+
+```
+"
+"passed","Fri Jun 04 15:11:09 UTC 2021","Fri Jun 04 15:11:43 UTC 2021","34151","specs","","connection.test.js","","","Classic","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(""Can start classic connection"", async () => {
+    await (0, _jetpackConnect.doClassicConnection)(true);
+  });
+  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+    const jetpackPage = await _jetpack.default.init(page);
+
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Fri Jun 04 15:14:10 UTC 2021","Fri Jun 04 15:14:18 UTC 2021","8467","specs","","pro-blocks.test.js","","","Pay with PayPal","
+### Test
+```typescript
+async () => {
+  let blockId;
+  await (0, _testSetup.step)(
+    ""Can visit the block editor and add a Pay with PayPal block"",
+    async () => {
+      await blockEditor.waitForAvailableBlock(_simplePayments.default.name());
+      blockId = await blockEditor.insertBlock(
+        _simplePayments.default.name(),
+        _simplePayments.default.title()
       );
-      const eventbriteBlock = new _eventbrite.default(blockId, page, eventId);
-      await eventbriteBlock.addEmbed();
     }
   );
   await (0, _testSetup.step)(
-    ""Can publish a post with a Eventbrite block"",
+    ""Can fill details of Pay with PayPal block"",
+    async () => {
+      const spBlock = new _simplePayments.default(blockId, page);
+      await spBlock.fillDetails();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can publish a post and assert that Pay with PayPal block is rendered"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
       await blockEditor.viewPost();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can assert that Eventbrite block is rendered"",
-    async () => {
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_eventbrite.default, {
-          eventId,
-        })
+        await frontend.isRenderedBlockPresent(_simplePayments.default)
       ).toBeTruthy();
     }
   );
@@ -135,7 +114,7 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:04:30 UTC 2021","Fri Jun 04 15:04:37 UTC 2021","6836","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Fri Jun 04 15:15:09 UTC 2021","Fri Jun 04 15:15:16 UTC 2021","7536","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -176,7 +155,7 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:01:58 UTC 2021","Fri Jun 04 15:02:15 UTC 2021","17155","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
+"passed","Fri Jun 04 15:12:36 UTC 2021","Fri Jun 04 15:12:52 UTC 2021","15988","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
 ### Test
 ```typescript
 async () => {
@@ -307,7 +286,47 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:01:23 UTC 2021","Fri Jun 04 15:01:26 UTC 2021","2874","specs","","search.test.js","","","Can perform search with default settings","
+"passed","Fri Jun 04 15:15:19 UTC 2021","Fri Jun 04 15:15:30 UTC 2021","10829","specs","","free-blocks.test.js","","","Eventbrite block","
+### Test
+```typescript
+async () => {
+  const eventId = ""112691417062"";
+  await (0, _testSetup.step)(
+    ""Can visit the block editor and add a Eventbrite block"",
+    async () => {
+      const blockId = await blockEditor.insertBlock(
+        _eventbrite.default.name(),
+        _eventbrite.default.title()
+      );
+      const eventbriteBlock = new _eventbrite.default(blockId, page, eventId);
+      await eventbriteBlock.addEmbed();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can publish a post with a Eventbrite block"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can assert that Eventbrite block is rendered"",
+    async () => {
+      const frontend = await _postFrontend.default.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_eventbrite.default, {
+          eventId,
+        })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Fri Jun 04 15:12:01 UTC 2021","Fri Jun 04 15:12:04 UTC 2021","2894","specs","","search.test.js","","","Can perform search with default settings","
 ### Test
 ```typescript
 async () => {
@@ -388,23 +407,31 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:00:48 UTC 2021","Fri Jun 04 15:01:22 UTC 2021","34123","specs","","connection.test.js","","","Classic","
+"passed","Fri Jun 04 15:11:07 UTC 2021","Fri Jun 04 15:11:08 UTC 2021","643","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
 ### Test
 ```typescript
 async () => {
-  await (0, _testSetup.step)(""Can start classic connection"", async () => {
-    await (0, _jetpackConnect.doClassicConnection)(true);
-  });
-  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
-    const jetpackPage = await _jetpack.default.init(page);
+  await (await _sidebar.default.init(page)).selectDashboard();
+  const dashboard = await _dashboard.default.init(page);
 
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
+  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
 };
 
 ```
 "
-"passed","Fri Jun 04 15:00:11 UTC 2021","Fri Jun 04 15:00:38 UTC 2021","26773","specs","","connection.test.js","","","User-less","
+"passed","Fri Jun 04 15:11:09 UTC 2021","Fri Jun 04 15:11:10 UTC 2021","1469","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectJetpack();
+  const jetpackPage = await _jetpack.default.init(page);
+
+  expect(await jetpackPage.isConnectBannerVisible()).toBeTruthy();
+};
+
+```
+"
+"passed","Fri Jun 04 15:10:33 UTC 2021","Fri Jun 04 15:11:00 UTC 2021","27013","specs","","connection.test.js","","","User-less","
 ### Test
 ```typescript
 async () => {
@@ -425,71 +452,32 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:01:43 UTC 2021","Fri Jun 04 15:01:45 UTC 2021","2043","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectJetpack();
-  const jetpackPage = await _jetpack.default.init(page);
-
-  expect(await jetpackPage.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Fri Jun 04 15:00:32 UTC 2021","Fri Jun 04 15:01:05 UTC 2021","33468","specs","","plugin-updater.test.js","","","Plugin updater","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(
-    ""Can login and navigate to Plugins page"",
-    async () => {
-      await (await _sidebar.default.init(page)).selectInstalledPlugins();
-      await _plugins.default.init(page);
-    }
-  );
-  await (0, _testSetup.step)(""Can update Jetpack"", async () => {
-    const pluginsPage = await _plugins.default.init(page);
-    const versionBefore = await pluginsPage.getJetpackVersion();
-    await pluginsPage.updateJetpack();
-    const versionAfter = await pluginsPage.getJetpackVersion();
-
-    expect(versionBefore).not.toBe(versionAfter);
-  });
-  await (0, _testSetup.step)(""Can connect Jetpack"", async () => {
-    await (await _sidebar.default.init(page)).selectJetpack();
-    await (0, _jetpackConnect.doInPlaceConnection)();
-    const jetpackPage = await _jetpack.default.init(page);
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Fri Jun 04 15:03:31 UTC 2021","Fri Jun 04 15:03:40 UTC 2021","8956","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Fri Jun 04 15:14:21 UTC 2021","Fri Jun 04 15:14:27 UTC 2021","5870","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
   let blockId;
   await (0, _testSetup.step)(
-    ""Can visit the block editor and add a Pay with PayPal block"",
+    ""Can visit the block editor and add a WordAds block"",
     async () => {
-      await blockEditor.waitForAvailableBlock(_simplePayments.default.name());
+      await blockEditor.waitForAvailableBlock(_wordAds.default.name());
       blockId = await blockEditor.insertBlock(
-        _simplePayments.default.name(),
-        _simplePayments.default.title()
+        _wordAds.default.name(),
+        _wordAds.default.title()
       );
+      await blockEditor.selectPostTitle();
     }
   );
   await (0, _testSetup.step)(
-    ""Can fill details of Pay with PayPal block"",
+    ""Can switch to Wide Skyscraper ad format"",
     async () => {
-      const spBlock = new _simplePayments.default(blockId, page);
-      await spBlock.fillDetails();
+      const adBlock = new _wordAds.default(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
     }
   );
   await (0, _testSetup.step)(
-    ""Can publish a post and assert that Pay with PayPal block is rendered"",
+    ""Can publish a post and assert that WordAds block is rendered"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
@@ -497,7 +485,7 @@ async () => {
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_simplePayments.default)
+        await frontend.isRenderedBlockPresent(_wordAds.default)
       ).toBeTruthy();
     }
   );
@@ -505,19 +493,39 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:01:40 UTC 2021","Fri Jun 04 15:01:41 UTC 2021","873","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
+"passed","Fri Jun 04 15:11:03 UTC 2021","Fri Jun 04 15:11:06 UTC 2021","3624","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
 ### Test
 ```typescript
 async () => {
-  await (await _sidebar.default.init(page)).selectDashboard();
-  const dashboard = await _dashboard.default.init(page);
+  await (await _sidebar.default.init(page)).selectInstalledPlugins();
+  const pluginsPage = await _plugins.default.init(page);
+  await (0, _utilsHelper.execWpCommand)(
+    ""wp transient set activated_jetpack true 120""
+  );
+  await pluginsPage.reload();
 
-  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
+  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
 };
 
 ```
 "
-"passed","Fri Jun 04 15:03:11 UTC 2021","Fri Jun 04 15:03:28 UTC 2021","16696","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Fri Jun 04 15:09:47 UTC 2021","Fri Jun 04 15:10:27 UTC 2021","39913","specs","","connection.test.js","","","In-place","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(""Can start in-place connection"", async () => {
+    await (0, _jetpackConnect.doInPlaceConnection)();
+  });
+  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+    const jetpackPage = await _jetpack.default.init(page);
+
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Fri Jun 04 15:13:49 UTC 2021","Fri Jun 04 15:14:07 UTC 2021","17716","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -552,37 +560,29 @@ async () => {
 
 ```
 "
-"passed","Fri Jun 04 15:01:28 UTC 2021","Fri Jun 04 15:01:29 UTC 2021","543","specs","","search.test.js","","","Can open and close overlay","
+"passed","Fri Jun 04 15:09:57 UTC 2021","Fri Jun 04 15:10:39 UTC 2021","42157","specs","","plugin-updater.test.js","","","Plugin updater","
 ### Test
 ```typescript
 async () => {
-  await (0, _testSetup.step)(""Can press enter to to open overlay"", async () => {
-    await homepage.pressEnterInSearchInput();
-    await homepage.waitForSearchResponse();
-
-    expect(await homepage.isOverlayVisible()).toBeTruthy();
-  });
   await (0, _testSetup.step)(
-    ""Can click the cross to close the overlay"",
+    ""Can login and navigate to Plugins page"",
     async () => {
-      await homepage.clickCrossToCloseOverlay();
-      expect(await homepage.isOverlayVisible()).toBeFalsy();
+      await (await _sidebar.default.init(page)).selectInstalledPlugins();
+      await _plugins.default.init(page);
     }
   );
-};
+  await (0, _testSetup.step)(""Can update Jetpack"", async () => {
+    const pluginsPage = await _plugins.default.init(page);
+    const versionBefore = await pluginsPage.getJetpackVersion();
+    await pluginsPage.updateJetpack();
+    const versionAfter = await pluginsPage.getJetpackVersion();
 
-```
-"
-"passed","Fri Jun 04 14:59:22 UTC 2021","Fri Jun 04 15:00:05 UTC 2021","43249","specs","","connection.test.js","","","In-place","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(""Can start in-place connection"", async () => {
-    await (0, _jetpackConnect.doInPlaceConnection)();
+    expect(versionBefore).not.toBe(versionAfter);
   });
-  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+  await (0, _testSetup.step)(""Can connect Jetpack"", async () => {
+    await (await _sidebar.default.init(page)).selectJetpack();
+    await (0, _jetpackConnect.doInPlaceConnection)();
     const jetpackPage = await _jetpack.default.init(page);
-
     expect(await jetpackPage.isConnected()).toBeTruthy();
   });
 };
