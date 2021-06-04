@@ -1,0 +1,344 @@
+{
+  "uid" : "e461a26b0c68e815",
+  "name" : "Can perform search with default settings",
+  "fullName" : "Can perform search with default settings",
+  "historyId" : "8a48effa07b2a0dc8118fcc35772e118",
+  "time" : {
+    "start" : 1622836209256,
+    "stop" : 1622836212101,
+    "duration" : 2845
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _testSetup.step)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(\n    &quot;Can open the overlay by entering a query&quot;,\n    async () =&gt; {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search controls in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search results in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can sort results by relevance by default&quot;,\n    async () =&gt; {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        &quot;&lt;mark&gt;Test1&lt;/mark&gt; Record 1&quot;\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can edit query in search form&quot;, async () =&gt; {\n    await homepage.enterQueryToOverlay(&quot;test2&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 1&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can change sort order&quot;, async () =&gt; {\n    await homepage.chooseSortingLink(&quot;newest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;newest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n    await homepage.chooseSortingLink(&quot;oldest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;oldest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can apply filters&quot;, async () =&gt; {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n  });\n  await (0, _testSetup.step)(\n    &quot;Can close overlay by clicking the cross&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "search.test.js"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ {
+      "uid" : "8c83d32f9f4eca89",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622836033487,
+        "stop" : 1622836035930,
+        "duration" : 2443
+      }
+    }, {
+      "uid" : "4836acb9da41bcac",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622835555451,
+        "stop" : 1622835558463,
+        "duration" : 3012
+      }
+    }, {
+      "uid" : "66d37dbc6ac96d8c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622834483214,
+        "stop" : 1622834486035,
+        "duration" : 2821
+      }
+    }, {
+      "uid" : "e6b12d748615d524",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622833961259,
+        "stop" : 1622833964143,
+        "duration" : 2884
+      }
+    }, {
+      "uid" : "ea3ae1ad4896768c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622832694672,
+        "stop" : 1622832697084,
+        "duration" : 2412
+      }
+    }, {
+      "uid" : "c5561a4ce751dcf2",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622828808078,
+        "stop" : 1622828810852,
+        "duration" : 2774
+      }
+    }, {
+      "uid" : "392679d3017d71de",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622826961045,
+        "stop" : 1622826963920,
+        "duration" : 2875
+      }
+    }, {
+      "uid" : "75219734a93dbd1d",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622826262363,
+        "stop" : 1622826264808,
+        "duration" : 2445
+      }
+    }, {
+      "uid" : "f31e26bb38ea4b1f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622823393585,
+        "stop" : 1622823396234,
+        "duration" : 2649
+      }
+    }, {
+      "uid" : "a27a7f4de582e94c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622820774111,
+        "stop" : 1622820776539,
+        "duration" : 2428
+      }
+    }, {
+      "uid" : "2e5fccc38064d344",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622819521542,
+        "stop" : 1622819524436,
+        "duration" : 2894
+      }
+    }, {
+      "uid" : "e9d337d2b652e03",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622818883399,
+        "stop" : 1622818886273,
+        "duration" : 2874
+      }
+    }, {
+      "uid" : "7199e68e539980b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622818070443,
+        "stop" : 1622818073080,
+        "duration" : 2637
+      }
+    }, {
+      "uid" : "42ee861849f32561",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622816829719,
+        "stop" : 1622816832390,
+        "duration" : 2671
+      }
+    }, {
+      "uid" : "d52aacdb91bb5818",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622816098756,
+        "stop" : 1622816101140,
+        "duration" : 2384
+      }
+    }, {
+      "uid" : "e9975a7107eeab7f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622815746853,
+        "stop" : 1622815749430,
+        "duration" : 2577
+      }
+    }, {
+      "uid" : "82629638c5fd3531",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622815251534,
+        "stop" : 1622815254494,
+        "duration" : 2960
+      }
+    }, {
+      "uid" : "1a531cedbbca315f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622813035976,
+        "stop" : 1622813038558,
+        "duration" : 2582
+      }
+    }, {
+      "uid" : "fc4bf1c7cce76ecf",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622812132196,
+        "stop" : 1622812135078,
+        "duration" : 2882
+      }
+    }, {
+      "uid" : "dc0a01d12a6797b9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622811735565,
+        "stop" : 1622811738650,
+        "duration" : 3085
+      }
+    }, {
+      "uid" : "2bba216abb9a9beb",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622808192297,
+        "stop" : 1622808195231,
+        "duration" : 2934
+      }
+    }, {
+      "uid" : "cf117e18d303c5c1",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622806698230,
+        "stop" : 1622806700901,
+        "duration" : 2671
+      }
+    }, {
+      "uid" : "35ebf43a24fdd6eb",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622805366038,
+        "stop" : 1622805368516,
+        "duration" : 2478
+      }
+    }, {
+      "uid" : "df2304841c385042",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622804260040,
+        "stop" : 1622804262380,
+        "duration" : 2340
+      }
+    }, {
+      "uid" : "1c3b64c903695b29",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622782743861,
+        "stop" : 1622782746551,
+        "duration" : 2690
+      }
+    }, {
+      "uid" : "c4647b7ba76dd703",
+      "status" : "passed",
+      "time" : {
+        "start" : 1622649597997,
+        "stop" : 1622649600695,
+        "duration" : 2698
+      }
+    } ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "e461a26b0c68e815.json",
+  "parameterValues" : [ ]
+}
