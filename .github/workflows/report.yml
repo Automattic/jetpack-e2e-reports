@@ -17,6 +17,10 @@ on:
         description: 'Run ID'
         required: true
         default: '916686145'
+      repository:
+        description: 'Repository'
+        required: true
+        default: 'automattic/jetpack'
 
 jobs:
   report:
@@ -30,6 +34,8 @@ jobs:
         run: |
           echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
+          github.event.client_payload = '{ "branch": "${{ github.event.inputs.branch }}", "pr": "${{ github.event.inputs.pr }}", "repository": "${{ github.event.inputs.repository }}", "run_id": "${{ github.event.inputs.runId }}" }'
+          echo "Client payload: ${{ github.event.client_payload }}"
 
       - name: Checkout
         uses: actions/checkout@v2
