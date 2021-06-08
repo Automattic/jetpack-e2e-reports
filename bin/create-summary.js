@@ -2,6 +2,8 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
 
+const excluded = [ 'static' ];
+
 const dirs = fs
 	.readdirSync( 'docs', { withFileTypes: true } )
 	.filter( ( dirent ) => dirent.isDirectory() )
@@ -10,6 +12,11 @@ const dirs = fs
 const json = { reports: [] };
 
 for ( const dirName of dirs ) {
+	// Skip excluded dirs
+	if ( excluded.includes( dirName ) ) {
+		continue;
+	}
+
 	// get the last update date from git log
 	const lastUpdate = execSync(
 		`git log -1 --format=\"%ad\" ${ path.resolve( 'docs', dirName ) }`
@@ -21,7 +28,6 @@ for ( const dirName of dirs ) {
 	const summaryData = fs.readFileSync(
 		path.resolve( 'docs', dirName, 'report/widgets/summary.json' )
 	);
-
 	const statistic = JSON.parse( summaryData ).statistic;
 
 	const report = { name: dirName, lastUpdate, statistic };
