@@ -40,6 +40,14 @@ jobs:
           echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
 
+          if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
+            $RUN_ID=github.event.inputs.runId
+            $PR_NUMBER=github.event.inputs.pr
+            $BRANCH=github.event.inputs.branch
+            $REPOSITORY=github.event.inputs.repository
+          fi
+
+          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
           echo "RUN_ID: $RUN_ID"
           echo "PR_NUMBER: $PR_NUMBER"
           echo "BRANCH: $BRANCH"
