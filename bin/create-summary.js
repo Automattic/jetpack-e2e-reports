@@ -11,4 +11,4 @@ for (const d of dirs) {
 	json.reports.push( { name: d, lastUpdate: "" } )
 }
 
-fs.writeFileSync(path.resolve('summary.json'), JSON.stringify(json, null, 2))
+fs.writeFileSync(path.resolve('src/summary.json'), JSON.stringify(json, null, 2))
