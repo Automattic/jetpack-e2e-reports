@@ -33,13 +33,10 @@ jobs:
       BRANCH: ${{ github.event.client_payload.branch }}
 
     steps:
-      - name: Create event information
+      - name: Event information
         env:
           CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
-          echo "Received event '${{ github.event.action }}'"
-          echo $CLIENT_PAYLOAD
-
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
 
           if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
@@ -47,6 +44,9 @@ jobs:
             echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
             echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
             echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
+          else
+            echo "Received event '${{ github.event.action }}'"
+            echo $CLIENT_PAYLOAD
           fi
 
       - name: Checkout
