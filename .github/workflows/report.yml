@@ -8,7 +8,7 @@ on:
       pr:
         description: 'PR number'
         required: true
-        default: '20000'
+        default: '0'
       branch:
         description: 'Branch name'
         required: true
@@ -63,25 +63,20 @@ jobs:
         run: ./bin/install-allure.sh
 
       - name: Wait for a artifacts to be available
-        env:
-          RUN_ID: ${{ github.event.client_payload.run_id }}
-          REPOSITORY: ${{ github.event.client_payload.repository }}
         run: ./bin/wait-for-artifacts.sh
 
       - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
-          repo: ${{ github.event.client_payload.repository }}
+          repo: $REPOSITORY
           workflow: e2e-tests.yml
           workflow_conclusion: "completed"
-          run_id: ${{ github.event.client_payload.run_id }}
+          run_id: $RUN_ID
           path: ../downloads
 
       - name: Generate new test report
         env:
           RESULTS_PATH: ../downloads
-          PR_NUMBER: ${{ github.event.client_payload.pr }}
-          BRANCH: ${{ github.event.client_payload.branch }}
           SITE_ROOT: docs
         run: ./bin/generate-report.sh
 
