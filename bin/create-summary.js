@@ -3,13 +3,12 @@ const path = require( 'path' );
 const { execSync } = require( 'child_process' );
 
 const excluded = [ 'static' ];
+const json = { reports: [] };
 
 const dirs = fs
 	.readdirSync( 'docs', { withFileTypes: true } )
 	.filter( ( dirent ) => dirent.isDirectory() )
 	.map( ( dirent ) => dirent.name );
-
-const json = { reports: [] };
 
 for ( const dirName of dirs ) {
 	// Skip excluded dirs
