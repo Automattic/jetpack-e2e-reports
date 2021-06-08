@@ -3,6 +3,21 @@ name: Get test results
 on:
   repository_dispatch:
 
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number'
+        required: true
+        default: '20000'
+      branch:
+        description: 'Branch name'
+        required: true
+        default: 'test-branch'
+      runId:
+        description: 'Run ID'
+        required: true
+        default: '916686145'
+
 jobs:
   report:
     name: "Create new test reports"
@@ -24,7 +39,6 @@ jobs:
           DESTINATION_PATH: ../
         run: ./bin/install-allure.sh
 
-       # Sometimes artefacts are not yet ready and waiting a few seconds helps
       - name: Wait for a artifacts to be available
         env:
           RUN_ID: ${{ github.event.client_payload.run_id }}
