@@ -26,6 +26,11 @@ jobs:
   report:
     name: "Create new test reports"
     runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ github.event.client_payload.pr }}
+      RUN_ID: ${{ github.event.client_payload.run_id }}
+      REPOSITORY: ${{ github.event.client_payload.repository }}
+      BRANCH: ${{ github.event.client_payload.branch }}
 
     steps:
       - name: Print event information
@@ -34,8 +39,11 @@ jobs:
         run: |
           echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
-          github.event.client_payload = '{ "branch": "${{ github.event.inputs.branch }}", "pr": "${{ github.event.inputs.pr }}", "repository": "${{ github.event.inputs.repository }}", "run_id": "${{ github.event.inputs.runId }}" }'
-          echo "Client payload: ${{ github.event.client_payload }}"
+
+          echo "RUN_ID: $RUN_ID"
+          echo "PR_NUMBER: $PR_NUMBER"
+          echo "BRANCH: $BRANCH"
+          echo "REPOSITORY: $REPOSITORY"
 
       - name: Checkout
         uses: actions/checkout@v2
