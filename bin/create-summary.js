@@ -10,13 +10,21 @@ const dirs = fs
 const json = { reports: [] };
 
 for ( const dirName of dirs ) {
+	// get the last update date from git log
 	const lastUpdate = execSync(
 		`git log -1 --format=\"%ad\" ${ path.resolve( 'docs', dirName ) }`
 	)
 		.toString()
 		.replace( /\n$/, '' );
 
-	const report = { name: dirName, lastUpdate };
+	// get the statistics from report/widgets/summary.json
+	const summaryData = fs.readFileSync(
+		path.resolve( 'docs', dirName, 'report/widgets/summary.json' )
+	);
+
+	const statistic = JSON.parse( summaryData ).statistic;
+
+	const report = { name: dirName, lastUpdate, statistic };
 	console.log( report );
 
 	json.reports.push( report );
