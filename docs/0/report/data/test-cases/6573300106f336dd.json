@@ -1,15 +1,15 @@
 {
-  "uid" : "d17145ad1c99d157",
-  "name" : "Can open and close overlay",
-  "fullName" : "Can open and close overlay",
-  "historyId" : "e2b62658a4d92c3cdceb7338a7d594b7",
+  "uid" : "6573300106f336dd",
+  "name" : "MailChimp Block",
+  "fullName" : "MailChimp Block",
+  "historyId" : "1e0e5667b8c419e68fc1ae6a0d73dd61",
   "time" : {
-    "start" : 1623111368820,
-    "stop" : 1623111369275,
-    "duration" : 455
+    "start" : 1623111453518,
+    "stop" : 1623111467863,
+    "duration" : 14345
   },
-  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\"Can press enter to to open overlay\", async () => {\n    await homepage.pressEnterInSearchInput();\n    await homepage.waitForSearchResponse();\n\n    expect(await homepage.isOverlayVisible()).toBeTruthy();\n  });\n  await (0, _testSetup.step)(\n    \"Can click the cross to close the overlay\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
-  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(&quot;Can press enter to to open overlay&quot;, async () =&gt; {\n    await homepage.pressEnterInSearchInput();\n    await homepage.waitForSearchResponse();\n\n    expect(await homepage.isOverlayVisible()).toBeTruthy();\n  });\n  await (0, _testSetup.step)(\n    &quot;Can click the cross to close the overlay&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "description" : "\n### Test\n```typescript\nasync () => {\n  let blockId;\n  await (0, _testSetup.step)(\n    \"Can visit the block editor and add a MailChimp block\",\n    async () => {\n      blockId = await blockEditor.insertBlock(\n        _mailchimp.default.name(),\n        _mailchimp.default.title()\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can connect to a MailChimp\", async () => {\n    const mcBlock = new _mailchimp.default(blockId, page);\n    await mcBlock.connect();\n  });\n  await (0, _testSetup.step)(\n    \"Can publish a post and assert that MailChimp block is rendered\",\n    async () => {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_mailchimp.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  let blockId;\n  await (0, _testSetup.step)(\n    &quot;Can visit the block editor and add a MailChimp block&quot;,\n    async () =&gt; {\n      blockId = await blockEditor.insertBlock(\n        _mailchimp.default.name(),\n        _mailchimp.default.title()\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can connect to a MailChimp&quot;, async () =&gt; {\n    const mcBlock = new _mailchimp.default(blockId, page);\n    await mcBlock.connect();\n  });\n  await (0, _testSetup.step)(\n    &quot;Can publish a post and assert that MailChimp block is rendered&quot;,\n    async () =&gt; {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_mailchimp.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n</code></pre>\n",
   "status" : "passed",
   "flaky" : false,
   "newFailed" : false,
@@ -116,7 +116,7 @@
     "value" : "specs"
   }, {
     "name" : "subSuite",
-    "value" : "search.test.js"
+    "value" : "pro-blocks.test.js"
   }, {
     "name" : "resultFormat",
     "value" : "allure2"
@@ -127,10 +127,18 @@
   "retry" : false,
   "extra" : {
     "severity" : "normal",
-    "retries" : [ ],
+    "retries" : [ {
+      "uid" : "a3c856198d0833e4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623111438105,
+        "stop" : 1623111456757,
+        "duration" : 18652
+      }
+    } ],
     "categories" : [ ],
     "tags" : [ ]
   },
-  "source" : "d17145ad1c99d157.json",
+  "source" : "6573300106f336dd.json",
   "parameterValues" : [ ]
 }
