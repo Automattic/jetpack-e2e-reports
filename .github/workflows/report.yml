@@ -33,7 +33,7 @@ jobs:
       BRANCH: ${{ github.event.client_payload.branch }}
 
     steps:
-      - name: Print event information
+      - name: Create event information
         env:
           CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
@@ -48,13 +48,6 @@ jobs:
             echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
             echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
           fi
-
-          echo "${{ toJSON(steps) }}"
-
-          echo "RUN_ID: ${{ env.RUN_ID }}"
-          echo "PR_NUMBER: $PR_NUMBER"
-          echo "BRANCH: $BRANCH"
-          echo "REPOSITORY: $REPOSITORY"
 
       - name: Checkout
         uses: actions/checkout@v2
