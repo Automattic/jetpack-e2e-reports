@@ -33,6 +33,9 @@ jobs:
       BRANCH: ${{ github.event.client_payload.branch }}
 
     steps:
+      - name: Setup Node
+        uses: actions/setup-node@v2
+
       - name: Event information
         env:
           CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
@@ -74,6 +77,9 @@ jobs:
           RESULTS_PATH: ../downloads
           SITE_ROOT: docs
         run: ./bin/generate-report.sh
+
+      - name: Recreate summary file
+        run: node ./bin/create-summary.js
 
       - name: Rebuild dashboard
         run: echo "Rebuild dashboard"
