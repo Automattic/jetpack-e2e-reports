@@ -1,22 +1,12 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import Data from './summary.json';
-
-function reportLink( report ) {
-	const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
-	return (
-		<div>
-			<a href={ linkUrl } className="App-link">
-				{ report.name }
-			</a>
-		</div>
-	);
-}
+import ReportsTable from './ReportsTable';
 
 function reportsList() {
 	return (
-		<content className="App-content">
-			{ Data.reports.map( ( r ) => reportLink( r ) ) }
-		</content>
+		<div className="App-content">
+			<ReportsTable />
+		</div>
 	);
 }
 
