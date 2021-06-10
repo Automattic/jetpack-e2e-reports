@@ -1,15 +1,15 @@
 {
-  "uid" : "7b4d2b47228b5b68",
-  "name" : "Can open and close overlay",
-  "fullName" : "Can open and close overlay",
-  "historyId" : "e2b62658a4d92c3cdceb7338a7d594b7",
+  "uid" : "fd2818fdde0c869a",
+  "name" : "Can find connect button on plugins page",
+  "fullName" : "Can find connect button on plugins page",
+  "historyId" : "c0686e6401832cffcf1f38f568189c9a",
   "time" : {
-    "start" : 1623111368820,
-    "stop" : 1623111369275,
-    "duration" : 455
+    "start" : 1623111475940,
+    "stop" : 1623111480988,
+    "duration" : 5048
   },
-  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\"Can press enter to to open overlay\", async () => {\n    await homepage.pressEnterInSearchInput();\n    await homepage.waitForSearchResponse();\n\n    expect(await homepage.isOverlayVisible()).toBeTruthy();\n  });\n  await (0, _testSetup.step)(\n    \"Can click the cross to close the overlay\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
-  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(&quot;Can press enter to to open overlay&quot;, async () =&gt; {\n    await homepage.pressEnterInSearchInput();\n    await homepage.waitForSearchResponse();\n\n    expect(await homepage.isOverlayVisible()).toBeTruthy();\n  });\n  await (0, _testSetup.step)(\n    &quot;Can click the cross to close the overlay&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "description" : "\n### Test\n```typescript\nasync () => {\n  await (await _sidebar.default.init(page)).selectInstalledPlugins();\n  const pluginsPage = await _plugins.default.init(page);\n  await (0, _utilsHelper.execWpCommand)(\n    \"wp transient set activated_jetpack true 120\"\n  );\n  await pluginsPage.reload();\n\n  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (await _sidebar.default.init(page)).selectInstalledPlugins();\n  const pluginsPage = await _plugins.default.init(page);\n  await (0, _utilsHelper.execWpCommand)(\n    &quot;wp transient set activated_jetpack true 120&quot;\n  );\n  await pluginsPage.reload();\n\n  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();\n};\n\n</code></pre>\n",
   "status" : "passed",
   "flaky" : false,
   "newFailed" : false,
@@ -116,7 +116,7 @@
     "value" : "specs"
   }, {
     "name" : "subSuite",
-    "value" : "search.test.js"
+    "value" : "pre-connection.test.js"
   }, {
     "name" : "resultFormat",
     "value" : "allure2"
@@ -131,6 +131,6 @@
     "categories" : [ ],
     "tags" : [ ]
   },
-  "source" : "7b4d2b47228b5b68.json",
+  "source" : "fd2818fdde0c869a.json",
   "parameterValues" : [ ]
 }
