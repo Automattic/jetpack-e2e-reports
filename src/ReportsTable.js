@@ -1,7 +1,83 @@
-import { Table } from 'react-bootstrap';
+import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import React from 'react';
 
 import Data from './summary.json';
+
+export default class ReportsTable extends React.Component {
+	constructor( props ) {
+		super( props );
+		this.state = { sortBy: 'name', sortDirection: true };
+	}
+
+	updateSorting = ( sortBy, sortDirection ) =>
+		this.setState( { sortBy, sortDirection } );
+
+	render() {
+		return (
+			<Table bordered variant="dark" id="reportsTable">
+				<thead>
+					<tr>
+						{ renderTableHeader(
+							this.updateSorting,
+							this.state.sortBy,
+							this.state.sortDirection
+						) }
+					</tr>
+				</thead>
+				<tbody>
+					{ renderTableData(
+						this.state.sortBy,
+						this.state.sortDirection
+					) }
+				</tbody>
+			</Table>
+		);
+	}
+}
+
+function sortTable( sortBy, direction ) {
+	console.log( '!!!!!', sortBy, direction );
+	switch ( sortBy ) {
+		case 'name':
+			return sortAlphabetically( direction );
+		case 'lastUpdate':
+			return sortByDate( direction );
+		case 'statistic':
+			return sortByStatus( direction );
+	}
+}
+
+function sortByDate( direction ) {
+	return Data.reports.sort( ( r1, r2 ) => {
+		if ( direction ) {
+			return Date.parse( r1.lastUpdate ) - Date.parse( r2.lastUpdate );
+		}
+		return Date.parse( r2.lastUpdate ) - Date.parse( r1.lastUpdate );
+	} );
+}
+
+function sortAlphabetically( direction ) {
+	return Data.reports.sort( ( r1, r2 ) =>
+		direction ? r1.name - r2.name : r2.name - r1.name
+	);
+}
+
+function sortByStatus( direction ) {
+	return Data.reports.sort( ( r1, r2 ) => {
+		if ( direction ) {
+			return (
+				r1.statistic.failed +
+				r1.statistic.broken -
+				( r2.statistic.failed + r2.statistic.broken )
+			);
+		}
+		return (
+			r2.statistic.failed +
+			r2.statistic.broken -
+			( r1.statistic.failed + r1.statistic.broken )
+		);
+	} );
+}
 
 function reportLink( report ) {
 	const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
@@ -17,17 +93,42 @@ function reportLink( report ) {
 	);
 }
 
-function sortTable( sortBy ) {
-	return Data.reports.sort( ( r1, r2 ) => {
-		if ( r1[ sortBy ] > r2[ sortBy ] ) {
-			return -1;
-		}
-		if ( r1[ sortBy ] < r2[ sortBy ] ) {
-			return 1;
-		}
-		return 0;
+function statusLabel( statistic ) {
+	const isFailed = statistic.total !== statistic.passed;
+
+	const counts = [ 'failed', 'passed', 'total' ].map( ( label, id ) => {
+		const count =
+			label === 'failed'
+				? statistic[ label ] + statistic.broken
+				: statistic[ label ];
+		return (
+			<OverlayTrigger
+				key={ id }
+				placement="right"
+				delay={ { show: 250, hide: 400 } }
+				overlay={
+					<Tooltip id={ `tooltip-${ label }` }>
+						{ capitalize( label ) + ' tests' }
+					</Tooltip>
+				}
+			>
+				<span className={ `label label-status-${ label }` }>
+					{ count }
+				</span>
+			</OverlayTrigger>
+		);
 	} );
+
+	return (
+		<div>
+			<span>{ `Tests ${ isFailed ? 'failed' : 'passed' }: ` }</span>
+			{ counts }
+		</div>
+	);
 }
+
+const localeDate = ( dateString ) =>
+	new Date( Date.parse( dateString ) ).toLocaleString();
 
 function renderTableData( sortBy, sortDirection ) {
 	const reports = sortTable( sortBy, sortDirection );
@@ -36,18 +137,8 @@ function renderTableData( sortBy, sortDirection ) {
 		return (
 			<tr key={ id }>
 				<td>{ reportLink( report ) }</td>
-				<td>{ lastUpdate }</td>
-				<td>
-					<span className={ `label label-status-failed` }>
-						{ statistic.failed }
-					</span>{ ' ' }
-					<span className={ `label label-status-passed` }>
-						{ statistic.passed }
-					</span>{ ' ' }
-					<span className={ `label label-status-total` }>
-						{ statistic.total }
-					</span>
-				</td>
+				<td>{ localeDate( lastUpdate ) }</td>
+				<td>{ statusLabel( statistic ) }</td>
 			</tr>
 		);
 	} );
@@ -72,32 +163,10 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 	} );
 }
 
-export default class ReportsTable extends React.Component {
-	constructor( props ) {
-		super( props );
-		this.state = { sortBy: 'name', sortDirection: true };
-	}
+// ========================================
+// Some helper functions
 
-	updateSorting = ( sortBy, sortDirection ) =>
-		this.setState( { sortBy, sortDirection } );
-
-	render() {
-		return (
-			<Table bordered variant="dark" id="reportsTable">
-				<thead>
-					<tr>
-						{ renderTableHeader(
-							this.updateSorting,
-							this.state.sortBy,
-							this.state.sortDirection
-						) }
-					</tr>
-				</thead>
-				<tbody>{ renderTableData( this.state.sortingColName ) }</tbody>
-			</Table>
-		);
-	}
-}
+const capitalize = ( s ) => s.charAt( 0 ).toUpperCase() + s.slice( 1 );
 
 function isNumeric( str ) {
 	if ( typeof str !== 'string' ) return false; // we only process strings!
