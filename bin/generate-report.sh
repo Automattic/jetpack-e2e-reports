@@ -51,5 +51,5 @@ cd "$TARGET_RESULTS_PATH"
 allure generate --clean --output report
 
 # Write metadata to file
-echo "$CLIENT_PAYLOAD" >> metadata.json
+echo "$CLIENT_PAYLOAD" > metadata.json
 
