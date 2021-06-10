@@ -1,4 +1,4 @@
-name: Get test results
+name: Test workflow
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   report:
-    name: "Create new test reports"
+    name: "Test workflow"
     runs-on: ubuntu-latest
     env:
       PR_NUMBER: ${{ github.event.client_payload.pr }}
@@ -31,4 +31,4 @@ jobs:
       - name: Test step
         run: |
           ls -lh
-          git log -1 --format="%ad" docs/0
+          git log -3 docs/0
