@@ -31,14 +31,13 @@ jobs:
       RUN_ID: ${{ github.event.client_payload.run_id }}
       REPOSITORY: ${{ github.event.client_payload.repository }}
       BRANCH: ${{ github.event.client_payload.branch }}
+      CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
 
     steps:
       - name: Setup Node
         uses: actions/setup-node@v2
 
       - name: Event information
-        env:
-          CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
 
@@ -50,7 +49,6 @@ jobs:
           else
             echo "Received event '${{ github.event.action }}'"
             echo $CLIENT_PAYLOAD
-            echo "CLIENT_PAYLOAD=$CLIENT_PAYLOAD" >> $GITHUB_ENV
           fi
 
       - name: Checkout
