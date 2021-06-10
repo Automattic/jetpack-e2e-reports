@@ -87,7 +87,12 @@ function reportLink( report ) {
 		name = `PR #${ report.name }`;
 	}
 	return (
-		<a href={ linkUrl } className="App-link">
+		<a
+			href={ linkUrl }
+			className="App-link"
+			target="_blank"
+			rel="noreferrer"
+		>
 			{ name }
 		</a>
 	);
