@@ -29,7 +29,33 @@ for ( const dirName of dirs ) {
 	);
 	const statistic = JSON.parse( summaryData ).statistic;
 
-	const report = { name: dirName, lastUpdate, statistic };
+	// metadata
+
+	let metadata = {
+		branch: 'n/a',
+		pr_number: 'n/a',
+		pr_title: 'n/a',
+		run_id: 'n/a',
+		run_number: 'n/a',
+	};
+
+	try {
+		const fileData = fs.readFileSync( `docs/${ dirName }/metadata.json` );
+		metadata = JSON.parse( fileData );
+	} catch ( error ) {
+		if ( error.code === 'ENOENT' ) {
+		} else {
+			console.error( error );
+		}
+	}
+
+	const report = {
+		name: dirName,
+		lastUpdate,
+		statistic,
+		metadata,
+	};
+
 	// console.log( report );
 
 	json.reports.push( report );
