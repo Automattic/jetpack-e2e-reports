@@ -30,7 +30,7 @@ for ( const dirName of dirs ) {
 	const statistic = JSON.parse( summaryData ).statistic;
 
 	const report = { name: dirName, lastUpdate, statistic };
-	console.log( report );
+	// console.log( report );
 
 	json.reports.push( report );
 }
