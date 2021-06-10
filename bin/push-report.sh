@@ -11,7 +11,6 @@ if [ -z "$(git status --porcelain)" ]; then
 else
   git config --local user.name "$USERNAME"
   git config --local user.email "$EMAIL"
-  git pull
   git add .
   git commit -m "Publish new test reports"
   git push
