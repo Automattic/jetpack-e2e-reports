@@ -1,0 +1,32 @@
+name: Get test results
+
+on:
+  push:
+    branches: [last-update-date]
+
+jobs:
+  report:
+    name: "Create new test reports"
+    runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ github.event.client_payload.pr }}
+      RUN_ID: ${{ github.event.client_payload.run_id }}
+      REPOSITORY: ${{ github.event.client_payload.repository }}
+      BRANCH: ${{ github.event.client_payload.branch }}
+
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Test step
+        run: git log -1 --format="%ad" docs/0
