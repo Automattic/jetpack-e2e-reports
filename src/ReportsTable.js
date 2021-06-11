@@ -1,4 +1,4 @@
-import { Table, OverlayTrigger, Tooltip, Badge, Button } from 'react-bootstrap';
+import { Table, Badge, Button } from 'react-bootstrap';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -154,20 +154,9 @@ function statusLabel( statistic ) {
 				? statistic[ label ] + statistic.broken
 				: statistic[ label ];
 		return (
-			<OverlayTrigger
-				key={ id }
-				placement="right"
-				delay={ { show: 250, hide: 400 } }
-				overlay={
-					<Tooltip id={ `tooltip-${ label }` }>
-						{ capitalize( label ) + ' tests' }
-					</Tooltip>
-				}
-			>
-				<Badge className={ `label label-status-${ label }` }>
-					{ label } { count }
-				</Badge>
-			</OverlayTrigger>
+			<Badge key={ id } className={ `label label-status-${ label }` }>
+				{ label } { count }
+			</Badge>
 		);
 	} );
 
@@ -242,8 +231,3 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 		);
 	} );
 }
-
-// ========================================
-// Some helper functions
-
-const capitalize = ( s ) => s.charAt( 0 ).toUpperCase() + s.slice( 1 );
