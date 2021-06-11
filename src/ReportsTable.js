@@ -1,5 +1,11 @@
 import { Table, OverlayTrigger, Tooltip, Badge } from 'react-bootstrap';
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+	faCheck,
+	faCodeBranch,
+	faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 
 import Data from './summary.json';
 
@@ -14,7 +20,7 @@ export default class ReportsTable extends React.Component {
 
 	render() {
 		return (
-			<Table bordered size="sm" variant="dark" id="reportsTable">
+			<Table bordered hover size="sm" variant="dark" id="reportsTable">
 				<thead>
 					<tr>
 						{ renderTableHeader(
@@ -79,7 +85,7 @@ function sortByStatus( direction ) {
 	} );
 }
 
-function reportLink( report, metadata ) {
+function reportLink( report, metadata, isFailed ) {
 	const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
 
 	const reportKey = report.name;
@@ -97,6 +103,11 @@ function reportLink( report, metadata ) {
 
 	return (
 		<span>
+			<FontAwesomeIcon
+				className={ isFailed ? 'failed' : 'passed' }
+				icon={ isFailed ? faTimes : faCheck }
+			/>
+			&nbsp;
 			<a
 				href={ linkUrl }
 				className="report-link"
@@ -107,7 +118,8 @@ function reportLink( report, metadata ) {
 				<br />
 			</a>
 			<sub>
-				report key: { reportKey }, branch: { metadata.branch }
+				#{ reportKey } { ' • ' }
+				<FontAwesomeIcon icon={ faCodeBranch } /> { metadata.branch }
 			</sub>
 		</span>
 	);
@@ -149,8 +161,8 @@ function renderTableData( sortBy, sortDirection ) {
 		const { lastUpdate, statistic, metadata } = report; //destructuring
 		const isFailed = statistic.total !== statistic.passed;
 		return (
-			<tr key={ id } className={ isFailed ? 'failed' : 'passed' }>
-				<td>{ reportLink( report, metadata ) }</td>
+			<tr key={ id }>
+				<td>{ reportLink( report, metadata, isFailed ) }</td>
 				<td>{ statusLabel( statistic ) }</td>
 				<td>{ localeDate( lastUpdate ) }</td>
 			</tr>
