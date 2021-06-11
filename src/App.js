@@ -11,11 +11,11 @@ function reportsList() {
 }
 
 function header() {
-	return <header className="App-header">This is header</header>;
+	return <header className="App-header">Jetpack E2E test reports</header>;
 }
 
 function footer() {
-	return <footer className="App-footer">This is footer</footer>;
+	return <footer className="App-footer">&nbsp;</footer>;
 }
 
 function App() {

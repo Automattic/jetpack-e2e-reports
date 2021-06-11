@@ -1,4 +1,4 @@
-import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Table, OverlayTrigger, Tooltip, Badge } from 'react-bootstrap';
 import React from 'react';
 
 import Data from './summary.json';
@@ -6,7 +6,7 @@ import Data from './summary.json';
 export default class ReportsTable extends React.Component {
 	constructor( props ) {
 		super( props );
-		this.state = { sortBy: 'name', sortDirection: true };
+		this.state = { sortBy: 'lastUpdate', sortDirection: false };
 	}
 
 	updateSorting = ( sortBy, sortDirection ) =>
@@ -14,7 +14,7 @@ export default class ReportsTable extends React.Component {
 
 	render() {
 		return (
-			<Table bordered variant="dark" id="reportsTable">
+			<Table bordered size="sm" variant="dark" id="reportsTable">
 				<thead>
 					<tr>
 						{ renderTableHeader(
@@ -79,28 +79,41 @@ function sortByStatus( direction ) {
 	} );
 }
 
-function reportLink( report ) {
+function reportLink( report, metadata ) {
 	const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
 
-	let name = `Branch: ${ report.name }`;
-	if ( isNumeric( report.name ) ) {
-		name = `PR #${ report.name }`;
+	const reportKey = report.name;
+	let reportTitle = report.name;
+
+	if ( metadata.pr_title ) {
+		let prNumber = '';
+		if ( metadata.pr ) {
+			prNumber = `(#${ metadata.pr })`;
+		} else if ( metadata.pr_number ) {
+			prNumber = `(#${ metadata.pr_number })`;
+		}
+		reportTitle = `${ metadata.pr_title } ${ prNumber }`;
 	}
+
 	return (
-		<a
-			href={ linkUrl }
-			className="App-link"
-			target="_blank"
-			rel="noreferrer"
-		>
-			{ name }
-		</a>
+		<span>
+			<a
+				href={ linkUrl }
+				className="report-link"
+				target="_blank"
+				rel="noreferrer"
+			>
+				{ reportTitle }
+				<br />
+			</a>
+			<sub>
+				report key: { reportKey }, branch: { metadata.branch }
+			</sub>
+		</span>
 	);
 }
 
 function statusLabel( statistic ) {
-	const isFailed = statistic.total !== statistic.passed;
-
 	const counts = [ 'failed', 'passed', 'total' ].map( ( label, id ) => {
 		const count =
 			label === 'failed'
@@ -117,19 +130,14 @@ function statusLabel( statistic ) {
 					</Tooltip>
 				}
 			>
-				<span className={ `label label-status-${ label }` }>
-					{ count }
-				</span>
+				<Badge className={ `label label-status-${ label }` }>
+					{ label } { count }
+				</Badge>
 			</OverlayTrigger>
 		);
 	} );
 
-	return (
-		<div>
-			<span>{ `Tests ${ isFailed ? 'failed' : 'passed' }: ` }</span>
-			{ counts }
-		</div>
-	);
+	return <div>{ counts }</div>;
 }
 
 const localeDate = ( dateString ) =>
@@ -138,19 +146,20 @@ const localeDate = ( dateString ) =>
 function renderTableData( sortBy, sortDirection ) {
 	const reports = sortTable( sortBy, sortDirection );
 	return reports.map( ( report, id ) => {
-		const { lastUpdate, statistic } = report; //destructuring
+		const { lastUpdate, statistic, metadata } = report; //destructuring
+		const isFailed = statistic.total !== statistic.passed;
 		return (
-			<tr key={ id }>
-				<td>{ reportLink( report ) }</td>
-				<td>{ localeDate( lastUpdate ) }</td>
+			<tr key={ id } className={ isFailed ? 'failed' : 'passed' }>
+				<td>{ reportLink( report, metadata ) }</td>
 				<td>{ statusLabel( statistic ) }</td>
+				<td>{ localeDate( lastUpdate ) }</td>
 			</tr>
 		);
 	} );
 }
 
 function renderTableHeader( updateSorting, sortBy, sortDirection ) {
-	const head = Object.keys( Data.reports[ 0 ] );
+	const head = [ 'name', 'statistic', 'lastUpdate' ];
 
 	const klass = sortDirection ? 'sort-by-asc' : 'sort-by-desc';
 	return head.map( ( key, index ) => {
@@ -173,10 +182,10 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 
 const capitalize = ( s ) => s.charAt( 0 ).toUpperCase() + s.slice( 1 );
 
-function isNumeric( str ) {
-	if ( typeof str !== 'string' ) return false; // we only process strings!
-	return (
-		! isNaN( str ) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-		! isNaN( parseFloat( str ) )
-	); // ...and ensure strings of whitespace fail
-}
+// function isNumeric( str ) {
+// 	if ( typeof str !== 'string' ) return false; // we only process strings!
+// 	return (
+// 		! isNaN( str ) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+// 		! isNaN( parseFloat( str ) )
+// 	); // ...and ensure strings of whitespace fail
+// }
