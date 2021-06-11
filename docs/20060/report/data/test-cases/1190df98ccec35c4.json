@@ -1,15 +1,15 @@
 {
-  "uid" : "bd60e278c4acd30a",
-  "name" : "MailChimp Block",
-  "fullName" : "MailChimp Block",
-  "historyId" : "1e0e5667b8c419e68fc1ae6a0d73dd61",
+  "uid" : "1190df98ccec35c4",
+  "name" : "WordAds block",
+  "fullName" : "WordAds block",
+  "historyId" : "18efccdb8f3fb33e445e77a8ef2cffa3",
   "time" : {
-    "start" : 1623355777152,
-    "stop" : 1623355789565,
-    "duration" : 12413
+    "start" : 1623355799489,
+    "stop" : 1623355803306,
+    "duration" : 3817
   },
-  "description" : "\n### Test\n```typescript\nasync () => {\n  let blockId;\n  await (0, _testSetup.step)(\n    \"Can visit the block editor and add a MailChimp block\",\n    async () => {\n      blockId = await blockEditor.insertBlock(\n        _mailchimp.default.name(),\n        _mailchimp.default.title()\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can connect to a MailChimp\", async () => {\n    const mcBlock = new _mailchimp.default(blockId, page);\n    await mcBlock.connect();\n  });\n  await (0, _testSetup.step)(\n    \"Can publish a post and assert that MailChimp block is rendered\",\n    async () => {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_mailchimp.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
-  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  let blockId;\n  await (0, _testSetup.step)(\n    &quot;Can visit the block editor and add a MailChimp block&quot;,\n    async () =&gt; {\n      blockId = await blockEditor.insertBlock(\n        _mailchimp.default.name(),\n        _mailchimp.default.title()\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can connect to a MailChimp&quot;, async () =&gt; {\n    const mcBlock = new _mailchimp.default(blockId, page);\n    await mcBlock.connect();\n  });\n  await (0, _testSetup.step)(\n    &quot;Can publish a post and assert that MailChimp block is rendered&quot;,\n    async () =&gt; {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_mailchimp.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "description" : "\n### Test\n```typescript\nasync () => {\n  let blockId;\n  await (0, _testSetup.step)(\n    \"Can visit the block editor and add a WordAds block\",\n    async () => {\n      await blockEditor.waitForAvailableBlock(_wordAds.default.name());\n      blockId = await blockEditor.insertBlock(\n        _wordAds.default.name(),\n        _wordAds.default.title()\n      );\n      await blockEditor.selectPostTitle();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can switch to Wide Skyscraper ad format\",\n    async () => {\n      const adBlock = new _wordAds.default(blockId, page);\n      await adBlock.focus();\n      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can publish a post and assert that WordAds block is rendered\",\n    async () => {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_wordAds.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  let blockId;\n  await (0, _testSetup.step)(\n    &quot;Can visit the block editor and add a WordAds block&quot;,\n    async () =&gt; {\n      await blockEditor.waitForAvailableBlock(_wordAds.default.name());\n      blockId = await blockEditor.insertBlock(\n        _wordAds.default.name(),\n        _wordAds.default.title()\n      );\n      await blockEditor.selectPostTitle();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can switch to Wide Skyscraper ad format&quot;,\n    async () =&gt; {\n      const adBlock = new _wordAds.default(blockId, page);\n      await adBlock.focus();\n      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can publish a post and assert that WordAds block is rendered&quot;,\n    async () =&gt; {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_wordAds.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n</code></pre>\n",
   "status" : "passed",
   "flaky" : false,
   "newFailed" : false,
@@ -131,6 +131,6 @@
     "categories" : [ ],
     "tags" : [ ]
   },
-  "source" : "bd60e278c4acd30a.json",
+  "source" : "1190df98ccec35c4.json",
   "parameterValues" : [ ]
 }
