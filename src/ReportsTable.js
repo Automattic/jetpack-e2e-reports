@@ -12,11 +12,11 @@ import Data from './summary.json';
 export default class ReportsTable extends React.Component {
 	constructor( props ) {
 		super( props );
-		this.state = { sortBy: 'lastUpdate', sortDirection: false };
+		this.state = { sortBy: 'lastUpdate', isSortAsc: false };
 	}
 
-	updateSorting = ( sortBy, sortDirection ) =>
-		this.setState( { sortBy, sortDirection } );
+	updateSorting = ( sortBy, isSortAsc ) =>
+		this.setState( { sortBy, isSortAsc } );
 
 	render() {
 		return (
@@ -34,7 +34,7 @@ export default class ReportsTable extends React.Component {
 							{ renderTableHeader(
 								this.updateSorting,
 								this.state.sortBy,
-								this.state.sortDirection
+								this.state.isSortAsc
 							) }
 						</th>
 					</tr>
@@ -42,7 +42,7 @@ export default class ReportsTable extends React.Component {
 				<tbody>
 					{ renderTableData(
 						this.state.sortBy,
-						this.state.sortDirection
+						this.state.isSortAsc
 					) }
 				</tbody>
 			</Table>
@@ -50,35 +50,35 @@ export default class ReportsTable extends React.Component {
 	}
 }
 
-function sortTable( sortBy, direction ) {
+function sortTable( sortBy, isSortAsc ) {
 	switch ( sortBy ) {
 		case 'name':
-			return sortAlphabetically( direction );
+			return sortAlphabetically( isSortAsc );
 		case 'lastUpdate':
-			return sortByDate( direction );
+			return sortByDate( isSortAsc );
 		case 'statistic':
-			return sortByStatus( direction );
+			return sortByStatus( isSortAsc );
 	}
 }
 
-function sortByDate( direction ) {
+function sortByDate( isSortAsc ) {
 	return Data.reports.sort( ( r1, r2 ) => {
-		if ( direction ) {
+		if ( isSortAsc ) {
 			return Date.parse( r1.lastUpdate ) - Date.parse( r2.lastUpdate );
 		}
 		return Date.parse( r2.lastUpdate ) - Date.parse( r1.lastUpdate );
 	} );
 }
 
-function sortAlphabetically( direction ) {
+function sortAlphabetically( isSortAsc ) {
 	return Data.reports.sort( ( r1, r2 ) =>
-		direction ? r1.name - r2.name : r2.name - r1.name
+		isSortAsc ? r1.name - r2.name : r2.name - r1.name
 	);
 }
 
-function sortByStatus( direction ) {
+function sortByStatus( isSortAsc ) {
 	return Data.reports.sort( ( r1, r2 ) => {
-		if ( direction ) {
+		if ( isSortAsc ) {
 			return (
 				r1.statistic.failed +
 				r1.statistic.broken -
@@ -93,7 +93,7 @@ function sortByStatus( direction ) {
 	} );
 }
 
-function reportLink( report, metadata, isFailed ) {
+function renderReportLink( report, metadata, isFailed ) {
 	const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
 
 	const reportKey = report.name;
@@ -147,7 +147,7 @@ function reportLink( report, metadata, isFailed ) {
 	);
 }
 
-function statusLabel( statistic ) {
+function renderResults( statistic ) {
 	const counts = [ 'failed', 'passed', 'total' ].map( ( label, id ) => {
 		const count =
 			label === 'failed'
@@ -163,7 +163,7 @@ function statusLabel( statistic ) {
 	return <div>{ counts }</div>;
 }
 
-function metadataCell( report ) {
+function renderMetadataCell( report ) {
 	const runUrl = `https://github.com/Automattic/jetpack/actions/runs/${ report.metadata.run_id }`;
 	return (
 		<ul className={ 'list-unstyled' }>
@@ -199,9 +199,9 @@ function renderTableData( sortBy, sortDirection ) {
 		const isFailed = statistic.total !== statistic.passed;
 		return (
 			<tr key={ id }>
-				<td>{ reportLink( report, metadata, isFailed ) }</td>
-				<td>{ statusLabel( statistic ) }</td>
-				<td>{ metadataCell( report ) }</td>
+				<td>{ renderReportLink( report, metadata, isFailed ) }</td>
+				<td>{ renderResults( statistic ) }</td>
+				<td>{ renderMetadataCell( report ) }</td>
 			</tr>
 		);
 	} );
