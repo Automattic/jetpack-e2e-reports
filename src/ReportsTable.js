@@ -49,7 +49,6 @@ export default class ReportsTable extends React.Component {
 }
 
 function sortTable( sortBy, direction ) {
-	console.log( '!!!!!', sortBy, direction );
 	switch ( sortBy ) {
 		case 'name':
 			return sortAlphabetically( direction );
