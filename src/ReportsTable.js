@@ -23,6 +23,11 @@ export default class ReportsTable extends React.Component {
 			<Table hover size="sm" variant="dark" id="reportsTable">
 				<thead>
 					<tr>
+						<th colSpan="3">
+							<h1>Jetpack e2e test reports</h1>
+						</th>
+					</tr>
+					<tr>
 						<th colSpan="3" id={ 'sortButtons' }>
 							{ renderTableHeader(
 								this.updateSorting,
@@ -154,19 +159,31 @@ function statusLabel( statistic ) {
 	return <div>{ counts }</div>;
 }
 
-const localeDate = ( dateString ) =>
-	new Date( Date.parse( dateString ) ).toLocaleString();
+function metadataCell( report ) {
+	const runUrl = `https://github.com/Automattic/jetpack/actions/runs/${ report.metadata.run_id }`;
+	return (
+		<sub>
+			last update:{ ' ' }
+			{ new Date( Date.parse( report.lastUpdate ) ).toLocaleString() }
+			<br />
+			last run id:{ ' ' }
+			<a href={ runUrl } className={ 'report-link' }>
+				{ report.metadata.run_id }
+			</a>
+		</sub>
+	);
+}
 
 function renderTableData( sortBy, sortDirection ) {
 	const reports = sortTable( sortBy, sortDirection );
 	return reports.map( ( report, id ) => {
-		const { lastUpdate, statistic, metadata } = report; //destructuring
+		const { statistic, metadata } = report; //destructuring
 		const isFailed = statistic.total !== statistic.passed;
 		return (
 			<tr key={ id }>
 				<td>{ reportLink( report, metadata, isFailed ) }</td>
 				<td>{ statusLabel( statistic ) }</td>
-				<td>{ localeDate( lastUpdate ) }</td>
+				<td>{ metadataCell( report ) }</td>
 			</tr>
 		);
 	} );
@@ -176,7 +193,7 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 	const head = {
 		name: 'report id',
 		statistic: 'results',
-		lastUpdate: 'last update',
+		lastUpdate: 'most recent',
 	};
 
 	const klass = sortDirection ? 'sort-by-asc' : 'sort-by-desc';
