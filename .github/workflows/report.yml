@@ -89,38 +89,3 @@ jobs:
         env:
           MESSAGE: "New test report"
         run: ./bin/push-changes.sh
-
-  dashboard:
-    name: "Regenerate dashboard"
-    runs-on: ubuntu-latest
-    needs: report
-
-    steps:
-      - name: Setup Node
-        uses: actions/setup-node@v2
-
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Recreate summary file
-        run: node ./bin/create-summary.js
-
-      - name: Rebuild dashboard
-        run: |
-          npm install --production
-          npm run build
-          cp -a ./build/. docs/
-
-      - name: Push changes
-        env:
-          MESSAGE: "Recreated dashboard"
-        run: ./bin/push-changes.sh
