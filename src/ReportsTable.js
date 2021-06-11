@@ -83,7 +83,7 @@ function reportLink( report, metadata ) {
 	const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
 
 	const reportKey = report.name;
-	let reportTitle = metadata.branch;
+	let reportTitle = report.name;
 
 	if ( metadata.pr_title ) {
 		let prNumber = '';
