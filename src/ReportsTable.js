@@ -20,7 +20,13 @@ export default class ReportsTable extends React.Component {
 
 	render() {
 		return (
-			<Table hover size="sm" variant="dark" id="reportsTable">
+			<Table
+				hover
+				responsive="sm"
+				size="sm"
+				variant="dark"
+				id="reportsTable"
+			>
 				<thead>
 					<tr>
 						<th colSpan="3">
