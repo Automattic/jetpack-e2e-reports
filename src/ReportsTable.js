@@ -24,7 +24,9 @@ export default class ReportsTable extends React.Component {
 				<thead>
 					<tr>
 						<th colSpan="3">
-							<h1>Jetpack e2e test reports</h1>
+							<h1 className={ 'display-4' }>
+								Jetpack e2e test reports
+							</h1>
 						</th>
 					</tr>
 					<tr>
@@ -110,34 +112,38 @@ function reportLink( report, metadata, isFailed ) {
 	const branchUrl = `https://github.com/Automattic/jetpack/tree/${ metadata.branch }`;
 
 	return (
-		<span>
-			<FontAwesomeIcon
-				className={ isFailed ? 'failed' : 'passed' }
-				icon={ isFailed ? faTimes : faCheck }
-			/>
-			&nbsp;
-			<a
-				href={ linkUrl }
-				className="report-link"
-				target="_blank"
-				rel="noreferrer"
-			>
-				{ reportTitle }
-				<br />
-			</a>
-			<sub>
-				#{ reportKey } { ' • ' }
-				<FontAwesomeIcon icon={ faCodeBranch } />{ ' ' }
+		<ul className={ 'list-unstyled' }>
+			<li>
+				<FontAwesomeIcon
+					className={ isFailed ? 'failed' : 'passed' }
+					icon={ isFailed ? faTimes : faCheck }
+				/>
+				&nbsp;
 				<a
-					href={ branchUrl }
-					target={ '_blank' }
-					className={ 'report-link' }
+					href={ linkUrl }
+					className="report-link"
+					target="_blank"
 					rel="noreferrer"
 				>
-					{ metadata.branch }
+					{ reportTitle }
+					<br />
 				</a>
-			</sub>
-		</span>
+			</li>
+			<li>
+				<small>
+					#{ reportKey } { ' • ' }
+					<FontAwesomeIcon icon={ faCodeBranch } />{ ' ' }
+					<a
+						href={ branchUrl }
+						target={ '_blank' }
+						className={ 'report-link' }
+						rel="noreferrer"
+					>
+						{ metadata.branch }
+					</a>
+				</small>
+			</li>
+		</ul>
 	);
 }
 
@@ -171,20 +177,29 @@ function statusLabel( statistic ) {
 function metadataCell( report ) {
 	const runUrl = `https://github.com/Automattic/jetpack/actions/runs/${ report.metadata.run_id }`;
 	return (
-		<sub>
-			last update:{ ' ' }
-			{ new Date( Date.parse( report.lastUpdate ) ).toLocaleString() }
-			<br />
-			last run id:{ ' ' }
-			<a
-				href={ runUrl }
-				target={ '_blank' }
-				className={ 'report-link' }
-				rel="noreferrer"
-			>
-				{ report.metadata.run_id }
-			</a>
-		</sub>
+		<ul className={ 'list-unstyled' }>
+			<li>
+				<small>
+					last update:{ ' ' }
+					{ new Date(
+						Date.parse( report.lastUpdate )
+					).toLocaleString() }
+				</small>
+			</li>
+			<li>
+				<small>
+					last run id:{ ' ' }
+					<a
+						href={ runUrl }
+						target={ '_blank' }
+						className={ 'report-link' }
+						rel="noreferrer"
+					>
+						{ report.metadata.run_id }
+					</a>
+				</small>
+			</li>
+		</ul>
 	);
 }
 
