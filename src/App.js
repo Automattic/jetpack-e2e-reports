@@ -11,7 +11,7 @@ function reportsList() {
 }
 
 function header() {
-	return <header className="App-header">Jetpack E2E test reports</header>;
+	return <header className="App-header">&nbsp;</header>;
 }
 
 function footer() {
