@@ -108,6 +108,8 @@ function reportLink( report, metadata, isFailed ) {
 		reportTitle = `${ metadata.pr_title } ${ prNumber }`;
 	}
 
+	const branchUrl = `https://github.com/Automattic/jetpack/tree/${ metadata.branch }`;
+
 	return (
 		<span>
 			<FontAwesomeIcon
@@ -126,7 +128,15 @@ function reportLink( report, metadata, isFailed ) {
 			</a>
 			<sub>
 				#{ reportKey } { ' • ' }
-				<FontAwesomeIcon icon={ faCodeBranch } /> { metadata.branch }
+				<FontAwesomeIcon icon={ faCodeBranch } />{ ' ' }
+				<a
+					href={ branchUrl }
+					target={ '_blank' }
+					className={ 'report-link' }
+					rel="noreferrer"
+				>
+					{ metadata.branch }
+				</a>
 			</sub>
 		</span>
 	);
@@ -167,7 +177,12 @@ function metadataCell( report ) {
 			{ new Date( Date.parse( report.lastUpdate ) ).toLocaleString() }
 			<br />
 			last run id:{ ' ' }
-			<a href={ runUrl } className={ 'report-link' }>
+			<a
+				href={ runUrl }
+				target={ '_blank' }
+				className={ 'report-link' }
+				rel="noreferrer"
+			>
 				{ report.metadata.run_id }
 			</a>
 		</sub>
