@@ -1,4 +1,4 @@
-import { Table, OverlayTrigger, Tooltip, Badge } from 'react-bootstrap';
+import { Table, OverlayTrigger, Tooltip, Badge, Button } from 'react-bootstrap';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -20,14 +20,16 @@ export default class ReportsTable extends React.Component {
 
 	render() {
 		return (
-			<Table bordered hover size="sm" variant="dark" id="reportsTable">
+			<Table hover size="sm" variant="dark" id="reportsTable">
 				<thead>
 					<tr>
-						{ renderTableHeader(
-							this.updateSorting,
-							this.state.sortBy,
-							this.state.sortDirection
-						) }
+						<th colSpan="3" id={ 'sortButtons' }>
+							{ renderTableHeader(
+								this.updateSorting,
+								this.state.sortBy,
+								this.state.sortDirection
+							) }
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -171,20 +173,26 @@ function renderTableData( sortBy, sortDirection ) {
 }
 
 function renderTableHeader( updateSorting, sortBy, sortDirection ) {
-	const head = [ 'name', 'statistic', 'lastUpdate' ];
+	const head = {
+		name: 'report id',
+		statistic: 'results',
+		lastUpdate: 'last update',
+	};
 
 	const klass = sortDirection ? 'sort-by-asc' : 'sort-by-desc';
-	return head.map( ( key, index ) => {
+
+	return Object.keys( head ).map( ( key, index ) => {
 		return (
-			<th
+			<Button
+				variant="dark"
 				key={ index }
 				onClick={ () => {
 					updateSorting( key, ! sortDirection );
 				} }
 			>
-				{ key.replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toUpperCase() }
+				{ head[ key ].toUpperCase() }
 				<span className={ sortBy === key ? klass : '' } />
-			</th>
+			</Button>
 		);
 	} );
 }
@@ -193,11 +201,3 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 // Some helper functions
 
 const capitalize = ( s ) => s.charAt( 0 ).toUpperCase() + s.slice( 1 );
-
-// function isNumeric( str ) {
-// 	if ( typeof str !== 'string' ) return false; // we only process strings!
-// 	return (
-// 		! isNaN( str ) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-// 		! isNaN( parseFloat( str ) )
-// 	); // ...and ensure strings of whitespace fail
-// }
