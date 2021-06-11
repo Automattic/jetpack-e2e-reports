@@ -32,11 +32,11 @@ for ( const dirName of dirs ) {
 	// metadata
 
 	let metadata = {
-		branch: 'n/a',
-		pr_number: 'n/a',
-		pr_title: 'n/a',
-		run_id: 'n/a',
-		run_number: 'n/a',
+		branch: '',
+		pr_number: '',
+		pr_title: '',
+		run_id: '',
+		run_number: '',
 	};
 
 	try {
