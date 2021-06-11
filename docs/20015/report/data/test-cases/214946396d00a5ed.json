@@ -1,19 +1,29 @@
 {
-  "uid" : "f381d2be932535cb",
-  "name" : "User-less",
-  "fullName" : "User-less",
-  "historyId" : "6607382b1aee5ecb8d6b88650b6684ec",
+  "uid" : "214946396d00a5ed",
+  "name" : "MailChimp Block",
+  "fullName" : "MailChimp Block",
+  "historyId" : "1e0e5667b8c419e68fc1ae6a0d73dd61",
   "time" : {
-    "start" : 1623108515784,
-    "stop" : 1623108542644,
-    "duration" : 26860
+    "start" : 1623108687360,
+    "stop" : 1623108707033,
+    "duration" : 19673
   },
-  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\"Can clean up WPCOM cookie\", async () => {\n    await (\n      await _sidebar.default.init(page)\n    ).removeCookieByName(\"wordpress_logged_in\");\n  });\n  await (0, _testSetup.step)(\"Can start Site Level connection\", async () => {\n    await (0, _jetpackConnect.doSiteLevelConnection)();\n  });\n  await (0, _testSetup.step)(\"Can assert that site is connected\", async () => {\n    const jetpackPage = await _jetpack.default.init(page);\n\n    expect(await jetpackPage.isConnected()).toBeTruthy();\n  });\n};\n\n```\n",
-  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(&quot;Can clean up WPCOM cookie&quot;, async () =&gt; {\n    await (\n      await _sidebar.default.init(page)\n    ).removeCookieByName(&quot;wordpress_logged_in&quot;);\n  });\n  await (0, _testSetup.step)(&quot;Can start Site Level connection&quot;, async () =&gt; {\n    await (0, _jetpackConnect.doSiteLevelConnection)();\n  });\n  await (0, _testSetup.step)(&quot;Can assert that site is connected&quot;, async () =&gt; {\n    const jetpackPage = await _jetpack.default.init(page);\n\n    expect(await jetpackPage.isConnected()).toBeTruthy();\n  });\n};\n\n</code></pre>\n",
+  "description" : "\n### Test\n```typescript\nasync () => {\n  let blockId;\n  await (0, _testSetup.step)(\n    \"Can visit the block editor and add a MailChimp block\",\n    async () => {\n      blockId = await blockEditor.insertBlock(\n        _mailchimp.default.name(),\n        _mailchimp.default.title()\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can connect to a MailChimp\", async () => {\n    const mcBlock = new _mailchimp.default(blockId, page);\n    await mcBlock.connect();\n  });\n  await (0, _testSetup.step)(\n    \"Can publish a post and assert that MailChimp block is rendered\",\n    async () => {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_mailchimp.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  let blockId;\n  await (0, _testSetup.step)(\n    &quot;Can visit the block editor and add a MailChimp block&quot;,\n    async () =&gt; {\n      blockId = await blockEditor.insertBlock(\n        _mailchimp.default.name(),\n        _mailchimp.default.title()\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can connect to a MailChimp&quot;, async () =&gt; {\n    const mcBlock = new _mailchimp.default(blockId, page);\n    await mcBlock.connect();\n  });\n  await (0, _testSetup.step)(\n    &quot;Can publish a post and assert that MailChimp block is rendered&quot;,\n    async () =&gt; {\n      await blockEditor.selectPostTitle();\n      await blockEditor.publishPost();\n      await blockEditor.viewPost();\n      const frontend = await _postFrontend.default.init(page);\n\n      expect(\n        await frontend.isRenderedBlockPresent(_mailchimp.default)\n      ).toBeTruthy();\n    }\n  );\n};\n\n</code></pre>\n",
   "status" : "passed",
   "flaky" : false,
   "newFailed" : false,
   "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
     "time" : { },
     "status" : "passed",
     "steps" : [ ],
@@ -94,26 +104,6 @@
     "attachmentsCount" : 0,
     "shouldDisplayMessage" : false,
     "hasContent" : false
-  }, {
-    "time" : { },
-    "status" : "passed",
-    "steps" : [ ],
-    "attachments" : [ ],
-    "parameters" : [ ],
-    "stepsCount" : 0,
-    "attachmentsCount" : 0,
-    "shouldDisplayMessage" : false,
-    "hasContent" : false
-  }, {
-    "time" : { },
-    "status" : "passed",
-    "steps" : [ ],
-    "attachments" : [ ],
-    "parameters" : [ ],
-    "stepsCount" : 0,
-    "attachmentsCount" : 0,
-    "shouldDisplayMessage" : false,
-    "hasContent" : false
   } ],
   "labels" : [ {
     "name" : "thread",
@@ -126,7 +116,7 @@
     "value" : "specs"
   }, {
     "name" : "subSuite",
-    "value" : "connection.test.js"
+    "value" : "pro-blocks.test.js"
   }, {
     "name" : "resultFormat",
     "value" : "allure2"
@@ -141,6 +131,6 @@
     "categories" : [ ],
     "tags" : [ ]
   },
-  "source" : "f381d2be932535cb.json",
+  "source" : "214946396d00a5ed.json",
   "parameterValues" : [ ]
 }
