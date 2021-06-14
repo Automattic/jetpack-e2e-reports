@@ -1,0 +1,33 @@
+name: Cleanup
+
+on:
+  schedule:
+    - cron: '0 10 * * *' # run every day at 10 server time (UTC)
+
+  workflow_dispatch:
+
+jobs:
+  report:
+    name: "Clean up old results"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Allure
+        env:
+          DESTINATION_PATH: ../
+        run: ./bin/install-allure.sh
+
+      - name: Clean up
+        env:
+          DAYS: 30
+        run: ./bin/cleanup.sh
+
+      - name: Push changes
+        env:
+          MESSAGE: "Cleanup"
+        run: ./bin/push-changes.sh
