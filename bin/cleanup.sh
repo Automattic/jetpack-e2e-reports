@@ -21,7 +21,7 @@ if [[ -z "$DAYS" ]]; then
 	exit 1
 fi
 
-echo "Cleaning results since $DAYS days ago"
+echo "Cleaning up results older than $DAYS days ago"
 echo
 
 # Go through each sub-folder of `docs` folder
