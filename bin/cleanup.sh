@@ -32,7 +32,7 @@ ls -d docs/*/ | while read -r path; do
 
   if [ "$path" == "docs/static" ]; then
     # `static` is not a results folder, ignore it
-    echo "Ignore $path, not in clean-up scope"
+    echo "Ignoring $path, not in clean-up scope"
     continue
   fi
 
@@ -78,5 +78,4 @@ ls -d docs/*/ | while read -r path; do
 
   fi
 done
-
 
