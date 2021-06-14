@@ -41,7 +41,7 @@ ls -d docs/*/ | while read -r path; do
   if [ "$(git log --since "$DAYS days ago" -- "$path")" == "" ]; then
     # Remove the entire folder because it was unchanged since $DAYS days ago
     echo "Removing $path, last updated in $last_update"
-    # rm -rf $path
+     rm -rf "$path"
   else
     # Folder was recently updated, we should check its content for older files
     echo "Checking $path, last updated in $last_update"
