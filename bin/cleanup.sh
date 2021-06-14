@@ -37,7 +37,8 @@ ls -d docs/*/ | while read -r path; do
   fi
 
   last_update="$(git log -1 --format="%aD" -- "$path")"
-old_log_entries=$(git log --since "$DAYS days ago" -- "$path")
+
+  old_log_entries=$(git log --since "$DAYS days ago" -- "$path")
   if [ "$old_log_entries" == "" ]; then
     # Remove the entire folder because it was unchanged since $DAYS days ago
     echo "Removing $path, last updated in $last_update"
