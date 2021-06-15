@@ -61,6 +61,8 @@ for ( const dirName of dirs ) {
 	json.reports.push( report );
 }
 
+json.reportsCount = json.reports.length;
+
 fs.writeFileSync(
 	path.resolve( 'src/summary.json' ),
 	JSON.stringify( json, null, 2 )
