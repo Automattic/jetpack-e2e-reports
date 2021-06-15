@@ -36,13 +36,13 @@ export default class ReportsTable extends React.Component {
 						</th>
 					</tr>
 					<tr>
-						<th colSpan="3" id={ 'sortButtons' }>
+						<td colSpan="3" id={ 'sortButtons' }>
 							{ renderTableHeader(
 								this.updateSorting,
 								this.state.sortBy,
 								this.state.isSortAsc
 							) }
-						</th>
+						</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -222,7 +222,7 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 
 	const klass = sortDirection ? 'sort-by-asc' : 'sort-by-desc';
 
-	return Object.keys( head ).map( ( key, index ) => {
+	const sortButtons = Object.keys( head ).map( ( key, index ) => {
 		return (
 			<Button
 				variant="dark"
@@ -236,4 +236,11 @@ function renderTableHeader( updateSorting, sortBy, sortDirection ) {
 			</Button>
 		);
 	} );
+
+	return (
+		<div className={ 'd-flex justify-content-between' }>
+			<div>{ Data.reportsCount } reports</div>
+			<div>{ sortButtons }</div>
+		</div>
+	);
 }
