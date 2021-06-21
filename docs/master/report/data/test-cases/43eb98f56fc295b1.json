@@ -1,0 +1,785 @@
+{
+  "uid" : "43eb98f56fc295b1",
+  "name" : "Recommendations (Jetpack Assistant)",
+  "fullName" : "Recommendations (Jetpack Assistant)",
+  "historyId" : "6acbca09fe63fb0db4bf908821bc38aa",
+  "time" : {
+    "start" : 1624289982196,
+    "stop" : 1624289997647,
+    "duration" : 15451
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  let recommendationsPage;\n  await (0, _testSetup.step)(\n    \"Navigate to the Recommendations module\",\n    async () => {\n      recommendationsPage = await _recommendations.default.visit(page);\n      const isPageVisible =\n        await recommendationsPage.areSiteTypeQuestionsVisible();\n\n      expect(isPageVisible).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-type\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Check Personal and Other checkboxes\",\n    async () => {\n      await recommendationsPage.checkPersonalSiteType();\n      await recommendationsPage.checkOtherSiteType();\n      expect(\n        await recommendationsPage.isPersonalSiteTypeChecked()\n      ).toBeTruthy();\n      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();\n      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();\n      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Save answers and continue to the Monitor step\",\n    async () => {\n      await recommendationsPage.saveSiteTypeAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isMonitorStep =\n        await recommendationsPage.isEnableMonitoringButtonVisible();\n      expect(isMonitorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"monitor\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Enable Monitoring and continue to Related Post step\",\n    async () => {\n      await recommendationsPage.enableMonitoringAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isRelatedPostsStep =\n        await recommendationsPage.isEnableRelatedPostsButtonVisible();\n      expect(isRelatedPostsStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"related-posts\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Enable Related Posts and continue to Creative Mail step\",\n    async () => {\n      await recommendationsPage.enableRelatedPostsAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isCreativeMailStep =\n        await recommendationsPage.isInstallCreativeMailButtonVisible();\n      expect(isCreativeMailStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"creative-mail\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Skip Creative Mail and continue to Site Accelerator\",\n    async () => {\n      await recommendationsPage.skipCreativeMailAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSiteAcceleratorStep =\n        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();\n      expect(isSiteAcceleratorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-accelerator\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Skip Site Accelerator and continue to Summary\",\n    async () => {\n      await recommendationsPage.skipSiteAcceleratorAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSummaryContent =\n        await recommendationsPage.isSummaryContentVisible();\n      const isSummarySidebar =\n        await recommendationsPage.isSummarySidebarVisible();\n      expect(isSummaryContent && isSummarySidebar).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"summary\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Verify Monitoring and Related Posts are enabled\",\n    async () => {\n      const isMonitoringFeatureEnabled =\n        await recommendationsPage.isMonitoringFeatureEnabled();\n      const isRelatedPostsFeatureEnabled =\n        await recommendationsPage.isRelatedPostsFeatureEnabled();\n      expect(\n        isMonitoringFeatureEnabled && isRelatedPostsFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Verify Creative Mail and Site Accelerator are disabled\",\n    async () => {\n      const isCreativeMailFeatureEnabled =\n        await recommendationsPage.isCreativeMailFeatureEnabled();\n      const isSiteAcceleratorFeatureEnabled =\n        await recommendationsPage.isSiteAcceleratorFeatureEnabled();\n      expect(\n        isCreativeMailFeatureEnabled && isSiteAcceleratorFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  let recommendationsPage;\n  await (0, _testSetup.step)(\n    &quot;Navigate to the Recommendations module&quot;,\n    async () =&gt; {\n      recommendationsPage = await _recommendations.default.visit(page);\n      const isPageVisible =\n        await recommendationsPage.areSiteTypeQuestionsVisible();\n\n      expect(isPageVisible).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;site-type&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Check Personal and Other checkboxes&quot;,\n    async () =&gt; {\n      await recommendationsPage.checkPersonalSiteType();\n      await recommendationsPage.checkOtherSiteType();\n      expect(\n        await recommendationsPage.isPersonalSiteTypeChecked()\n      ).toBeTruthy();\n      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();\n      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();\n      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Save answers and continue to the Monitor step&quot;,\n    async () =&gt; {\n      await recommendationsPage.saveSiteTypeAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isMonitorStep =\n        await recommendationsPage.isEnableMonitoringButtonVisible();\n      expect(isMonitorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;monitor&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Enable Monitoring and continue to Related Post step&quot;,\n    async () =&gt; {\n      await recommendationsPage.enableMonitoringAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isRelatedPostsStep =\n        await recommendationsPage.isEnableRelatedPostsButtonVisible();\n      expect(isRelatedPostsStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;related-posts&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Enable Related Posts and continue to Creative Mail step&quot;,\n    async () =&gt; {\n      await recommendationsPage.enableRelatedPostsAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isCreativeMailStep =\n        await recommendationsPage.isInstallCreativeMailButtonVisible();\n      expect(isCreativeMailStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;creative-mail&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Skip Creative Mail and continue to Site Accelerator&quot;,\n    async () =&gt; {\n      await recommendationsPage.skipCreativeMailAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSiteAcceleratorStep =\n        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();\n      expect(isSiteAcceleratorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;site-accelerator&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Skip Site Accelerator and continue to Summary&quot;,\n    async () =&gt; {\n      await recommendationsPage.skipSiteAcceleratorAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSummaryContent =\n        await recommendationsPage.isSummaryContentVisible();\n      const isSummarySidebar =\n        await recommendationsPage.isSummarySidebarVisible();\n      expect(isSummaryContent &amp;&amp; isSummarySidebar).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;summary&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Verify Monitoring and Related Posts are enabled&quot;,\n    async () =&gt; {\n      const isMonitoringFeatureEnabled =\n        await recommendationsPage.isMonitoringFeatureEnabled();\n      const isRelatedPostsFeatureEnabled =\n        await recommendationsPage.isRelatedPostsFeatureEnabled();\n      expect(\n        isMonitoringFeatureEnabled &amp;&amp; isRelatedPostsFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Verify Creative Mail and Site Accelerator are disabled&quot;,\n    async () =&gt; {\n      const isCreativeMailFeatureEnabled =\n        await recommendationsPage.isCreativeMailFeatureEnabled();\n      const isSiteAcceleratorFeatureEnabled =\n        await recommendationsPage.isSiteAcceleratorFeatureEnabled();\n      expect(\n        isCreativeMailFeatureEnabled &amp;&amp; isSiteAcceleratorFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "a81d22e2519ae5b1",
+      "name" : "1624289980488_beforeAll___ROOT_DESCRIBE_BLOCK.webm",
+      "source" : "a81d22e2519ae5b1.webm",
+      "type" : "video/webm",
+      "size" : 273452
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "testStage" : {
+    "description" : "\n### Test\n```typescript\nasync () => {\n  let recommendationsPage;\n  await (0, _testSetup.step)(\n    \"Navigate to the Recommendations module\",\n    async () => {\n      recommendationsPage = await _recommendations.default.visit(page);\n      const isPageVisible =\n        await recommendationsPage.areSiteTypeQuestionsVisible();\n\n      expect(isPageVisible).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-type\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Check Personal and Other checkboxes\",\n    async () => {\n      await recommendationsPage.checkPersonalSiteType();\n      await recommendationsPage.checkOtherSiteType();\n      expect(\n        await recommendationsPage.isPersonalSiteTypeChecked()\n      ).toBeTruthy();\n      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();\n      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();\n      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Save answers and continue to the Monitor step\",\n    async () => {\n      await recommendationsPage.saveSiteTypeAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isMonitorStep =\n        await recommendationsPage.isEnableMonitoringButtonVisible();\n      expect(isMonitorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"monitor\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Enable Monitoring and continue to Related Post step\",\n    async () => {\n      await recommendationsPage.enableMonitoringAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isRelatedPostsStep =\n        await recommendationsPage.isEnableRelatedPostsButtonVisible();\n      expect(isRelatedPostsStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"related-posts\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Enable Related Posts and continue to Creative Mail step\",\n    async () => {\n      await recommendationsPage.enableRelatedPostsAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isCreativeMailStep =\n        await recommendationsPage.isInstallCreativeMailButtonVisible();\n      expect(isCreativeMailStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"creative-mail\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Skip Creative Mail and continue to Site Accelerator\",\n    async () => {\n      await recommendationsPage.skipCreativeMailAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSiteAcceleratorStep =\n        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();\n      expect(isSiteAcceleratorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-accelerator\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Skip Site Accelerator and continue to Summary\",\n    async () => {\n      await recommendationsPage.skipSiteAcceleratorAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSummaryContent =\n        await recommendationsPage.isSummaryContentVisible();\n      const isSummarySidebar =\n        await recommendationsPage.isSummarySidebarVisible();\n      expect(isSummaryContent && isSummarySidebar).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"summary\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Verify Monitoring and Related Posts are enabled\",\n    async () => {\n      const isMonitoringFeatureEnabled =\n        await recommendationsPage.isMonitoringFeatureEnabled();\n      const isRelatedPostsFeatureEnabled =\n        await recommendationsPage.isRelatedPostsFeatureEnabled();\n      expect(\n        isMonitoringFeatureEnabled && isRelatedPostsFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Verify Creative Mail and Site Accelerator are disabled\",\n    async () => {\n      const isCreativeMailFeatureEnabled =\n        await recommendationsPage.isCreativeMailFeatureEnabled();\n      const isSiteAcceleratorFeatureEnabled =\n        await recommendationsPage.isSiteAcceleratorFeatureEnabled();\n      expect(\n        isCreativeMailFeatureEnabled && isSiteAcceleratorFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "b43e048a1fcbe953",
+      "name" : "1624289997315_Recommendations__Jetpack_Assistant____Recommendations__Jetpack_Assistant_.webm",
+      "source" : "b43e048a1fcbe953.webm",
+      "type" : "video/webm",
+      "size" : 694245
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "recommendations.test.js"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ {
+      "uid" : "ad1bbed57615ea34",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624281619234,
+        "stop" : 1624281637500,
+        "duration" : 18266
+      }
+    }, {
+      "uid" : "fca7902ee128f4bb",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624278025744,
+        "stop" : 1624278041490,
+        "duration" : 15746
+      }
+    }, {
+      "uid" : "951b64b5754d2010",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624277210749,
+        "stop" : 1624277225310,
+        "duration" : 14561
+      }
+    }, {
+      "uid" : "610d2c4e4284bd2b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624263950043,
+        "stop" : 1624263965858,
+        "duration" : 15815
+      }
+    }, {
+      "uid" : "bab5e5ea6911ffa4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624234007442,
+        "stop" : 1624234022467,
+        "duration" : 15025
+      }
+    }, {
+      "uid" : "cf96aa7c70955cc4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624190754726,
+        "stop" : 1624190766735,
+        "duration" : 12009
+      }
+    }, {
+      "uid" : "4376ee4bb0dfe9cc",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624147695030,
+        "stop" : 1624147714804,
+        "duration" : 19774
+      }
+    }, {
+      "uid" : "c1861f6fa7a03775",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624104434431,
+        "stop" : 1624104449066,
+        "duration" : 14635
+      }
+    }, {
+      "uid" : "7c0bd9a9cc54a6e9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624061246018,
+        "stop" : 1624061261872,
+        "duration" : 15854
+      }
+    }, {
+      "uid" : "302b0eae1b518cd2",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624050106464,
+        "stop" : 1624050119702,
+        "duration" : 13238
+      }
+    }, {
+      "uid" : "8d6b17adba05394e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624033876312,
+        "stop" : 1624033892683,
+        "duration" : 16371
+      }
+    }, {
+      "uid" : "915cad6f78cf866e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624033138457,
+        "stop" : 1624033151590,
+        "duration" : 13133
+      }
+    }, {
+      "uid" : "a4ae0e0633fc7a8",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624026878669,
+        "stop" : 1624026893785,
+        "duration" : 15116
+      }
+    }, {
+      "uid" : "c26cfba9b6111c5e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624025817574,
+        "stop" : 1624025835705,
+        "duration" : 18131
+      }
+    }, {
+      "uid" : "aee973882b6345c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624021642446,
+        "stop" : 1624021663106,
+        "duration" : 20660
+      }
+    }, {
+      "uid" : "8bb929131f8877f7",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624018055145,
+        "stop" : 1624018071273,
+        "duration" : 16128
+      }
+    }, {
+      "uid" : "c52a79f272f7b876",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623974869078,
+        "stop" : 1623974884957,
+        "duration" : 15879
+      }
+    }, {
+      "uid" : "e68cd4d1cbe7c85c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623970297986,
+        "stop" : 1623970312814,
+        "duration" : 14828
+      }
+    }, {
+      "uid" : "f1ae36a4fe906210",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623967156857,
+        "stop" : 1623967170824,
+        "duration" : 13967
+      }
+    }, {
+      "uid" : "48a13627602ab047",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623963528487,
+        "stop" : 1623963544161,
+        "duration" : 15674
+      }
+    }, {
+      "uid" : "3d7071692cb61492",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623958163097,
+        "stop" : 1623958178203,
+        "duration" : 15106
+      }
+    }, {
+      "uid" : "60b7088b81f12528",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623955040959,
+        "stop" : 1623955057226,
+        "duration" : 16267
+      }
+    }, {
+      "uid" : "61a5c47597ed3596",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623949811601,
+        "stop" : 1623949825385,
+        "duration" : 13784
+      }
+    }, {
+      "uid" : "3f25b17a5c97e57c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623944575060,
+        "stop" : 1623944591038,
+        "duration" : 15978
+      }
+    }, {
+      "uid" : "921d03a11ec906f8",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623940858145,
+        "stop" : 1623940874640,
+        "duration" : 16495
+      }
+    }, {
+      "uid" : "ed2b33b4868ed2e9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623931628997,
+        "stop" : 1623931643863,
+        "duration" : 14866
+      }
+    }, {
+      "uid" : "f88f10bf960868cf",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623888386494,
+        "stop" : 1623888400684,
+        "duration" : 14190
+      }
+    }, {
+      "uid" : "8042c729e41d0879",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623882408433,
+        "stop" : 1623882420486,
+        "duration" : 12053
+      }
+    }, {
+      "uid" : "b6787646745ff573",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623873401430,
+        "stop" : 1623873415415,
+        "duration" : 13985
+      }
+    }, {
+      "uid" : "3b8726dbab9f37d1",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623868888855,
+        "stop" : 1623868906321,
+        "duration" : 17466
+      }
+    }, {
+      "uid" : "e459e553f2e2deaa",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623858180261,
+        "stop" : 1623858193551,
+        "duration" : 13290
+      }
+    }, {
+      "uid" : "82602bca225ea969",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623854870222,
+        "stop" : 1623854887581,
+        "duration" : 17359
+      }
+    }, {
+      "uid" : "f00d268422b4e48",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623853498009,
+        "stop" : 1623853514540,
+        "duration" : 16531
+      }
+    }, {
+      "uid" : "235ac229e86bfee6",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623852494347,
+        "stop" : 1623852510309,
+        "duration" : 15962
+      }
+    }, {
+      "uid" : "1c30d23b5cd8d570",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623849861620,
+        "stop" : 1623849879080,
+        "duration" : 17460
+      }
+    }, {
+      "uid" : "a014ce95f731e2fb",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623845231558,
+        "stop" : 1623845247569,
+        "duration" : 16011
+      }
+    }, {
+      "uid" : "ce011b46ce71d0a9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623801954117,
+        "stop" : 1623801967279,
+        "duration" : 13162
+      }
+    }, {
+      "uid" : "e445835c96dd7fa4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623785158400,
+        "stop" : 1623785174531,
+        "duration" : 16131
+      }
+    }, {
+      "uid" : "9d2b06cc8846d9c8",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623779009063,
+        "stop" : 1623779024918,
+        "duration" : 15855
+      }
+    }, {
+      "uid" : "1e5f6488ffed20a6",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623758766849,
+        "stop" : 1623758779611,
+        "duration" : 12762
+      }
+    }, {
+      "uid" : "c00d5668c1c5ddb3",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623754852674,
+        "stop" : 1623754870367,
+        "duration" : 17693
+      }
+    }, {
+      "uid" : "8977235c662b7e4b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623730988822,
+        "stop" : 1623731006132,
+        "duration" : 17310
+      }
+    }, {
+      "uid" : "eadba9a8866c72c7",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623729607514,
+        "stop" : 1623729621794,
+        "duration" : 14280
+      }
+    }, {
+      "uid" : "65bd997ee2c940",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623715634037,
+        "stop" : 1623715648525,
+        "duration" : 14488
+      }
+    }, {
+      "uid" : "2e4b4d97a31ba30a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623695222965,
+        "stop" : 1623695237183,
+        "duration" : 14218
+      }
+    }, {
+      "uid" : "91fb762d2254b5cd",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623672405895,
+        "stop" : 1623672420845,
+        "duration" : 14950
+      }
+    }, {
+      "uid" : "96385afa32334410",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623629291895,
+        "stop" : 1623629309512,
+        "duration" : 17617
+      }
+    }, {
+      "uid" : "5fedf383834dc662",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623586011373,
+        "stop" : 1623586026380,
+        "duration" : 15007
+      }
+    }, {
+      "uid" : "7847958b55596404",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623542758319,
+        "stop" : 1623542770845,
+        "duration" : 12526
+      }
+    }, {
+      "uid" : "2b997ddaa7efd3fa",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623499555746,
+        "stop" : 1623499568752,
+        "duration" : 13006
+      }
+    }, {
+      "uid" : "d9336d83c4ac3afa",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623456444672,
+        "stop" : 1623456460803,
+        "duration" : 16131
+      }
+    }, {
+      "uid" : "3ab3fe278084a51e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623430265908,
+        "stop" : 1623430280801,
+        "duration" : 14893
+      }
+    }, {
+      "uid" : "28630fab15eea094",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623425315305,
+        "stop" : 1623425330508,
+        "duration" : 15203
+      }
+    }, {
+      "uid" : "ac29b0277686d849",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623424642414,
+        "stop" : 1623424657629,
+        "duration" : 15215
+      }
+    }, {
+      "uid" : "f388986f922da9e1",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623414801750,
+        "stop" : 1623414818433,
+        "duration" : 16683
+      }
+    }, {
+      "uid" : "e076f113790ea1d7",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623413156477,
+        "stop" : 1623413169212,
+        "duration" : 12735
+      }
+    }, {
+      "uid" : "8532302f27b76be9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623411689002,
+        "stop" : 1623411703665,
+        "duration" : 14663
+      }
+    }, {
+      "uid" : "e3d589c5a51b088c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623404865614,
+        "stop" : 1623404880690,
+        "duration" : 15076
+      }
+    }, {
+      "uid" : "f313254f366496fd",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623370010549,
+        "stop" : 1623370025700,
+        "duration" : 15151
+      }
+    }, {
+      "uid" : "ef176af61a865554",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623359075157,
+        "stop" : 1623359087982,
+        "duration" : 12825
+      }
+    }, {
+      "uid" : "d6230e2a4a552b4b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623356922090,
+        "stop" : 1623356935461,
+        "duration" : 13371
+      }
+    }, {
+      "uid" : "f5c82034b965290f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623343096576,
+        "stop" : 1623343111664,
+        "duration" : 15088
+      }
+    }, {
+      "uid" : "4c07f5947e2a718b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623342235772,
+        "stop" : 1623342248124,
+        "duration" : 12352
+      }
+    }, {
+      "uid" : "d3cb1ce2ef2b2f2c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623339175835,
+        "stop" : 1623339188761,
+        "duration" : 12926
+      }
+    }, {
+      "uid" : "1b590694bf2f60d",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623326806429,
+        "stop" : 1623326822271,
+        "duration" : 15842
+      }
+    }, {
+      "uid" : "e64603692a82fbc",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623283617207,
+        "stop" : 1623283633287,
+        "duration" : 16080
+      }
+    }, {
+      "uid" : "8cb2cb77053be906",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623270811510,
+        "stop" : 1623270829983,
+        "duration" : 18473
+      }
+    }, {
+      "uid" : "4d3ccc1865c1712a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623264838124,
+        "stop" : 1623264854378,
+        "duration" : 16254
+      }
+    }, {
+      "uid" : "b1692c93cb4f98d0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623250576927,
+        "stop" : 1623250591946,
+        "duration" : 15019
+      }
+    }, {
+      "uid" : "6e6a836b60383d0c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623240486049,
+        "stop" : 1623240504972,
+        "duration" : 18923
+      }
+    }, {
+      "uid" : "dade274d4a6e1cc8",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623215403494,
+        "stop" : 1623215416297,
+        "duration" : 12803
+      }
+    }, {
+      "uid" : "cb343625b1fb3d1f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623214150287,
+        "stop" : 1623214165599,
+        "duration" : 15312
+      }
+    }, {
+      "uid" : "a10bc1e25bc12de6",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623206512512,
+        "stop" : 1623206527092,
+        "duration" : 14580
+      }
+    }, {
+      "uid" : "444bd79aef05321e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623197205796,
+        "stop" : 1623197219911,
+        "duration" : 14115
+      }
+    }, {
+      "uid" : "d22eb1c73001fa7d",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623182366350,
+        "stop" : 1623182380789,
+        "duration" : 14439
+      }
+    }, {
+      "uid" : "4f291dd4a61519b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623168473203,
+        "stop" : 1623168487472,
+        "duration" : 14269
+      }
+    }, {
+      "uid" : "20fbb46aab313900",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623163300960,
+        "stop" : 1623163318594,
+        "duration" : 17634
+      }
+    }, {
+      "uid" : "6b362550b74cf993",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623160573108,
+        "stop" : 1623160587409,
+        "duration" : 14301
+      }
+    }, {
+      "uid" : "980dbb3881b296a4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623154959421,
+        "stop" : 1623154974493,
+        "duration" : 15072
+      }
+    }, {
+      "uid" : "4198ce3206521225",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623154061211,
+        "stop" : 1623154077818,
+        "duration" : 16607
+      }
+    }, {
+      "uid" : "da1b1d24869b615c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623111392559,
+        "stop" : 1623111405510,
+        "duration" : 12951
+      }
+    }, {
+      "uid" : "3a241a988e83a6f2",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623105299223,
+        "stop" : 1623105314667,
+        "duration" : 15444
+      }
+    }, {
+      "uid" : "9992e8db9e07165e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623102996831,
+        "stop" : 1623103013760,
+        "duration" : 16929
+      }
+    }, {
+      "uid" : "bbec1d1c5ccf1cce",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623097647869,
+        "stop" : 1623097663449,
+        "duration" : 15580
+      }
+    }, {
+      "uid" : "4386626b924c7489",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623095517258,
+        "stop" : 1623095534047,
+        "duration" : 16789
+      }
+    }, {
+      "uid" : "d1cabf06e07efe1e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623068343373,
+        "stop" : 1623068358499,
+        "duration" : 15126
+      }
+    }, {
+      "uid" : "fa58813298d6714c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1623067187572,
+        "stop" : 1623067204129,
+        "duration" : 16557
+      }
+    } ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "43eb98f56fc295b1.json",
+  "parameterValues" : [ ]
+}
