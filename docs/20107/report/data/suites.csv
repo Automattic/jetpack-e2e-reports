@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Tue Jun 22 04:13:27 UTC 2021","Tue Jun 22 04:13:30 UTC 2021","3465","specs","","search.test.js","","","Can perform search with default settings","
+"passed","Tue Jun 22 04:45:35 UTC 2021","Tue Jun 22 04:45:39 UTC 2021","3502","specs","","search.test.js","","","Can perform search with default settings","
 ### Test
 ```typescript
 async () => {
@@ -80,7 +80,7 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:13:32 UTC 2021","Tue Jun 22 04:13:33 UTC 2021","970","specs","","search.test.js","","","Can open and close overlay","
+"passed","Tue Jun 22 04:45:41 UTC 2021","Tue Jun 22 04:45:42 UTC 2021","1080","specs","","search.test.js","","","Can open and close overlay","
 ### Test
 ```typescript
 async () => {
@@ -101,40 +101,50 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:16:33 UTC 2021","Tue Jun 22 04:16:39 UTC 2021","6293","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Tue Jun 22 04:46:12 UTC 2021","Tue Jun 22 04:46:19 UTC 2021","7098","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
 ### Test
 ```typescript
 async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+  await (await _sidebar.default.init(page)).selectInstalledPlugins();
+  const pluginsPage = await _plugins.default.init(page);
+  await (0, _utilsHelper.execWpCommand)(
+    ""wp transient set activated_jetpack true 120""
+  );
+  await pluginsPage.reload();
 
+  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
+};
+
+```
+"
+"passed","Tue Jun 22 04:47:44 UTC 2021","Tue Jun 22 04:48:06 UTC 2021","21838","specs","","pro-blocks.test.js","","","MailChimp Block","
+### Test
+```typescript
+async () => {
+  let blockId;
   await (0, _testSetup.step)(
-    ""Can visit the block editor and add a Pinterest block"",
+    ""Can visit the block editor and add a MailChimp block"",
     async () => {
-      const blockId = await blockEditor.insertBlock(
-        _pinterest.default.name(),
-        _pinterest.default.title()
+      blockId = await blockEditor.insertBlock(
+        _mailchimp.default.name(),
+        _mailchimp.default.title()
       );
-      const pinterestBlock = new _pinterest.default(blockId, page, pinId);
-      await pinterestBlock.addEmbed();
     }
   );
+  await (0, _testSetup.step)(""Can connect to a MailChimp"", async () => {
+    const mcBlock = new _mailchimp.default(blockId, page);
+    await mcBlock.connect();
+  });
   await (0, _testSetup.step)(
-    ""Can publish a post with a Pinterest block"",
+    ""Can publish a post and assert that MailChimp block is rendered"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
       await blockEditor.viewPost();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can assert that Pinterest block is rendered"",
-    async () => {
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_pinterest.default, {
-          pinId,
-        })
+        await frontend.isRenderedBlockPresent(_mailchimp.default)
       ).toBeTruthy();
     }
   );
@@ -142,19 +152,7 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:14:05 UTC 2021","Tue Jun 22 04:14:08 UTC 2021","3024","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectJetpack();
-  const jetpackPage = await _jetpack.default.init(page);
-
-  expect(await jetpackPage.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Tue Jun 22 04:15:46 UTC 2021","Tue Jun 22 04:15:52 UTC 2021","5784","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Tue Jun 22 04:48:24 UTC 2021","Tue Jun 22 04:48:31 UTC 2021","7029","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -195,35 +193,7 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:14:02 UTC 2021","Tue Jun 22 04:14:04 UTC 2021","1381","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectDashboard();
-  const dashboard = await _dashboard.default.init(page);
-
-  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Tue Jun 22 04:12:27 UTC 2021","Tue Jun 22 04:13:36 UTC 2021","69083","specs","","connection.test.js","","","In-place","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(""Can start in-place connection"", async () => {
-    await (0, _jetpackConnect.doInPlaceConnection)();
-  });
-  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
-    const jetpackPage = await _jetpack.default.init(page);
-
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Tue Jun 22 04:14:02 UTC 2021","Tue Jun 22 04:14:19 UTC 2021","16113","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
+"passed","Tue Jun 22 04:46:18 UTC 2021","Tue Jun 22 04:46:38 UTC 2021","19577","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
 ### Test
 ```typescript
 async () => {
@@ -354,91 +324,7 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:13:55 UTC 2021","Tue Jun 22 04:14:01 UTC 2021","6751","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectInstalledPlugins();
-  const pluginsPage = await _plugins.default.init(page);
-  await (0, _utilsHelper.execWpCommand)(
-    ""wp transient set activated_jetpack true 120""
-  );
-  await pluginsPage.reload();
-
-  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
-};
-
-```
-"
-"passed","Tue Jun 22 04:15:34 UTC 2021","Tue Jun 22 04:15:43 UTC 2021","9358","specs","","pro-blocks.test.js","","","Pay with PayPal","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _testSetup.step)(
-    ""Can visit the block editor and add a Pay with PayPal block"",
-    async () => {
-      await blockEditor.waitForAvailableBlock(_simplePayments.default.name());
-      blockId = await blockEditor.insertBlock(
-        _simplePayments.default.name(),
-        _simplePayments.default.title()
-      );
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can fill details of Pay with PayPal block"",
-    async () => {
-      const spBlock = new _simplePayments.default(blockId, page);
-      await spBlock.fillDetails();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _postFrontend.default.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_simplePayments.default)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Jun 22 04:12:54 UTC 2021","Tue Jun 22 04:13:26 UTC 2021","31974","specs","","plugin-updater.test.js","","","Plugin updater","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(
-    ""Can login and navigate to Plugins page"",
-    async () => {
-      await (await _sidebar.default.init(page)).selectInstalledPlugins();
-      await _plugins.default.init(page);
-    }
-  );
-  await (0, _testSetup.step)(""Can update Jetpack"", async () => {
-    const pluginsPage = await _plugins.default.init(page);
-    const versionBefore = await pluginsPage.getJetpackVersion();
-    await pluginsPage.updateJetpack();
-    const versionAfter = await pluginsPage.getJetpackVersion();
-
-    expect(versionBefore).not.toBe(versionAfter);
-  });
-  await (0, _testSetup.step)(""Can connect Jetpack"", async () => {
-    await (await _sidebar.default.init(page)).selectJetpack();
-    await (0, _jetpackConnect.doInPlaceConnection)();
-    const jetpackPage = await _jetpack.default.init(page);
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Tue Jun 22 04:13:35 UTC 2021","Tue Jun 22 04:13:43 UTC 2021","8132","specs","","search.test.js","","","Can display different result formats","
+"passed","Tue Jun 22 04:45:44 UTC 2021","Tue Jun 22 04:45:55 UTC 2021","11132","specs","","search.test.js","","","Can display different result formats","
 ### Test
 ```typescript
 async () => {
@@ -477,7 +363,7 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:13:44 UTC 2021","Tue Jun 22 04:14:25 UTC 2021","41051","specs","","connection.test.js","","","User-less","
+"passed","Tue Jun 22 04:45:08 UTC 2021","Tue Jun 22 04:45:48 UTC 2021","40762","specs","","connection.test.js","","","User-less","
 ### Test
 ```typescript
 async () => {
@@ -498,7 +384,7 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:14:38 UTC 2021","Tue Jun 22 04:15:26 UTC 2021","48168","specs","","connection.test.js","","","Classic","
+"passed","Tue Jun 22 04:46:01 UTC 2021","Tue Jun 22 04:46:56 UTC 2021","54404","specs","","connection.test.js","","","Classic","
 ### Test
 ```typescript
 async () => {
@@ -514,26 +400,58 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:15:14 UTC 2021","Tue Jun 22 04:15:32 UTC 2021","17968","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Tue Jun 22 04:43:53 UTC 2021","Tue Jun 22 04:44:59 UTC 2021","65793","specs","","connection.test.js","","","In-place","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(""Can start in-place connection"", async () => {
+    await (0, _jetpackConnect.doInPlaceConnection)();
+  });
+  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+    const jetpackPage = await _jetpack.default.init(page);
+
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Tue Jun 22 04:46:23 UTC 2021","Tue Jun 22 04:46:27 UTC 2021","3613","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectJetpack();
+  const jetpackPage = await _jetpack.default.init(page);
+
+  expect(await jetpackPage.isConnectBannerVisible()).toBeTruthy();
+};
+
+```
+"
+"passed","Tue Jun 22 04:48:09 UTC 2021","Tue Jun 22 04:48:21 UTC 2021","11316","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
   let blockId;
   await (0, _testSetup.step)(
-    ""Can visit the block editor and add a MailChimp block"",
+    ""Can visit the block editor and add a Pay with PayPal block"",
     async () => {
+      await blockEditor.waitForAvailableBlock(_simplePayments.default.name());
       blockId = await blockEditor.insertBlock(
-        _mailchimp.default.name(),
-        _mailchimp.default.title()
+        _simplePayments.default.name(),
+        _simplePayments.default.title()
       );
     }
   );
-  await (0, _testSetup.step)(""Can connect to a MailChimp"", async () => {
-    const mcBlock = new _mailchimp.default(blockId, page);
-    await mcBlock.connect();
-  });
   await (0, _testSetup.step)(
-    ""Can publish a post and assert that MailChimp block is rendered"",
+    ""Can fill details of Pay with PayPal block"",
+    async () => {
+      const spBlock = new _simplePayments.default(blockId, page);
+      await spBlock.fillDetails();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can publish a post and assert that Pay with PayPal block is rendered"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
@@ -541,7 +459,7 @@ async () => {
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_mailchimp.default)
+        await frontend.isRenderedBlockPresent(_simplePayments.default)
       ).toBeTruthy();
     }
   );
@@ -549,7 +467,36 @@ async () => {
 
 ```
 "
-"passed","Tue Jun 22 04:16:42 UTC 2021","Tue Jun 22 04:16:51 UTC 2021","8596","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Tue Jun 22 04:44:25 UTC 2021","Tue Jun 22 04:45:35 UTC 2021","70457","specs","","plugin-updater.test.js","","","Plugin updater","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(
+    ""Can login and navigate to Plugins page"",
+    async () => {
+      await (await _sidebar.default.init(page)).selectInstalledPlugins();
+      await _plugins.default.init(page);
+    }
+  );
+  await (0, _testSetup.step)(""Can update Jetpack"", async () => {
+    const pluginsPage = await _plugins.default.init(page);
+    const versionBefore = await pluginsPage.getJetpackVersion();
+    await pluginsPage.updateJetpack();
+    const versionAfter = await pluginsPage.getJetpackVersion();
+
+    expect(versionBefore).not.toBe(versionAfter);
+  });
+  await (0, _testSetup.step)(""Can connect Jetpack"", async () => {
+    await (await _sidebar.default.init(page)).selectJetpack();
+    await (0, _jetpackConnect.doInPlaceConnection)();
+    const jetpackPage = await _jetpack.default.init(page);
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Tue Jun 22 04:49:35 UTC 2021","Tue Jun 22 04:49:47 UTC 2021","11589","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -581,6 +528,59 @@ async () => {
       expect(
         await frontend.isRenderedBlockPresent(_eventbrite.default, {
           eventId,
+        })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Tue Jun 22 04:46:20 UTC 2021","Tue Jun 22 04:46:22 UTC 2021","1843","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectDashboard();
+  const dashboard = await _dashboard.default.init(page);
+
+  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
+};
+
+```
+"
+"passed","Tue Jun 22 04:49:22 UTC 2021","Tue Jun 22 04:49:32 UTC 2021","10194","specs","","free-blocks.test.js","","","Pinterest block","
+### Test
+```typescript
+async () => {
+  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+
+  await (0, _testSetup.step)(
+    ""Can visit the block editor and add a Pinterest block"",
+    async () => {
+      const blockId = await blockEditor.insertBlock(
+        _pinterest.default.name(),
+        _pinterest.default.title()
+      );
+      const pinterestBlock = new _pinterest.default(blockId, page, pinId);
+      await pinterestBlock.addEmbed();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can publish a post with a Pinterest block"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can assert that Pinterest block is rendered"",
+    async () => {
+      const frontend = await _postFrontend.default.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_pinterest.default, {
+          pinId,
         })
       ).toBeTruthy();
     }
