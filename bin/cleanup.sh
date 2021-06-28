@@ -25,7 +25,7 @@ fi
 is_merged() {
   pr=$(basename "$1")
   # shellcheck disable=SC2034
-  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq '.state')
+  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq -r '.state')
 
   echo "PR $pr state: $state"
 
