@@ -21,6 +21,14 @@ if [[ -z "$DAYS" ]]; then
 	exit 1
 fi
 
+get_pr_state() {
+  pr=$(basename "$1")
+  echo "Checking PR $pr state"
+  echo
+  # shellcheck disable=SC2034
+  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq '.state')
+}
+
 echo "Cleaning up results older than $DAYS days ago"
 echo
 
@@ -49,7 +57,11 @@ ls -d docs/*/ | while read -r path; do
   if [ "$old_log_entries" == "" ]; then
     # Remove the entire folder because it was unchanged since $days_to_keep days ago
     echo "Removing $path, last updated in $last_update"
-     rm -rf "$path"
+    rm -rf "$path"
+  elif get_pr_state "$path" == "closed"; then
+    # Remove the entire folder because PR was merged
+    echo "Removing $path, pull request merged"
+    rm -rf "$path"
   else
     # Folder was recently updated, we should check its content for older files
     echo "Checking $path, last updated in $last_update"
