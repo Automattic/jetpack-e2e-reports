@@ -36,11 +36,18 @@ ls -d docs/*/ | while read -r path; do
     continue
   fi
 
+  days_to_keep=$DAYS
+
+  if [ "$path" == "docs/master" ]; then
+    echo "Cleaning up results older than $days_to_keep days ago"
+    days_to_keep=10
+  fi
+
   last_update="$(git log -1 --format="%aD" -- "$path")"
 
-  old_log_entries=$(git log --since "$DAYS days ago" -- "$path")
+  old_log_entries=$(git log --since "$days_to_keep days ago" -- "$path")
   if [ "$old_log_entries" == "" ]; then
-    # Remove the entire folder because it was unchanged since $DAYS days ago
+    # Remove the entire folder because it was unchanged since $days_to_keep days ago
     echo "Removing $path, last updated in $last_update"
      rm -rf "$path"
   else
@@ -55,8 +62,8 @@ ls -d docs/*/ | while read -r path; do
     git ls-tree -r --name-only HEAD | grep "$results_dir" | while read -r file; do
       last_update="$(git log -1 --format="%aD" -- "$file")"
 
-      if [ "$(git log --since "$DAYS days ago" -- "$file")" == "" ]; then
-        # Remove the file because it was unchanged since $DAYS days ago
+      if [ "$(git log --since "$days_to_keep days ago" -- "$file")" == "" ]; then
+        # Remove the file because it was unchanged since $days_to_keep days ago
         echo -e "\tRemoving $file, last updated in $last_update"
         rm -rf "$file"
       else
