@@ -8,7 +8,8 @@
 # Steps:
 # * Go through each sub-folder of `docs` folder and check the git log
 # * If the folder was not updated in the last `DAYS` days delete the folder
-# * If the folder was updated then check the contents of `allure-results` sub-folder
+# * If the folder is for a PR that was merged delete the folder
+# * If the folder was updated and PR was not merged then check the contents of `allure-results` sub-folder
 # * If any results files in `allure-results` sub-folder are older than `DAYS` days remove them
 # * If results files are removed then regenerate the report for the folder
 
@@ -21,12 +22,14 @@ if [[ -z "$DAYS" ]]; then
 	exit 1
 fi
 
-get_pr_state() {
+is_merged() {
   pr=$(basename "$1")
-  echo "Checking PR $pr state"
-  echo
   # shellcheck disable=SC2034
   state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq '.state')
+
+  echo "PR $pr state: $state"
+
+  [ "$state" == "closed" ]
 }
 
 echo "Cleaning up results older than $DAYS days ago"
@@ -58,7 +61,7 @@ ls -d docs/*/ | while read -r path; do
     # Remove the entire folder because it was unchanged since $days_to_keep days ago
     echo "Removing $path, last updated in $last_update"
     rm -rf "$path"
-  elif get_pr_state "$path" == "closed"; then
+  elif is_merged "$path"; then
     # Remove the entire folder because PR was merged
     echo "Removing $path, pull request merged"
     rm -rf "$path"
