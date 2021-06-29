@@ -18,8 +18,8 @@
 set -eo pipefail
 
 if [[ -z "$DAYS" ]]; then
-	echo "::error::DAYS must be set"
-	exit 1
+  echo "::error::DAYS must be set"
+  exit 1
 fi
 
 is_merged() {
@@ -72,19 +72,23 @@ ls -d docs/*/ | while read -r path; do
     results_dir="$path/allure-results"
     initial_file_count=$(ls "$results_dir" | wc -l)
 
-    echo -e "\t$((initial_file_count)) files in $results_dir"
+    echo -e "$((initial_file_count)) files in $results_dir"
 
     git ls-tree -r --name-only HEAD | grep "$results_dir" | while read -r file; do
       last_update="$(git log -1 --format="%aD" -- "$file")"
 
       if [ "$(git log --since "$days_to_keep days ago" -- "$file")" == "" ]; then
         # Remove the file because it was unchanged since $days_to_keep days ago
-        echo -e "\tRemoving $file, last updated in $last_update"
+        #        echo -e "\tRemoving $file, last updated in $last_update"
+        echo -n "R"
         rm -rf "$file"
       else
-        echo -e "\tSkipping $file, last updated in $last_update"
+        #        echo -e "\tSkipping $file, last updated in $last_update"
+        echo -n "."
       fi
     done
+
+    echo
 
     final_count=$(ls "$results_dir" | wc -l)
     diff=$((initial_file_count - final_count))
@@ -100,4 +104,5 @@ ls -d docs/*/ | while read -r path; do
     fi
 
   fi
+  echo
 done
