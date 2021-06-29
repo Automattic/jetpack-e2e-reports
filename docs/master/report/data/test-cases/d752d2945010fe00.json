@@ -1,0 +1,629 @@
+{
+  "uid" : "d752d2945010fe00",
+  "name" : "Can perform search with default settings",
+  "fullName" : "Can perform search with default settings",
+  "historyId" : "8a48effa07b2a0dc8118fcc35772e118",
+  "time" : {
+    "start" : 1624964804490,
+    "stop" : 1624964804616,
+    "duration" : 126
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _testSetup.step)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(\n    &quot;Can open the overlay by entering a query&quot;,\n    async () =&gt; {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search controls in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search results in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can sort results by relevance by default&quot;,\n    async () =&gt; {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        &quot;&lt;mark&gt;Test1&lt;/mark&gt; Record 1&quot;\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can edit query in search form&quot;, async () =&gt; {\n    await homepage.enterQueryToOverlay(&quot;test2&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 1&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can change sort order&quot;, async () =&gt; {\n    await homepage.chooseSortingLink(&quot;newest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;newest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n    await homepage.chooseSortingLink(&quot;oldest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;oldest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can apply filters&quot;, async () =&gt; {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n  });\n  await (0, _testSetup.step)(\n    &quot;Can close overlay by clicking the cross&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "broken",
+  "statusMessage" : "TimeoutError",
+  "statusTrace" : "page.waitForSelector: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#jp-plugin-container\" to be visible\n============================================================\nNote: use DEBUG=pw:api environment variable to capture Playwright logs.",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "broken",
+    "statusMessage" : "TimeoutError",
+    "statusTrace" : "page.waitForSelector: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#jp-plugin-container\" to be visible\n============================================================\nNote: use DEBUG=pw:api environment variable to capture Playwright logs.",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "e2db9aa253d15d",
+      "name" : "beforeAll - Search",
+      "source" : "e2db9aa253d15d.png",
+      "type" : "image/png",
+      "size" : 16403
+    }, {
+      "uid" : "4f6d27b8e1cc1c81",
+      "name" : "1624964801394_beforeAll___Search.webm",
+      "source" : "4f6d27b8e1cc1c81.webm",
+      "type" : "video/webm",
+      "size" : 141852
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _testSetup.step)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+    "status" : "broken",
+    "statusMessage" : "TimeoutError",
+    "statusTrace" : "page.waitForSelector: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#jp-plugin-container\" to be visible\n============================================================\nNote: use DEBUG=pw:api environment variable to capture Playwright logs.",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3bf56c9a1316d070",
+      "name" : "1624964804591_Search___Can_perform_search_with_default_settings.webm",
+      "source" : "3bf56c9a1316d070.webm",
+      "type" : "video/webm",
+      "size" : 1409
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "search.test.js"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ {
+      "uid" : "eb33d4ad804d7c09",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624961776079,
+        "stop" : 1624961779611,
+        "duration" : 3532
+      }
+    }, {
+      "uid" : "bac5b94630fdb621",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624952653090,
+        "stop" : 1624952656881,
+        "duration" : 3791
+      }
+    }, {
+      "uid" : "7e5e1d61cce5737c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624925172350,
+        "stop" : 1624925175929,
+        "duration" : 3579
+      }
+    }, {
+      "uid" : "75f8b3e9ec99d2f0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624917689103,
+        "stop" : 1624917692801,
+        "duration" : 3698
+      }
+    }, {
+      "uid" : "91736d3214bf68ec",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624909710960,
+        "stop" : 1624909713936,
+        "duration" : 2976
+      }
+    }, {
+      "uid" : "f4d4fd5dd080a95f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624894615217,
+        "stop" : 1624894618456,
+        "duration" : 3239
+      }
+    }, {
+      "uid" : "73eb2324bcb9f400",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624893296633,
+        "stop" : 1624893300247,
+        "duration" : 3614
+      }
+    }, {
+      "uid" : "3d7f329d0040abc4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624892457062,
+        "stop" : 1624892460233,
+        "duration" : 3171
+      }
+    }, {
+      "uid" : "f1e6cce88cfd2623",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624888950432,
+        "stop" : 1624888954019,
+        "duration" : 3587
+      }
+    }, {
+      "uid" : "7141052d70ddb0dc",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624888287482,
+        "stop" : 1624888290925,
+        "duration" : 3443
+      }
+    }, {
+      "uid" : "ebf974a18746aa9b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624883171741,
+        "stop" : 1624883175535,
+        "duration" : 3794
+      }
+    }, {
+      "uid" : "4da117c0c1677779",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624882571893,
+        "stop" : 1624882575367,
+        "duration" : 3474
+      }
+    }, {
+      "uid" : "4fdb2dcfd7561b71",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624882332014,
+        "stop" : 1624882335331,
+        "duration" : 3317
+      }
+    }, {
+      "uid" : "661336e6eb730a27",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624868209361,
+        "stop" : 1624868212668,
+        "duration" : 3307
+      }
+    }, {
+      "uid" : "677b5045c9fb73b4",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624838903768,
+        "stop" : 1624838907940,
+        "duration" : 4172
+      }
+    }, {
+      "uid" : "15f6d62135bcb524",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624795621182,
+        "stop" : 1624795624831,
+        "duration" : 3649
+      }
+    }, {
+      "uid" : "4a732a86ae3c9d42",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624752384515,
+        "stop" : 1624752387844,
+        "duration" : 3329
+      }
+    }, {
+      "uid" : "cd291bde6973a931",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624742460764,
+        "stop" : 1624742464186,
+        "duration" : 3422
+      }
+    }, {
+      "uid" : "1bc970a976daf554",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624709229572,
+        "stop" : 1624709233395,
+        "duration" : 3823
+      }
+    }, {
+      "uid" : "bad67602cfd487d6",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624666043271,
+        "stop" : 1624666046618,
+        "duration" : 3347
+      }
+    }, {
+      "uid" : "17aac66cb6418c3d",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624642534347,
+        "stop" : 1624642537374,
+        "duration" : 3027
+      }
+    }, {
+      "uid" : "e10c4de4fd2c8b92",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624638539094,
+        "stop" : 1624638542220,
+        "duration" : 3126
+      }
+    }, {
+      "uid" : "5380033eefb02313",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624633013841,
+        "stop" : 1624633017486,
+        "duration" : 3645
+      }
+    }, {
+      "uid" : "5e4e3a1aa21ffd0e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624626223108,
+        "stop" : 1624626226228,
+        "duration" : 3120
+      }
+    }, {
+      "uid" : "f05773217bf3bc86",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624625022301,
+        "stop" : 1624625025603,
+        "duration" : 3302
+      }
+    }, {
+      "uid" : "ff9549bfb58899a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624622722706,
+        "stop" : 1624622725576,
+        "duration" : 2870
+      }
+    }, {
+      "uid" : "e9df82da626a17fd",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624618274598,
+        "stop" : 1624618278157,
+        "duration" : 3559
+      }
+    }, {
+      "uid" : "7a0673cfbad2ea98",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624607188151,
+        "stop" : 1624607191255,
+        "duration" : 3104
+      }
+    }, {
+      "uid" : "a95b2288d5677a6c",
+      "status" : "broken",
+      "statusDetails" : "TimeoutError",
+      "time" : {
+        "start" : 1624579586728,
+        "stop" : 1624579586867,
+        "duration" : 139
+      }
+    }, {
+      "uid" : "da2368cbaff92008",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624565419743,
+        "stop" : 1624565423226,
+        "duration" : 3483
+      }
+    }, {
+      "uid" : "2c964e0a2b7ed979",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624558428945,
+        "stop" : 1624558432419,
+        "duration" : 3474
+      }
+    }, {
+      "uid" : "5086f7f057184539",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624556875152,
+        "stop" : 1624556878493,
+        "duration" : 3341
+      }
+    }, {
+      "uid" : "46ddaa0d5d2c2b03",
+      "status" : "broken",
+      "statusDetails" : "TimeoutError",
+      "time" : {
+        "start" : 1624542021326,
+        "stop" : 1624542021513,
+        "duration" : 187
+      }
+    }, {
+      "uid" : "672725e16e3d6d53",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624538363290,
+        "stop" : 1624538366808,
+        "duration" : 3518
+      }
+    }, {
+      "uid" : "7fbec4bc20da510d",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624536354114,
+        "stop" : 1624536356872,
+        "duration" : 2758
+      }
+    }, {
+      "uid" : "117acd63ca9ca3a0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624533025699,
+        "stop" : 1624533028597,
+        "duration" : 2898
+      }
+    }, {
+      "uid" : "416d5f6f2d1bb6d3",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624522973708,
+        "stop" : 1624522976815,
+        "duration" : 3107
+      }
+    }, {
+      "uid" : "f3f704a0d10c913c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624493219581,
+        "stop" : 1624493223012,
+        "duration" : 3431
+      }
+    }, {
+      "uid" : "7ffd4d6c35885855",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624472685064,
+        "stop" : 1624472688423,
+        "duration" : 3359
+      }
+    }, {
+      "uid" : "84aa3edd2dde910e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624460128898,
+        "stop" : 1624460132302,
+        "duration" : 3404
+      }
+    }, {
+      "uid" : "bb3a7b6e7d4a1906",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624458139094,
+        "stop" : 1624458142439,
+        "duration" : 3345
+      }
+    }, {
+      "uid" : "56d556000e76c833",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624455224269,
+        "stop" : 1624455227316,
+        "duration" : 3047
+      }
+    }, {
+      "uid" : "b62c52a3bf551b7e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624449947429,
+        "stop" : 1624449950762,
+        "duration" : 3333
+      }
+    }, {
+      "uid" : "5bf349110902e9ec",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624446768657,
+        "stop" : 1624446771912,
+        "duration" : 3255
+      }
+    }, {
+      "uid" : "f280025196598ec0",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624440316939,
+        "stop" : 1624440320569,
+        "duration" : 3630
+      }
+    }, {
+      "uid" : "5d6309369bf0302c",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624438394091,
+        "stop" : 1624438397678,
+        "duration" : 3587
+      }
+    }, {
+      "uid" : "ccbc2a9fad0ac39e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624429998070,
+        "stop" : 1624430001221,
+        "duration" : 3151
+      }
+    }, {
+      "uid" : "6b48ff63a6da93e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624406728620,
+        "stop" : 1624406731643,
+        "duration" : 3023
+      }
+    }, {
+      "uid" : "9278359699b15bf8",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624378510160,
+        "stop" : 1624378513216,
+        "duration" : 3056
+      }
+    }, {
+      "uid" : "310619e1028bd78b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624363545689,
+        "stop" : 1624363548849,
+        "duration" : 3160
+      }
+    }, {
+      "uid" : "ae245588bd7ed6f",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624345825002,
+        "stop" : 1624345828077,
+        "duration" : 3075
+      }
+    }, {
+      "uid" : "f11e8ed6ee57a58a",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624320376902,
+        "stop" : 1624320380255,
+        "duration" : 3353
+      }
+    }, {
+      "uid" : "886c7dc956f00d55",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624311167290,
+        "stop" : 1624311170832,
+        "duration" : 3542
+      }
+    }, {
+      "uid" : "a669eb68960540bb",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624308949927,
+        "stop" : 1624308953400,
+        "duration" : 3473
+      }
+    }, {
+      "uid" : "93c6e3755c26f95",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624292573886,
+        "stop" : 1624292577427,
+        "duration" : 3541
+      }
+    }, {
+      "uid" : "a36135920fd7f9ff",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624289946490,
+        "stop" : 1624289949908,
+        "duration" : 3418
+      }
+    }, {
+      "uid" : "524bf79bd2b9f8a9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624281578253,
+        "stop" : 1624281581835,
+        "duration" : 3582
+      }
+    }, {
+      "uid" : "1798428ef2243a31",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624277987977,
+        "stop" : 1624277991481,
+        "duration" : 3504
+      }
+    }, {
+      "uid" : "b242efcbe29b330b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624277174865,
+        "stop" : 1624277178166,
+        "duration" : 3301
+      }
+    }, {
+      "uid" : "5f2b765ab36bc7a9",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624263916858,
+        "stop" : 1624263920126,
+        "duration" : 3268
+      }
+    }, {
+      "uid" : "c578f35c5575d47b",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624233971273,
+        "stop" : 1624233974806,
+        "duration" : 3533
+      }
+    }, {
+      "uid" : "cafd0e032c95202e",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624190724881,
+        "stop" : 1624190728057,
+        "duration" : 3176
+      }
+    }, {
+      "uid" : "e473fd29f63f1d38",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624147654204,
+        "stop" : 1624147658090,
+        "duration" : 3886
+      }
+    }, {
+      "uid" : "302c43875d506865",
+      "status" : "passed",
+      "time" : {
+        "start" : 1624104397178,
+        "stop" : 1624104400963,
+        "duration" : 3785
+      }
+    } ],
+    "categories" : [ {
+      "name" : "Test defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "tags" : [ ]
+  },
+  "source" : "d752d2945010fe00.json",
+  "parameterValues" : [ ]
+}
