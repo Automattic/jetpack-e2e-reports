@@ -27,7 +27,7 @@ jobs:
     name: "Create new test report"
     runs-on: ubuntu-latest
     env:
-      PR_NUMBER: ${{ github.event.client_payload.pr }}
+      PR_NUMBER: ${{ github.event.client_payload.pr_number }}
       RUN_ID: ${{ github.event.client_payload.run_id }}
       REPOSITORY: ${{ github.event.client_payload.repository }}
       BRANCH: ${{ github.event.client_payload.branch }}
@@ -46,7 +46,7 @@ jobs:
             echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
             echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
             echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr\": \"${{ github.event.inputs.pr }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"Test PR name\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
+            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"Test PR name\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
           else
             echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
