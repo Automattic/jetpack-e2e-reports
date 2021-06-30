@@ -46,6 +46,9 @@ for d in "$RESULTS_PATH"/*; do
     cp -R "$d/allure-results" "$TARGET_RESULTS_PATH/"
 done
 
+echo "Copying history from to results"
+cp -R "$TARGET_RESULTS_PATH/report/history" "$TARGET_RESULTS_PATH/allure-results/"
+
 echo "Generating new report for $TARGET_RESULTS_PATH"
 cd "$TARGET_RESULTS_PATH"
 allure generate --clean --output report
