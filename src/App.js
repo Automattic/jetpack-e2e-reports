@@ -15,7 +15,27 @@ function header() {
 }
 
 function footer() {
-	return <footer className="App-footer">&nbsp;</footer>;
+	return (
+		<footer className="App-footer">
+			<div>
+				<a
+					target="_blank"
+					href="https://github.com/Automattic/jetpack-e2e-reports/"
+					rel="noreferrer"
+				>
+					Code
+				</a>
+				{ ' • ' }
+				<a
+					target="_blank"
+					href="https://github.com/Automattic/jetpack-e2e-reports/actions"
+					rel="noreferrer"
+				>
+					Actions
+				</a>
+			</div>
+		</footer>
+	);
 }
 
 function App() {
