@@ -12,23 +12,23 @@ set -eo pipefail
 allure --version
 
 if [[ -z "$RESULTS_PATH" ]]; then
-	echo "::error::RESULTS_PATH must be set"
-	exit 1
+  echo "::error::RESULTS_PATH must be set"
+  exit 1
 elif [[ ! -d "$RESULTS_PATH" ]]; then
-	echo "::error::'$RESULTS_PATH' does not exist or is not a directory"
-	exit 1
+  echo "::error::'$RESULTS_PATH' does not exist or is not a directory"
+  exit 1
 fi
 
 if [[ -z "$SITE_ROOT" ]]; then
-	echo "::error::SITE_ROOT path must be set"
-	exit 1
+  echo "::error::SITE_ROOT path must be set"
+  exit 1
 fi
 
 if [[ -z "$PR_NUMBER" ]]; then
-	echo "PR_NUMBER is not defined, using BRANCH"
+  echo "PR_NUMBER is not defined, using BRANCH"
 
-	if [[ -z "$BRANCH" ]]; then
-	  echo "::error::PR_NUMBER or BRANCH is not defined"
+  if [[ -z "$BRANCH" ]]; then
+    echo "::error::PR_NUMBER or BRANCH is not defined"
     exit 1
   else
     TARGET_RESULTS_PATH="$SITE_ROOT/$BRANCH"
@@ -42,17 +42,18 @@ echo "Creating target results dir '$TARGET_RESULTS_PATH'"
 mkdir -p "$TARGET_RESULTS_PATH"
 
 for d in "$RESULTS_PATH"/*; do
-    echo "Copy results from $d to $TARGET_RESULTS_PATH"
-    cp -R "$d/allure-results" "$TARGET_RESULTS_PATH/"
+  echo "Copy results from $d to $TARGET_RESULTS_PATH"
+  cp -R "$d/allure-results" "$TARGET_RESULTS_PATH/"
 done
 
-echo "Copying history from to results"
-cp -R "$TARGET_RESULTS_PATH/report/history" "$TARGET_RESULTS_PATH/allure-results/"
+if [ -d "$TARGET_RESULTS_PATH/report/history" ]; then
+  echo "Copying history from to results"
+  cp -R "$TARGET_RESULTS_PATH/report/history" "$TARGET_RESULTS_PATH/allure-results/"
+fi
 
 echo "Generating new report for $TARGET_RESULTS_PATH"
 cd "$TARGET_RESULTS_PATH"
 allure generate --clean --output report
 
 # Write metadata to file
-echo "$CLIENT_PAYLOAD" > metadata.json
-
+echo "$CLIENT_PAYLOAD" >metadata.json
