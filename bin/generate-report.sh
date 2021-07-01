@@ -11,6 +11,8 @@ set -eo pipefail
 # Test Allure installation
 allure --version
 
+BASE_URL="https://automattic.github.io/jetpack-e2e-reports"
+
 if [[ -z "$RESULTS_PATH" ]]; then
   echo "::error::RESULTS_PATH must be set"
   exit 1
@@ -31,11 +33,15 @@ if [[ -z "$PR_NUMBER" ]]; then
     echo "::error::PR_NUMBER or BRANCH is not defined"
     exit 1
   else
-    TARGET_RESULTS_PATH="$SITE_ROOT/$BRANCH"
+    TARGET_DIR="$SITE_ROOT/$BRANCH"
+    REPORT_URL="$BASE_URL/$BRANCH"
   fi
 else
-  TARGET_RESULTS_PATH="$SITE_ROOT/$PR_NUMBER"
+  TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
+  REPORT_URL="$BASE_URL/$PR_NUMBER"
 fi
+
+TARGET_RESULTS_PATH="$TARGET_DIR/results"
 
 # Copy new results into final results path
 echo "Creating target results dir '$TARGET_RESULTS_PATH'"
@@ -43,17 +49,47 @@ mkdir -p "$TARGET_RESULTS_PATH"
 
 for d in "$RESULTS_PATH"/*; do
   echo "Copy results from $d to $TARGET_RESULTS_PATH"
-  cp -R "$d/allure-results" "$TARGET_RESULTS_PATH/"
+  cp -R "$d/allure-results/." "$TARGET_RESULTS_PATH"
 done
 
-if [ -d "$TARGET_RESULTS_PATH/report/history" ]; then
-  echo "Copying history from to results"
-  cp -R "$TARGET_RESULTS_PATH/report/history" "$TARGET_RESULTS_PATH/allure-results/"
+HISTORY_PATH="$TARGET_RESULTS_PATH/report/history"
+HISTORIC_TC_PATH="$TARGET_RESULTS_PATH/report/data/test-cases"
+HISTORIC_ATTACHMENT_PATH="$TARGET_RESULTS_PATH/report/data/attachments"
+
+if [ -d "$HISTORY_PATH" ]; then
+  echo "Copying history from old report"
+  cp -R "$HISTORY_PATH" "$TARGET_RESULTS_PATH"
 fi
 
-echo "Generating new report for $TARGET_RESULTS_PATH"
-cd "$TARGET_RESULTS_PATH"
-allure generate --clean --output report
+if [ -d "$HISTORIC_TC_PATH" ]; then
+  echo "Copying historic test cases from old report"
+  cp -R "$HISTORIC_TC_PATH" "$TARGET_RESULTS_PATH"
+fi
+
+if [ -d "$HISTORIC_ATTACHMENT_PATH" ]; then
+  echo "Copying historic attachments from old report"
+  cp -R "$HISTORIC_ATTACHMENT_PATH" "$TARGET_RESULTS_PATH"
+fi
+
+echo "Creating executor.json"
+echo "{" >>"$TARGET_RESULTS_PATH/executor.json"
+echo "\"url\":\"$BASE_URL\"," >>"$TARGET_RESULTS_PATH/executor.json"
+echo "\"reportUrl\":\"$REPORT_URL\"" >>"$TARGET_RESULTS_PATH/executor.json"
+echo "}" >>"$TARGET_RESULTS_PATH/executor.json"
+
+echo "Generating new report for $TARGET_DIR"
+cd "$TARGET_DIR"
+allure generate --clean results --output report
+cd ../..
+
+echo "Copying historic test cases into report"
+cp -R "$TARGET_RESULTS_PATH/test-cases/." "$HISTORIC_TC_PATH" 2>/dev/null || :
+echo "Copying historic attachments into report"
+cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORIC_ATTACHMENT_PATH" 2>/dev/null || :
+
+pwd
+echo "Cleaning up: remove results dir $TARGET_RESULTS_PATH"
+rm -rf "$TARGET_RESULTS_PATH"
 
 # Write metadata to file
-echo "$CLIENT_PAYLOAD" >metadata.json
+echo "$CLIENT_PAYLOAD" >"$TARGET_DIR/metadata.json"

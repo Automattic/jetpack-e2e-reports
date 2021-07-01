@@ -62,8 +62,8 @@ ls -d docs/*/ | while read -r path; do
     echo "Removing $path, last updated in $last_update"
     rm -rf "$path"
   elif is_merged "$path"; then
-    # Remove the entire folder because PR was merged
-    echo "Removing $path, pull request merged"
+    # Remove the entire folder because PR is closed
+    echo "Removing $path, pull request closed"
     rm -rf "$path"
   else
     # Folder was recently updated, we should check its content for older files
