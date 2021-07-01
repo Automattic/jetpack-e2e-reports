@@ -42,6 +42,7 @@ else
 fi
 
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
+TARGET_REPORT_PATH="$TARGET_DIR/report"
 
 # Copy new results into final results path
 echo "Creating target results dir '$TARGET_RESULTS_PATH'"
@@ -52,9 +53,9 @@ for d in "$RESULTS_PATH"/*; do
   cp -R "$d/allure-results/." "$TARGET_RESULTS_PATH"
 done
 
-HISTORY_PATH="$TARGET_RESULTS_PATH/report/history"
-HISTORIC_TC_PATH="$TARGET_RESULTS_PATH/report/data/test-cases"
-HISTORIC_ATTACHMENT_PATH="$TARGET_RESULTS_PATH/report/data/attachments"
+HISTORY_PATH="$TARGET_REPORT_PATH/history"
+HISTORIC_TC_PATH="$TARGET_REPORT_PATH/data/test-cases"
+HISTORIC_ATTACHMENT_PATH="$TARGET_REPORT_PATH/data/attachments"
 
 if [ -d "$HISTORY_PATH" ]; then
   echo "Copying history from old report"
@@ -72,15 +73,14 @@ if [ -d "$HISTORIC_ATTACHMENT_PATH" ]; then
 fi
 
 echo "Creating executor.json"
-echo "{" >>"$TARGET_RESULTS_PATH/executor.json"
-echo "\"url\":\"$BASE_URL\"," >>"$TARGET_RESULTS_PATH/executor.json"
-echo "\"reportUrl\":\"$REPORT_URL\"" >>"$TARGET_RESULTS_PATH/executor.json"
-echo "}" >>"$TARGET_RESULTS_PATH/executor.json"
+jq -n --arg url "$BASE_URL" \
+  --arg reportUrl "$REPORT_URL" \
+  '{"url":$url,"reportUrl":$reportUrl}' \
+  >"$TARGET_RESULTS_PATH/executor.json"
+cat "$TARGET_RESULTS_PATH/executor.json"
 
 echo "Generating new report for $TARGET_DIR"
-cd "$TARGET_DIR"
-allure generate --clean results --output report
-cd ../..
+allure generate --clean "$TARGET_RESULTS_PATH" --output "$TARGET_REPORT_PATH"
 
 echo "Copying historic test cases into report"
 cp -R "$TARGET_RESULTS_PATH/test-cases/." "$HISTORIC_TC_PATH" 2>/dev/null || :
