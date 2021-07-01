@@ -43,6 +43,9 @@ fi
 
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
 TARGET_REPORT_PATH="$TARGET_DIR/report"
+HISTORY_PATH="$TARGET_REPORT_PATH/history"
+HISTORY_TC_PATH="$TARGET_REPORT_PATH/data/test-cases"
+HISTORY_ATTACHMENT_PATH="$TARGET_REPORT_PATH/data/attachments"
 
 # Copy new results into final results path
 echo "Creating target results dir '$TARGET_RESULTS_PATH'"
@@ -53,23 +56,19 @@ for d in "$RESULTS_PATH"/*; do
   cp -R "$d/allure-results/." "$TARGET_RESULTS_PATH"
 done
 
-HISTORY_PATH="$TARGET_REPORT_PATH/history"
-HISTORIC_TC_PATH="$TARGET_REPORT_PATH/data/test-cases"
-HISTORIC_ATTACHMENT_PATH="$TARGET_REPORT_PATH/data/attachments"
-
 if [ -d "$HISTORY_PATH" ]; then
-  echo "Copying history from old report"
+  echo "Copying history from existing report: $HISTORY_PATH -> $TARGET_RESULTS_PATH"
   cp -R "$HISTORY_PATH" "$TARGET_RESULTS_PATH"
 fi
 
-if [ -d "$HISTORIC_TC_PATH" ]; then
-  echo "Copying historic test cases from old report"
-  cp -R "$HISTORIC_TC_PATH" "$TARGET_RESULTS_PATH"
+if [ -d "$HISTORY_TC_PATH" ]; then
+  echo "Copying test cases from existing report: $HISTORY_TC_PATH -> $TARGET_RESULTS_PATH"
+  cp -R "$HISTORY_TC_PATH" "$TARGET_RESULTS_PATH"
 fi
 
-if [ -d "$HISTORIC_ATTACHMENT_PATH" ]; then
-  echo "Copying historic attachments from old report"
-  cp -R "$HISTORIC_ATTACHMENT_PATH" "$TARGET_RESULTS_PATH"
+if [ -d "$HISTORY_ATTACHMENT_PATH" ]; then
+  echo "Copying attachments from existing report: $HISTORY_ATTACHMENT_PATH -> $TARGET_RESULTS_PATH"
+  cp -R "$HISTORY_ATTACHMENT_PATH" "$TARGET_RESULTS_PATH"
 fi
 
 echo "Creating executor.json"
@@ -83,9 +82,9 @@ echo "Generating new report for $TARGET_DIR"
 allure generate --clean "$TARGET_RESULTS_PATH" --output "$TARGET_REPORT_PATH"
 
 echo "Copying historic test cases into report"
-cp -R "$TARGET_RESULTS_PATH/test-cases/." "$HISTORIC_TC_PATH" 2>/dev/null || :
+cp -R "$TARGET_RESULTS_PATH/test-cases/." "$HISTORY_TC_PATH" 2>/dev/null || :
 echo "Copying historic attachments into report"
-cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORIC_ATTACHMENT_PATH" 2>/dev/null || :
+cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORY_ATTACHMENT_PATH" 2>/dev/null || :
 
 pwd
 echo "Cleaning up: remove results dir $TARGET_RESULTS_PATH"
