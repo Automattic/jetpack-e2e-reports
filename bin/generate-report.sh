@@ -34,11 +34,11 @@ if [[ -z "$PR_NUMBER" ]]; then
     exit 1
   else
     TARGET_DIR="$SITE_ROOT/$BRANCH"
-    REPORT_URL="$BASE_URL/$BRANCH"
+    REPORT_URL="$BASE_URL/$BRANCH/report"
   fi
 else
   TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
-  REPORT_URL="$BASE_URL/$PR_NUMBER"
+  REPORT_URL="$BASE_URL/$PR_NUMBER/report"
 fi
 
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
