@@ -3,15 +3,13 @@
 # The scope of this script is to remove results older than a specified number of days.
 
 # Required:
-# - DAYS: the number of days to keep results for
+# - DAYS: the number of days to keep reports for
 
 # Steps:
 # * Go through each sub-folder of `docs` folder and check the git log
 # * If the folder was not updated in the last `DAYS` days delete the folder
-# * If the folder is for a PR that was merged delete the folder
-# * If the folder was updated and PR was not merged then check the contents of `allure-results` sub-folder
-# * If any results files in `allure-results` sub-folder are older than `DAYS` days remove them
-# * If results files are removed then regenerate the report for the folder
+# * If the folder is for a PR that was closed delete the folder
+# * If the folder was updated and PR was not closed then check the existing report and remove results not included in history
 
 # shellcheck disable=SC2012
 
@@ -32,8 +30,49 @@ is_merged() {
   [ "$state" == "closed" ]
 }
 
-echo "Cleaning up results older than $DAYS days ago"
+echo "Cleaning up reports for closed PRs or older than $DAYS days"
 echo
+
+clean_tests() {
+  historyFile="$1/report/history/history.json"
+  testCasesPath="$1/report/data/test-cases"
+
+  testsToKeep=$(jq '[.[].items[].uid]' "$historyFile")
+  #    echo "$testsToKeep"
+
+  # Go through each test and check if it exists in history
+  ls "$testCasesPath" | while read -r testCaseFile; do
+    testCaseId=${testCaseFile%.*}
+    #      echo "$testCaseFile"
+    if [[ ! "${testsToKeep[@]}" =~ ${testCaseId} ]]; then
+      # Test doesn't exist in history, it can be removed
+      echo "Cleaning attachments for test $testCaseId"
+      clean_attachments "$1" "$testCasesPath/$testCaseFile"
+      echo "Removing test file $testCaseFile"
+      rm "$testCaseFile"
+    fi
+  done
+}
+
+clean_attachments() {
+  attachmentsPath="$1/report/data/attachments"
+  testCaseFile="$2"
+
+  if [ ! -d "$attachmentsPath" ]; then
+    return
+  fi
+
+  attachmentsToRemove=$(jq '.. | ."attachments"? | select(. != null)  | select(. != []) | .[].source' "$testCaseFile")
+  #  echo "$attachmentsToRemove"
+
+  ls "$attachmentsPath" | while read -r attachmentFile; do
+    #      echo "$attachmentFile"
+    if [[ "${attachmentsToRemove[@]}" =~ ${attachmentFile} ]]; then
+      echo "Removing attachment $attachmentFile"
+      rm "$attachmentsPath/$attachmentFile"
+    fi
+  done
+}
 
 # Go through each sub-folder of `docs` folder
 ls -d docs/*/ | while read -r path; do
@@ -47,62 +86,28 @@ ls -d docs/*/ | while read -r path; do
     continue
   fi
 
-  days_to_keep=$DAYS
-
-  if [ "$path" == "docs/master" ]; then
-    echo "Cleaning up results older than $days_to_keep days ago"
-    days_to_keep=10
-  fi
-
   last_update="$(git log -1 --format="%aD" -- "$path")"
+  old_log_entries=$(git log --since "$DAYS days ago" -- "$path")
 
-  old_log_entries=$(git log --since "$days_to_keep days ago" -- "$path")
-  if [ "$old_log_entries" == "" ]; then
-    # Remove the entire folder because it was unchanged since $days_to_keep days ago
-    echo "Removing $path, last updated in $last_update"
-    rm -rf "$path"
-  elif is_merged "$path"; then
+  if is_merged "$path"; then
     # Remove the entire folder because PR is closed
     echo "Removing $path, pull request closed"
     rm -rf "$path"
+  elif [ "$old_log_entries" == "" ]; then
+    # Remove the entire folder because it was unchanged since $DAYS days ago
+    echo "Removing $path, last updated in $last_update"
+    rm -rf "$path"
   else
-    # Folder was recently updated, we should check its content for older files
+    # Folder was recently updated, we should check its content and remove old results
     echo "Checking $path, last updated in $last_update"
+    initial_file_count=$(find "$path" -type f | wc -l)
 
-    results_dir="$path/allure-results"
-    initial_file_count=$(ls "$results_dir" | wc -l)
+    clean_tests "$path"
 
-    echo -e "$((initial_file_count)) files in $results_dir"
-
-    git ls-tree -r --name-only HEAD | grep "$results_dir" | while read -r file; do
-      last_update="$(git log -1 --format="%aD" -- "$file")"
-
-      if [ "$(git log --since "$days_to_keep days ago" -- "$file")" == "" ]; then
-        # Remove the file because it was unchanged since $days_to_keep days ago
-        #        echo -e "\tRemoving $file, last updated in $last_update"
-        echo -n "R"
-        rm -rf "$file"
-      else
-        #        echo -e "\tSkipping $file, last updated in $last_update"
-        echo -n "."
-      fi
-    done
-
-    echo
-
-    final_count=$(ls "$results_dir" | wc -l)
+    final_count=$(find "$path" -type f | wc -l)
     diff=$((initial_file_count - final_count))
 
     echo -e "\t$diff files removed from $path"
-
-    root_path=$(pwd)
-    if [ "$diff" -gt 0 ]; then
-      echo -e "\tRecreating report $path"
-      cd "$path"
-      echo -e "\t$(allure generate --clean --output report)"
-      cd "$root_path"
-    fi
-
   fi
   echo
 done
