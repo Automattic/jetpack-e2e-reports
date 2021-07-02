@@ -90,7 +90,7 @@ cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORY_ATTACHMENT_PATH" 2>/dev/nul
 
 echo "Setting report name to $REPORT_NAME"
 # shellcheck disable=SC2002
-cat "$TARGET_REPORT_PATH/widgets/summary.json" | jq -n --arg name "$REPORT_NAME" '.reportName|=$name' >"$TARGET_REPORT_PATH/widgets/summary.tmp"
+cat "$TARGET_REPORT_PATH/widgets/summary.json" | jq --arg name "$REPORT_NAME" '.reportName|=$name' >"$TARGET_REPORT_PATH/widgets/summary.tmp"
 mv "$TARGET_REPORT_PATH/widgets/summary.tmp" "$TARGET_REPORT_PATH/widgets/summary.json"
 cat "$TARGET_REPORT_PATH/widgets/summary.json"
 
@@ -98,4 +98,6 @@ echo "Cleaning up: remove results dir $TARGET_RESULTS_PATH"
 rm -rf "$TARGET_RESULTS_PATH"
 
 echo "Writing metadata to file"
-echo "$CLIENT_PAYLOAD" >"$TARGET_DIR/metadata.json"
+#echo "$CLIENT_PAYLOAD" >"$TARGET_DIR/metadata.json"
+echo "$CLIENT_PAYLOAD" | jq --arg updateDate "$(date +"%Y-%m-%dT%H:%M:%S%z")" '. + {"updated_on":$updateDate}'  >"$TARGET_DIR/metadata.json"
+cat "$TARGET_DIR/metadata.json"
