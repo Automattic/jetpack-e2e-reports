@@ -17,7 +17,7 @@ else
   git config --local user.name "$USERNAME"
   git config --local user.email "$EMAIL"
   git add .
-  git commit -m "$MESSAGE"
+  git commit -m "$MESSAGE $(date +"%Y-%m-%dT%H:%M:%S%z")"
   git pull
   git push
 fi
