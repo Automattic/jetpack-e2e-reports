@@ -17,11 +17,11 @@ for ( const dirName of dirs ) {
 	}
 
 	// get the last update date from git log
-	const lastUpdate = execSync(
-		`git log -1 --format=\"%ad\" ${ path.resolve( 'docs', dirName ) }`
-	)
-		.toString()
-		.replace( /\n$/, '' );
+	// const lastUpdate = execSync(
+	// 	`git log -1 --format=\"%ad\" ${ path.resolve( 'docs', dirName ) }`
+	// )
+	// 	.toString()
+	// 	.replace( /\n$/, '' );
 
 	// get the statistics from report/widgets/summary.json
 	const summaryData = fs.readFileSync(
@@ -37,6 +37,7 @@ for ( const dirName of dirs ) {
 		pr_title: '',
 		run_id: '',
 		run_number: '',
+		updated_on: '1970',
 	};
 
 	try {
@@ -51,7 +52,7 @@ for ( const dirName of dirs ) {
 
 	const report = {
 		name: dirName,
-		lastUpdate,
+		lastUpdate: metadata.updated_on,
 		statistic,
 		metadata,
 	};
