@@ -98,5 +98,4 @@ echo "Cleaning up: remove results dir $TARGET_RESULTS_PATH"
 rm -rf "$TARGET_RESULTS_PATH"
 
 echo "Writing metadata to file"
-"$CLIENT_PAYLOAD" | jq -n --arg updateDate "$(date +"%d %b %Y %H-%M %Z")" '.updated_on|=$updateDate' >"$TARGET_DIR/metadata.json"
-cat "$TARGET_DIR/metadata.json"
+echo "$CLIENT_PAYLOAD" >"$TARGET_DIR/metadata.json"
