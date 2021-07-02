@@ -65,6 +65,6 @@ for ( const dirName of dirs ) {
 json.reportsCount = json.reports.length;
 
 fs.writeFileSync(
-	path.resolve( 'public/summary.json' ),
+	path.resolve( 'docs/summary.json' ),
 	JSON.stringify( json, null, 2 )
 );
