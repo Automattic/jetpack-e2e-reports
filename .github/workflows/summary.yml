@@ -1,6 +1,15 @@
-name: Dashboard
+name: Dashboard data
 
 on:
+  push:
+    branches:
+      - trunk
+  workflow_run:
+    workflows: [ "Report" ]
+    branches:
+      - trunk
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -9,7 +18,7 @@ concurrency:
 
 jobs:
   dashboard:
-    name: "Build dashboard"
+    name: "Create summary data"
     runs-on: ubuntu-latest
 
     steps:
@@ -26,14 +35,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Build dashboard
-        run: |
-          npm install --production
-          npm run build
-          rm -rf docs/static/
-          cp -a ./build/. docs/
+      - name: Recreate summary file
+        run: node ./bin/create-summary.js
 
       - name: Push changes
         env:
-          MESSAGE: "Build dashboard"
+          MESSAGE: "Automatic summary data update"
         run: ./bin/push-changes.sh
