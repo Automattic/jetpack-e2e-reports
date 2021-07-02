@@ -46,9 +46,9 @@ clean_tests() {
     #      echo "$testCaseFile"
     if [[ ! "${testsToKeep[@]}" =~ ${testCaseId} ]]; then
       # Test doesn't exist in history, it can be removed
-      echo "Cleaning attachments for test $testCaseId"
+      echo -e "\tCleaning attachments for test $testCaseId"
       clean_attachments "$1" "$testCasesPath/$testCaseFile"
-      echo "Removing test file $testCaseFile"
+      echo -e "\tRemoving test file $testCaseFile"
       rm "$testCaseFile"
     fi
   done
@@ -68,7 +68,7 @@ clean_attachments() {
   ls "$attachmentsPath" | while read -r attachmentFile; do
     #      echo "$attachmentFile"
     if [[ "${attachmentsToRemove[@]}" =~ ${attachmentFile} ]]; then
-      echo "Removing attachment $attachmentFile"
+      echo -e "\t\tRemoving attachment $attachmentFile"
       rm "$attachmentsPath/$attachmentFile"
     fi
   done
