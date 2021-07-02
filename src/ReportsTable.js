@@ -26,9 +26,7 @@ export default class ReportsTable extends React.Component {
 		} )
 			.then( ( response ) => response.json() )
 			.then( ( jsonData ) => {
-				console.log( 'Data fetch' );
 				this.setState( { data: jsonData } );
-				console.log( this.state.data );
 			} )
 			.catch( console.log );
 	}
