@@ -89,6 +89,7 @@ echo "Copying historic attachments into report"
 cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORY_ATTACHMENT_PATH" 2>/dev/null || :
 
 echo "Setting report name to $REPORT_NAME"
+# shellcheck disable=SC2002
 cat "$TARGET_REPORT_PATH/widgets/summary.json" | jq -n --arg name "$REPORT_NAME" '.reportName|=$name' >"$TARGET_REPORT_PATH/widgets/summary.tmp"
 mv "$TARGET_REPORT_PATH/widgets/summary.tmp" "$TARGET_REPORT_PATH/widgets/summary.json"
 cat "$TARGET_REPORT_PATH/widgets/summary.json"
@@ -98,4 +99,4 @@ rm -rf "$TARGET_RESULTS_PATH"
 
 echo "Writing metadata to file"
 "$CLIENT_PAYLOAD" | jq -n --arg updateDate "$(date +"%d %b %Y %H-%M %Z")" '.updated_on|=$updateDate' >"$TARGET_DIR/metadata.json"
-#echo "$CLIENT_PAYLOAD" >"$TARGET_DIR/metadata.json"
+cat "$TARGET_DIR/metadata.json"
