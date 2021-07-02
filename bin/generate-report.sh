@@ -35,10 +35,12 @@ if [[ -z "$PR_NUMBER" ]]; then
   else
     TARGET_DIR="$SITE_ROOT/$BRANCH"
     REPORT_URL="$BASE_URL/$BRANCH/report"
+    REPORT_NAME="E2E report for $BRANCH"
   fi
 else
   TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
   REPORT_URL="$BASE_URL/$PR_NUMBER/report"
+  REPORT_NAME="E2E report for PR $PR_NUMBER"
 fi
 
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
@@ -86,7 +88,11 @@ cp -R "$TARGET_RESULTS_PATH/test-cases/." "$HISTORY_TC_PATH" 2>/dev/null || :
 echo "Copying historic attachments into report"
 cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORY_ATTACHMENT_PATH" 2>/dev/null || :
 
-pwd
+echo "Setting report name to $REPORT_NAME"
+jq -n --arg name "$REPORT_NAME" '.reportName|=$name' "$TARGET_REPORT_PATH/widgets/summary.json" > "$TARGET_REPORT_PATH/widgets/summary.tmp"
+mv "$TARGET_REPORT_PATH/widgets/summary.tmp" "$TARGET_REPORT_PATH/widgets/summary.json"
+cat "$TARGET_REPORT_PATH/widgets/summary.json"
+
 echo "Cleaning up: remove results dir $TARGET_RESULTS_PATH"
 rm -rf "$TARGET_RESULTS_PATH"
 
