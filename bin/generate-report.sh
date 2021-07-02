@@ -35,12 +35,12 @@ if [[ -z "$PR_NUMBER" ]]; then
   else
     TARGET_DIR="$SITE_ROOT/$BRANCH"
     REPORT_URL="$BASE_URL/$BRANCH/report"
-    REPORT_NAME="E2E report for $BRANCH"
+    REPORT_NAME="Test report for $BRANCH branch"
   fi
 else
   TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
   REPORT_URL="$BASE_URL/$PR_NUMBER/report"
-  REPORT_NAME="E2E report for PR $PR_NUMBER"
+  REPORT_NAME="Test report for PR $PR_NUMBER"
 fi
 
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
