@@ -37,7 +37,7 @@ for ( const dirName of dirs ) {
 		pr_title: '',
 		run_id: '',
 		run_number: '',
-		updated_on: '1970',
+		updated_on: '',
 	};
 
 	try {
@@ -52,7 +52,7 @@ for ( const dirName of dirs ) {
 
 	const report = {
 		name: dirName,
-		lastUpdate: metadata.updated_on,
+		lastUpdate: metadata.updated_on ? metadata.updated_on : '1970-01-01',
 		statistic,
 		metadata,
 	};
