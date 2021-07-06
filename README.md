@@ -25,4 +25,8 @@ The reports are generated using [Allure](http://allure.qatools.ru) framework. Al
 
 ## Cleanup
 
-A cleanup job runs every day, deleting reports older than 30 days.
+A cleanup job runs twice every day, deleting:
+- full reports for pull requests that are closed
+- full reports that were not updated in the last 60 days
+- test results and attachments referencing tests that are not included in the history list (for each test we keep the last 20 results)
+
