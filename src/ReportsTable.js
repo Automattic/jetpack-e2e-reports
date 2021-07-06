@@ -87,15 +87,12 @@ export default class ReportsTable extends React.Component {
 
 		if ( metadata.pr_title ) {
 			let prNumber = '';
-			if ( metadata.pr ) {
-				prNumber = `(#${ metadata.pr })`;
-			} else if ( metadata.pr_number ) {
-				prNumber = `(#${ metadata.pr_number })`;
-			}
+			prNumber = `(#${ metadata.pr_number })`;
 			reportTitle = `${ metadata.pr_title } ${ prNumber }`;
 		}
 
 		const branchUrl = `https://github.com/Automattic/jetpack/tree/${ metadata.branch }`;
+		const prUrl = `https://github.com/Automattic/jetpack/pull/${ metadata.pr_number }`;
 
 		return (
 			<ul className={ 'list-unstyled' }>
@@ -127,6 +124,17 @@ export default class ReportsTable extends React.Component {
 						>
 							{ metadata.branch }
 						</a>
+						{ metadata.pr_number ? ' • ' : '' }
+						{ metadata.pr_number && (
+							<a
+								href={ prUrl }
+								target={ '_blank' }
+								className={ 'report-link' }
+								rel={ 'noreferrer' }
+							>
+								PR { metadata.pr_number }
+							</a>
+						) }
 					</small>
 				</li>
 			</ul>
