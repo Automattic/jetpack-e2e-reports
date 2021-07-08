@@ -1,5 +1,58 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Wed Jul 07 23:22:43 UTC 2021","Wed Jul 07 23:23:00 UTC 2021","16438","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Thu Jul 08 06:46:58 UTC 2021","Thu Jul 08 06:47:22 UTC 2021","24108","specs","","connection.test.js","","","User-less","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(""Can clean up WPCOM cookie"", async () => {
+    await (
+      await _sidebar.default.init(page)
+    ).removeCookieByName(""wordpress_logged_in"");
+  });
+  await (0, _testSetup.step)(""Can start Site Level connection"", async () => {
+    await (0, _jetpackConnect.doSiteLevelConnection)();
+  });
+  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+    const jetpackPage = await _jetpack.default.init(page);
+
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Thu Jul 08 06:48:46 UTC 2021","Thu Jul 08 06:48:51 UTC 2021","4743","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectInstalledPlugins();
+  const pluginsPage = await _plugins.default.init(page);
+  await (0, _utilsHelper.execWpCommand)(
+    ""wp transient set activated_jetpack true 120""
+  );
+  await pluginsPage.reload();
+
+  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
+};
+
+```
+"
+"passed","Thu Jul 08 06:47:32 UTC 2021","Thu Jul 08 06:48:02 UTC 2021","30437","specs","","connection.test.js","","","Classic","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(""Can start classic connection"", async () => {
+    await (0, _jetpackConnect.doClassicConnection)(true);
+  });
+  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+    const jetpackPage = await _jetpack.default.init(page);
+
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Thu Jul 08 06:50:10 UTC 2021","Thu Jul 08 06:50:26 UTC 2021","16639","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -34,7 +87,7 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:24:09 UTC 2021","Wed Jul 07 23:24:18 UTC 2021","8865","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Thu Jul 08 06:51:35 UTC 2021","Thu Jul 08 06:51:44 UTC 2021","8509","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -74,44 +127,7 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:21:12 UTC 2021","Wed Jul 07 23:21:44 UTC 2021","31791","specs","","connection.test.js","","","User-less","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(""Can clean up WPCOM cookie"", async () => {
-    await (
-      await _sidebar.default.init(page)
-    ).removeCookieByName(""wordpress_logged_in"");
-  });
-  await (0, _testSetup.step)(""Can start Site Level connection"", async () => {
-    await (0, _jetpackConnect.doSiteLevelConnection)();
-  });
-  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
-    const jetpackPage = await _jetpack.default.init(page);
-
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Wed Jul 07 23:21:56 UTC 2021","Wed Jul 07 23:22:34 UTC 2021","37823","specs","","connection.test.js","","","Classic","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(""Can start classic connection"", async () => {
-    await (0, _jetpackConnect.doClassicConnection)(true);
-  });
-  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
-    const jetpackPage = await _jetpack.default.init(page);
-
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Wed Jul 07 23:24:00 UTC 2021","Wed Jul 07 23:24:06 UTC 2021","6199","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Thu Jul 08 06:51:27 UTC 2021","Thu Jul 08 06:51:33 UTC 2021","5991","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -152,35 +168,7 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:20:24 UTC 2021","Wed Jul 07 23:20:26 UTC 2021","1643","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectJetpack();
-  const jetpackPage = await _jetpack.default.init(page);
-
-  expect(await jetpackPage.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Wed Jul 07 23:20:12 UTC 2021","Wed Jul 07 23:21:04 UTC 2021","51637","specs","","connection.test.js","","","In-place","
-### Test
-```typescript
-async () => {
-  await (0, _testSetup.step)(""Can start in-place connection"", async () => {
-    await (0, _jetpackConnect.doInPlaceConnection)();
-  });
-  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
-    const jetpackPage = await _jetpack.default.init(page);
-
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Wed Jul 07 23:23:13 UTC 2021","Wed Jul 07 23:23:18 UTC 2021","5235","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Thu Jul 08 06:50:41 UTC 2021","Thu Jul 08 06:50:46 UTC 2021","5376","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -221,74 +209,104 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:20:22 UTC 2021","Wed Jul 07 23:20:23 UTC 2021","743","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
+"passed","Thu Jul 08 06:48:22 UTC 2021","Thu Jul 08 06:48:24 UTC 2021","2688","specs","","search.test.js","","","Can perform search with default settings","
 ### Test
 ```typescript
 async () => {
-  await (await _sidebar.default.init(page)).selectDashboard();
-  const dashboard = await _dashboard.default.init(page);
-
-  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Wed Jul 07 23:20:17 UTC 2021","Wed Jul 07 23:20:21 UTC 2021","3939","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectInstalledPlugins();
-  const pluginsPage = await _plugins.default.init(page);
-  await (0, _utilsHelper.execWpCommand)(
-    ""wp transient set activated_jetpack true 120""
-  );
-  await pluginsPage.reload();
-
-  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
-};
-
-```
-"
-"passed","Wed Jul 07 23:23:03 UTC 2021","Wed Jul 07 23:23:11 UTC 2021","8046","specs","","pro-blocks.test.js","","","Pay with PayPal","
-### Test
-```typescript
-async () => {
-  let blockId;
   await (0, _testSetup.step)(
-    ""Can visit the block editor and add a Pay with PayPal block"",
+    ""Can open the overlay by entering a query"",
     async () => {
-      await blockEditor.waitForAvailableBlock(_simplePayments.default.name());
-      blockId = await blockEditor.insertBlock(
-        _simplePayments.default.name(),
-        _simplePayments.default.title()
+      await homepage.focusSearchInput();
+      await homepage.enterQuery();
+      await homepage.waitForSearchResponse();
+
+      expect(await homepage.isOverlayVisible()).toBeTruthy();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can show search controls in the overlay"",
+    async () => {
+      expect(await homepage.isSearchFormVisible()).toBeTruthy();
+      expect(await homepage.isSortingVisible()).toBeTruthy();
+      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can show search results in the overlay"",
+    async () => {
+      expect(await homepage.isSearchResultVisible()).toBeTruthy();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can sort results by relevance by default"",
+    async () => {
+      expect(await homepage.getFirstResultTitle()).toBe(
+        ""<mark>Test1</mark> Record 1""
       );
     }
   );
+  await (0, _testSetup.step)(""Can edit query in search form"", async () => {
+    await homepage.enterQueryToOverlay(""test2"");
+    await homepage.waitForSearchResponse();
+    expect(await homepage.getFirstResultTitle()).toBe(
+      ""<mark>Test2</mark> Record 1""
+    );
+  });
+  await (0, _testSetup.step)(""Can change sort order"", async () => {
+    await homepage.chooseSortingLink(""newest"");
+    await homepage.waitForSearchResponse();
+    expect(await homepage.isSortingLinkSelected(""newest"")).toBeTruthy();
+    expect(await homepage.getFirstResultTitle()).toBe(
+      ""<mark>Test2</mark> Record 3""
+    );
+    await homepage.chooseSortingLink(""oldest"");
+    await homepage.waitForSearchResponse();
+    expect(await homepage.isSortingLinkSelected(""oldest"")).toBeTruthy();
+    expect(await homepage.getFirstResultTitle()).toBe(
+      ""<mark>Test2</mark> Record 2""
+    );
+  });
+  await (0, _testSetup.step)(""Can apply filters"", async () => {
+    await homepage.clickFilterCategory2();
+    await homepage.waitForSearchResponse();
+    expect(await homepage.getFirstResultTitle()).toBe(
+      ""<mark>Test2</mark> Record 2""
+    );
+    await homepage.clickFilterCategory2();
+    await homepage.clickFilterTag3();
+    await homepage.waitForSearchResponse();
+    expect(await homepage.getFirstResultTitle()).toBe(
+      ""<mark>Test2</mark> Record 3""
+    );
+  });
   await (0, _testSetup.step)(
-    ""Can fill details of Pay with PayPal block"",
+    ""Can close overlay by clicking the cross"",
     async () => {
-      const spBlock = new _simplePayments.default(blockId, page);
-      await spBlock.fillDetails();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _postFrontend.default.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_simplePayments.default)
-      ).toBeTruthy();
+      await homepage.clickCrossToCloseOverlay();
+      expect(await homepage.isOverlayVisible()).toBeFalsy();
     }
   );
 };
 
 ```
 "
-"passed","Wed Jul 07 23:21:03 UTC 2021","Wed Jul 07 23:21:11 UTC 2021","8326","specs","","search.test.js","","","Can display different result formats","
+"passed","Thu Jul 08 06:46:23 UTC 2021","Thu Jul 08 06:46:51 UTC 2021","27727","specs","","connection.test.js","","","In-place","
+### Test
+```typescript
+async () => {
+  await (0, _testSetup.step)(""Can start in-place connection"", async () => {
+    await (0, _jetpackConnect.doInPlaceConnection)();
+  });
+  await (0, _testSetup.step)(""Can assert that site is connected"", async () => {
+    const jetpackPage = await _jetpack.default.init(page);
+
+    expect(await jetpackPage.isConnected()).toBeTruthy();
+  });
+};
+
+```
+"
+"passed","Thu Jul 08 06:48:29 UTC 2021","Thu Jul 08 06:48:38 UTC 2021","8097","specs","","search.test.js","","","Can display different result formats","
 ### Test
 ```typescript
 async () => {
@@ -327,7 +345,19 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:19:18 UTC 2021","Wed Jul 07 23:19:53 UTC 2021","35777","specs","","plugin-updater.test.js","","","Plugin updater","
+"passed","Thu Jul 08 06:48:53 UTC 2021","Thu Jul 08 06:48:54 UTC 2021","1256","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectDashboard();
+  const dashboard = await _dashboard.default.init(page);
+
+  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
+};
+
+```
+"
+"passed","Thu Jul 08 06:47:40 UTC 2021","Thu Jul 08 06:48:17 UTC 2021","37033","specs","","plugin-updater.test.js","","","Plugin updater","
 ### Test
 ```typescript
 async () => {
@@ -356,7 +386,7 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:21:00 UTC 2021","Wed Jul 07 23:21:01 UTC 2021","518","specs","","search.test.js","","","Can open and close overlay","
+"passed","Thu Jul 08 06:48:27 UTC 2021","Thu Jul 08 06:48:27 UTC 2021","533","specs","","search.test.js","","","Can open and close overlay","
 ### Test
 ```typescript
 async () => {
@@ -377,7 +407,46 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:21:30 UTC 2021","Wed Jul 07 23:21:47 UTC 2021","16721","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
+"passed","Thu Jul 08 06:50:29 UTC 2021","Thu Jul 08 06:50:38 UTC 2021","9104","specs","","pro-blocks.test.js","","","Pay with PayPal","
+### Test
+```typescript
+async () => {
+  let blockId;
+  await (0, _testSetup.step)(
+    ""Can visit the block editor and add a Pay with PayPal block"",
+    async () => {
+      await blockEditor.waitForAvailableBlock(_simplePayments.default.name());
+      blockId = await blockEditor.insertBlock(
+        _simplePayments.default.name(),
+        _simplePayments.default.title()
+      );
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can fill details of Pay with PayPal block"",
+    async () => {
+      const spBlock = new _simplePayments.default(blockId, page);
+      await spBlock.fillDetails();
+    }
+  );
+  await (0, _testSetup.step)(
+    ""Can publish a post and assert that Pay with PayPal block is rendered"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _postFrontend.default.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_simplePayments.default)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Thu Jul 08 06:48:56 UTC 2021","Thu Jul 08 06:49:12 UTC 2021","16087","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
 ### Test
 ```typescript
 async () => {
@@ -508,83 +577,14 @@ async () => {
 
 ```
 "
-"passed","Wed Jul 07 23:20:55 UTC 2021","Wed Jul 07 23:20:58 UTC 2021","2676","specs","","search.test.js","","","Can perform search with default settings","
+"passed","Thu Jul 08 06:48:56 UTC 2021","Thu Jul 08 06:48:58 UTC 2021","2130","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
 ### Test
 ```typescript
 async () => {
-  await (0, _testSetup.step)(
-    ""Can open the overlay by entering a query"",
-    async () => {
-      await homepage.focusSearchInput();
-      await homepage.enterQuery();
-      await homepage.waitForSearchResponse();
+  await (await _sidebar.default.init(page)).selectJetpack();
+  const jetpackPage = await _jetpack.default.init(page);
 
-      expect(await homepage.isOverlayVisible()).toBeTruthy();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can show search controls in the overlay"",
-    async () => {
-      expect(await homepage.isSearchFormVisible()).toBeTruthy();
-      expect(await homepage.isSortingVisible()).toBeTruthy();
-      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can show search results in the overlay"",
-    async () => {
-      expect(await homepage.isSearchResultVisible()).toBeTruthy();
-    }
-  );
-  await (0, _testSetup.step)(
-    ""Can sort results by relevance by default"",
-    async () => {
-      expect(await homepage.getFirstResultTitle()).toBe(
-        ""<mark>Test1</mark> Record 1""
-      );
-    }
-  );
-  await (0, _testSetup.step)(""Can edit query in search form"", async () => {
-    await homepage.enterQueryToOverlay(""test2"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 1""
-    );
-  });
-  await (0, _testSetup.step)(""Can change sort order"", async () => {
-    await homepage.chooseSortingLink(""newest"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.isSortingLinkSelected(""newest"")).toBeTruthy();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 3""
-    );
-    await homepage.chooseSortingLink(""oldest"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.isSortingLinkSelected(""oldest"")).toBeTruthy();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 2""
-    );
-  });
-  await (0, _testSetup.step)(""Can apply filters"", async () => {
-    await homepage.clickFilterCategory2();
-    await homepage.waitForSearchResponse();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 2""
-    );
-    await homepage.clickFilterCategory2();
-    await homepage.clickFilterTag3();
-    await homepage.waitForSearchResponse();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 3""
-    );
-  });
-  await (0, _testSetup.step)(
-    ""Can close overlay by clicking the cross"",
-    async () => {
-      await homepage.clickCrossToCloseOverlay();
-      expect(await homepage.isOverlayVisible()).toBeFalsy();
-    }
-  );
+  expect(await jetpackPage.isConnectBannerVisible()).toBeTruthy();
 };
 
 ```
