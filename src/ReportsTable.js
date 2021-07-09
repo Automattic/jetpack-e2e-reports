@@ -244,6 +244,9 @@ export default class ReportsTable extends React.Component {
 				variant="dark"
 				id="reportsTable"
 			>
+				<caption>
+					<small>docs size: { this.state.data.docsSize }</small>
+				</caption>
 				<thead>
 					<tr>
 						<th colSpan="3">
