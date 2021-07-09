@@ -16,13 +16,6 @@ for ( const dirName of dirs ) {
 		continue;
 	}
 
-	// get the last update date from git log
-	// const lastUpdate = execSync(
-	// 	`git log -1 --format=\"%ad\" ${ path.resolve( 'docs', dirName ) }`
-	// )
-	// 	.toString()
-	// 	.replace( /\n$/, '' );
-
 	// get the statistics from report/widgets/summary.json
 	const summaryData = fs.readFileSync(
 		path.resolve( 'docs', dirName, 'report/widgets/summary.json' )
@@ -63,6 +56,12 @@ for ( const dirName of dirs ) {
 }
 
 json.reportsCount = json.reports.length;
+
+// get the size of the docs folder
+const docsSize = execSync( 'du -sh docs | cut -f1' )
+	.toString()
+	.replace( /\n$/, '' );
+json.docsSize = docsSize;
 
 fs.writeFileSync(
 	path.resolve( 'docs/summary.json' ),
