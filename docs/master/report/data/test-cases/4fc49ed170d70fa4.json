@@ -1,0 +1,327 @@
+{
+  "uid" : "4fc49ed170d70fa4",
+  "name" : "Can perform search with default settings",
+  "fullName" : "Can perform search with default settings",
+  "historyId" : "8a48effa07b2a0dc8118fcc35772e118",
+  "time" : {
+    "start" : 1626171199190,
+    "stop" : 1626171201603,
+    "duration" : 2413
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _testSetup.step)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(\n    &quot;Can open the overlay by entering a query&quot;,\n    async () =&gt; {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search controls in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search results in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can sort results by relevance by default&quot;,\n    async () =&gt; {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        &quot;&lt;mark&gt;Test1&lt;/mark&gt; Record 1&quot;\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can edit query in search form&quot;, async () =&gt; {\n    await homepage.enterQueryToOverlay(&quot;test2&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 1&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can change sort order&quot;, async () =&gt; {\n    await homepage.chooseSortingLink(&quot;newest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;newest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n    await homepage.chooseSortingLink(&quot;oldest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;oldest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can apply filters&quot;, async () =&gt; {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n  });\n  await (0, _testSetup.step)(\n    &quot;Can close overlay by clicking the cross&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "search.test.js"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 1,
+        "skipped" : 0,
+        "passed" : 70,
+        "unknown" : 0,
+        "total" : 71
+      },
+      "items" : [ {
+        "uid" : "6fb2197dc50bcafe",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/6fb2197dc50bcafe",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626169405154,
+          "stop" : 1626169407919,
+          "duration" : 2765
+        }
+      }, {
+        "uid" : "211ac0b9531dc3a5",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/211ac0b9531dc3a5",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626134734837,
+          "stop" : 1626134737298,
+          "duration" : 2461
+        }
+      }, {
+        "uid" : "966eb3a09fd5e335",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/966eb3a09fd5e335",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626127647576,
+          "stop" : 1626127650080,
+          "duration" : 2504
+        }
+      }, {
+        "uid" : "7f18f69b1ff27016",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/7f18f69b1ff27016",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626123807609,
+          "stop" : 1626123810421,
+          "duration" : 2812
+        }
+      }, {
+        "uid" : "cd5548a6030992fe",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/cd5548a6030992fe",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626117888846,
+          "stop" : 1626117891230,
+          "duration" : 2384
+        }
+      }, {
+        "uid" : "7e0da3dc114a6edd",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/7e0da3dc114a6edd",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626108961265,
+          "stop" : 1626108963775,
+          "duration" : 2510
+        }
+      }, {
+        "uid" : "fec6e4cc622b7342",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/fec6e4cc622b7342",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626102859809,
+          "stop" : 1626102862609,
+          "duration" : 2800
+        }
+      }, {
+        "uid" : "999e9859a8625c4a",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/999e9859a8625c4a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626091541608,
+          "stop" : 1626091544014,
+          "duration" : 2406
+        }
+      }, {
+        "uid" : "6e0020882040bc48",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/6e0020882040bc48",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626076286085,
+          "stop" : 1626076288633,
+          "duration" : 2548
+        }
+      }, {
+        "uid" : "ee4364bb65677836",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/ee4364bb65677836",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626067723828,
+          "stop" : 1626067726341,
+          "duration" : 2513
+        }
+      }, {
+        "uid" : "bd16aaad606e8e1d",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/bd16aaad606e8e1d",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626048361769,
+          "stop" : 1626048364411,
+          "duration" : 2642
+        }
+      }, {
+        "uid" : "41634d3e990b898",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/41634d3e990b898",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626005175834,
+          "stop" : 1626005178471,
+          "duration" : 2637
+        }
+      }, {
+        "uid" : "52d8161ef2801229",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/52d8161ef2801229",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625961990010,
+          "stop" : 1625961992612,
+          "duration" : 2602
+        }
+      }, {
+        "uid" : "591f3a70f74a2132",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/591f3a70f74a2132",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625918783158,
+          "stop" : 1625918785887,
+          "duration" : 2729
+        }
+      }, {
+        "uid" : "6e0cd916d0027660",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/6e0cd916d0027660",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625861302628,
+          "stop" : 1625861305058,
+          "duration" : 2430
+        }
+      }, {
+        "uid" : "54f25ea7ece07df5",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/54f25ea7ece07df5",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625858035757,
+          "stop" : 1625858038466,
+          "duration" : 2709
+        }
+      }, {
+        "uid" : "e9c76eea9803438b",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/e9c76eea9803438b",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625853009436,
+          "stop" : 1625853011792,
+          "duration" : 2356
+        }
+      }, {
+        "uid" : "5c6a21f207f87512",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/5c6a21f207f87512",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625837959823,
+          "stop" : 1625837962333,
+          "duration" : 2510
+        }
+      }, {
+        "uid" : "98fc674798cc24c",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/98fc674798cc24c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625837329866,
+          "stop" : 1625837332317,
+          "duration" : 2451
+        }
+      }, {
+        "uid" : "1c57671b1b3519d4",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/1c57671b1b3519d4",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625832423734,
+          "stop" : 1625832426747,
+          "duration" : 3013
+        }
+      } ]
+    },
+    "tags" : [ ]
+  },
+  "source" : "4fc49ed170d70fa4.json",
+  "parameterValues" : [ ]
+}
