@@ -1,0 +1,183 @@
+{
+  "uid" : "9c0ac599e8322bce",
+  "name" : "Can perform search with default settings",
+  "fullName" : "Can perform search with default settings",
+  "historyId" : "8a48effa07b2a0dc8118fcc35772e118",
+  "time" : {
+    "start" : 1628116383774,
+    "stop" : 1628116386225,
+    "duration" : 2451
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _testSetup.step)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _testSetup.step)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _testSetup.step)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _testSetup.step)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _testSetup.step)(\n    &quot;Can open the overlay by entering a query&quot;,\n    async () =&gt; {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search controls in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can show search results in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _testSetup.step)(\n    &quot;Can sort results by relevance by default&quot;,\n    async () =&gt; {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        &quot;&lt;mark&gt;Test1&lt;/mark&gt; Record 1&quot;\n      );\n    }\n  );\n  await (0, _testSetup.step)(&quot;Can edit query in search form&quot;, async () =&gt; {\n    await homepage.enterQueryToOverlay(&quot;test2&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 1&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can change sort order&quot;, async () =&gt; {\n    await homepage.chooseSortingLink(&quot;newest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;newest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n    await homepage.chooseSortingLink(&quot;oldest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;oldest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n  });\n  await (0, _testSetup.step)(&quot;Can apply filters&quot;, async () =&gt; {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n  });\n  await (0, _testSetup.step)(\n    &quot;Can close overlay by clicking the cross&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "search.test.js"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 0,
+        "skipped" : 0,
+        "passed" : 5,
+        "unknown" : 0,
+        "total" : 5
+      },
+      "items" : [ {
+        "uid" : "d6881ca488091ca3",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/20503/report/#testresult/d6881ca488091ca3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1627878981946,
+          "stop" : 1627878984356,
+          "duration" : 2410
+        }
+      }, {
+        "uid" : "ed1dfa8f5a639de8",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/20503/report/#testresult/ed1dfa8f5a639de8",
+        "status" : "passed",
+        "time" : {
+          "start" : 1627867731565,
+          "stop" : 1627867734133,
+          "duration" : 2568
+        }
+      }, {
+        "uid" : "eca9fde91b80d857",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/20503/report/#testresult/eca9fde91b80d857",
+        "status" : "passed",
+        "time" : {
+          "start" : 1627676719555,
+          "stop" : 1627676722119,
+          "duration" : 2564
+        }
+      }, {
+        "uid" : "1dfb935e2f533b1",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/20503/report/#testresult/1dfb935e2f533b1",
+        "status" : "passed",
+        "time" : {
+          "start" : 1627629032774,
+          "stop" : 1627629035608,
+          "duration" : 2834
+        }
+      } ]
+    },
+    "tags" : [ ]
+  },
+  "source" : "9c0ac599e8322bce.json",
+  "parameterValues" : [ ]
+}
