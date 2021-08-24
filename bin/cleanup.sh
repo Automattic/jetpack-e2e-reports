@@ -36,6 +36,11 @@ echo
 clean_tests() {
   historyFile="$1/report/history/history.json"
   testCasesPath="$1/report/data/test-cases"
+  
+  if [ ! -f "$historyFile" ]; then
+    echo "$historyFile cannot find history file. Skipping this dir."
+    return
+  fi
 
   testsToKeep=$(jq '[.[].items[].uid]' "$historyFile")
   #    echo "$testsToKeep"
