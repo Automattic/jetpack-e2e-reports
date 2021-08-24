@@ -2,7 +2,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
 
-const excluded = [ 'static' ];
+const excluded = [ 'static', 'e2e' ];
 const json = { reports: [] };
 
 const dirs = fs
