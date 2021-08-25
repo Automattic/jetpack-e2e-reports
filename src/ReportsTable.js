@@ -190,7 +190,7 @@ export default class ReportsTable extends React.Component {
 		const reports = this.sortTable( sortBy, sortDirection );
 		return reports.map( ( report, id ) => {
 			const { statistic, metadata } = report; //destructuring
-			const isFailed = statistic.total !== statistic.passed;
+			const isFailed = statistic.total !== statistic.passed + statistic.skipped;
 			return (
 				<tr key={ id }>
 					<td>
