@@ -20,11 +20,17 @@ if [[ -z "$DAYS" ]]; then
   exit 1
 fi
 
+mapfile -t permanentReports < <(jq -r '.permanent[]' "config.json")
+echo "Permanent reports: ${permanentReports[*]}"
+
 is_merged() {
   pr=$(basename "$1")
-  # shellcheck disable=SC2034
-  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq -r '.state')
-#  state="open"
+
+  if [[ "${permanentReports[*]}" =~ ${pr} ]]; then
+    state="not a PR"
+  else
+    state=$(curl -s "https://api.github.com/repos/automattic/jetpack/pulls/$pr" | jq -r '.state')
+  fi
 
   echo "PR $pr state: $state"
 
