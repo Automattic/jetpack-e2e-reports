@@ -23,8 +23,8 @@ fi
 is_merged() {
   pr=$(basename "$1")
   # shellcheck disable=SC2034
-  #  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq -r '.state')
-  state="open"
+  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq -r '.state')
+#  state="open"
 
   echo "PR $pr state: $state"
 
@@ -44,13 +44,12 @@ clean_tests() {
   fi
 
   testsToKeep=$(jq '[.[].items[].uid]' "$historyFile")
-  #    echo "$testsToKeep"
 
   # Go through each test and check if it exists in history
   ls "$testCasesPath" | while read -r testCaseFile; do
     testCaseId=${testCaseFile%.*}
     #      echo "$testCaseFile"
-    if [[ ! "${testsToKeep[@]}" =~ ${testCaseId} ]]; then
+    if [[ ! "${testsToKeep[*]}" =~ ${testCaseId} ]]; then
       # Test doesn't exist in history, it can be removed
       echo -e "\tCleaning attachments for test $testCaseId"
       clean_attachments "$1" "$testCasesPath/$testCaseFile"
@@ -73,12 +72,17 @@ clean_attachments() {
 
   ls "$attachmentsPath" | while read -r attachmentFile; do
     #      echo "$attachmentFile"
-    if [[ "${attachmentsToRemove[@]}" =~ ${attachmentFile} ]]; then
+    if [[ "${attachmentsToRemove[*]}" =~ ${attachmentFile} ]]; then
       echo -e "\t\tRemoving attachment $attachmentFile"
       rm "$attachmentsPath/$attachmentFile"
     fi
   done
 }
+
+# Read the ignore list from config and append "docs" to each folder in list to have a complete path
+mapfile -t ignoreList < <(jq -r '.ignore[]' "config.json")
+ignoreList=( "${ignoreList[@]/#/docs/}" )
+echo "Ignore list: ${ignoreList[*]}"
 
 # Go through each sub-folder of `docs` folder
 ls -d docs/*/ | while read -r path; do
@@ -86,9 +90,7 @@ ls -d docs/*/ | while read -r path; do
   # shellcheck disable=SC2001
   path=$(echo "$path" | sed 's:/*$::')
 
-  ignoreList=$(jq '.ignore' "config.json")
-
-  if [[ "${ignoreList[@]}" =~ ${path} ]]; then
+  if [[ "${ignoreList[*]}" =~ ${path} ]]; then
     echo "Ignoring $path, not in clean-up scope"
     echo
     continue
