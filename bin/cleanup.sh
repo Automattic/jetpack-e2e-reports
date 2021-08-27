@@ -9,7 +9,7 @@
 # * Go through each sub-folder of `docs` folder and check the git log
 # * If the folder was not updated in the last `DAYS` days delete the folder
 # * If the folder is for a PR that was closed delete the folder
-# * If the folder was updated and PR was not closed then check the existing report and remove results not included in history
+# * If the folder was updated and PR was not closed or the report is not for a PR then check the existing report and remove results not included in history
 
 # shellcheck disable=SC2012
 
@@ -23,7 +23,8 @@ fi
 is_merged() {
   pr=$(basename "$1")
   # shellcheck disable=SC2034
-  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq -r '.state')
+  #  state=$(curl -s https://api.github.com/repos/automattic/jetpack/pulls/$pr | jq -r '.state')
+  state="open"
 
   echo "PR $pr state: $state"
 
@@ -36,7 +37,7 @@ echo
 clean_tests() {
   historyFile="$1/report/history/history.json"
   testCasesPath="$1/report/data/test-cases"
-  
+
   if [ ! -f "$historyFile" ]; then
     echo "$historyFile cannot find history file. Skipping this dir."
     return
@@ -85,9 +86,11 @@ ls -d docs/*/ | while read -r path; do
   # shellcheck disable=SC2001
   path=$(echo "$path" | sed 's:/*$::')
 
-  if [ "$path" == "docs/static" ]; then
-    # `static` is not a results folder, ignore it
+  ignoreList=$(jq '.ignore' "config.json")
+
+  if [[ "${ignoreList[@]}" =~ ${path} ]]; then
     echo "Ignoring $path, not in clean-up scope"
+    echo
     continue
   fi
 
