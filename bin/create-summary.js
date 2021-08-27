@@ -2,7 +2,8 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
 
-const excluded = [ 'static', 'e2e' ];
+const excluded = require( '../config.json' ).ignore;
+
 const json = { reports: [] };
 
 const dirs = fs
@@ -13,6 +14,7 @@ const dirs = fs
 for ( const dirName of dirs ) {
 	// Skip excluded dirs
 	if ( excluded.includes( dirName ) ) {
+		console.log( `Ignore ${ dirName }` );
 		continue;
 	}
 
