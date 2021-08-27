@@ -26,21 +26,29 @@ if [[ -z "$SITE_ROOT" ]]; then
   exit 1
 fi
 
-if [[ -z "$PR_NUMBER" ]]; then
-  echo "PR_NUMBER is not defined, using BRANCH"
+if [[ -z "$REPORT_NAME" ]]; then
+  echo "REPORT_NAME is not defined, using PR_NUMBER or BRANCH"
 
-  if [[ -z "$BRANCH" ]]; then
-    echo "::error::PR_NUMBER or BRANCH is not defined"
-    exit 1
+  if [[ -z "$PR_NUMBER" ]]; then
+    echo "PR_NUMBER is not defined, using BRANCH"
+
+    if [[ -z "$BRANCH" ]]; then
+      echo "::error::PR_NUMBER or BRANCH is not defined"
+      exit 1
+    else
+      TARGET_DIR="$SITE_ROOT/$BRANCH"
+      REPORT_URL="$BASE_URL/$BRANCH/report"
+      REPORT_TITLE="Test report for $BRANCH branch"
+    fi
   else
-    TARGET_DIR="$SITE_ROOT/$BRANCH"
-    REPORT_URL="$BASE_URL/$BRANCH/report"
-    REPORT_NAME="Test report for $BRANCH branch"
+    TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
+    REPORT_URL="$BASE_URL/$PR_NUMBER/report"
+    REPORT_TITLE="Test report for PR $PR_NUMBER"
   fi
 else
-  TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
-  REPORT_URL="$BASE_URL/$PR_NUMBER/report"
-  REPORT_NAME="Test report for PR $PR_NUMBER"
+  TARGET_DIR="$SITE_ROOT/$REPORT_NAME"
+  REPORT_URL="$BASE_URL/$REPORT_NAME/report"
+  REPORT_TITLE="Test report for $REPORT_NAME"
 fi
 
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
@@ -88,9 +96,9 @@ cp -R "$TARGET_RESULTS_PATH/test-cases/." "$HISTORY_TC_PATH" 2>/dev/null || :
 echo "Copying historic attachments into report"
 cp -R "$TARGET_RESULTS_PATH/attachments/." "$HISTORY_ATTACHMENT_PATH" 2>/dev/null || :
 
-echo "Setting report name to $REPORT_NAME"
+echo "Setting report title to $REPORT_TITLE"
 # shellcheck disable=SC2002
-cat "$TARGET_REPORT_PATH/widgets/summary.json" | jq --arg name "$REPORT_NAME" '.reportName|=$name' >"$TARGET_REPORT_PATH/widgets/summary.tmp"
+cat "$TARGET_REPORT_PATH/widgets/summary.json" | jq --arg name "$REPORT_TITLE" '.reportName|=$name' >"$TARGET_REPORT_PATH/widgets/summary.tmp"
 mv "$TARGET_REPORT_PATH/widgets/summary.tmp" "$TARGET_REPORT_PATH/widgets/summary.json"
 cat "$TARGET_REPORT_PATH/widgets/summary.json"
 
