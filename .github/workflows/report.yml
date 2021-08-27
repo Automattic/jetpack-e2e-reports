@@ -17,6 +17,9 @@ on:
         description: 'Branch name'
         required: true
         default: 'test/test-pr'
+      report_name:
+        description: 'Report name'
+        required: false
       runId:
         description: 'Run ID'
         required: true
@@ -35,6 +38,7 @@ jobs:
       RUN_ID: ${{ github.event.client_payload.run_id }}
       REPOSITORY: ${{ github.event.client_payload.repository }}
       BRANCH: ${{ github.event.client_payload.branch }}
+      REPORT_NAME: ${{ github.event.client_payload.report_name }}
       CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
 
     steps:
@@ -49,8 +53,9 @@ jobs:
             echo "RUN_ID=${{ github.event.inputs.runId }}" >> $GITHUB_ENV
             echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
             echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
+            echo "REPORT_NAME=${{ github.event.inputs.report_name }}" >> $GITHUB_ENV
             echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
+            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
           else
             echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
