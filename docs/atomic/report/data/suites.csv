@@ -1,20 +1,22 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Mon Aug 30 12:10:44 UTC 2021","Mon Aug 30 12:10:54 UTC 2021","10436","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Mon Aug 30 16:11:00 UTC 2021","Mon Aug 30 16:11:13 UTC 2021","13775","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
-
-  await (0, _reporter.testStep)(""Add a Pinterest block"", async () => {
-    const blockId = await blockEditor.insertBlock(
-      _pinterest.default.name(),
-      _pinterest.default.title()
-    );
-    const pinterestBlock = new _pinterest.default(blockId, page, pinId);
-    await pinterestBlock.addEmbed();
-  });
+  const eventId = ""112691417062"";
   await (0, _reporter.testStep)(
-    ""Publish a post with a Pinterest block"",
+    ""Can visit the block editor and add a Eventbrite block"",
+    async () => {
+      const blockId = await blockEditor.insertBlock(
+        _eventbrite.default.name(),
+        _eventbrite.default.title()
+      );
+      const eventbriteBlock = new _eventbrite.default(blockId, page, eventId);
+      await eventbriteBlock.addEmbed();
+    }
+  );
+  await (0, _reporter.testStep)(
+    ""Can publish a post with a Eventbrite block"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
@@ -22,13 +24,13 @@ async () => {
     }
   );
   await (0, _reporter.testStep)(
-    ""Can assert that Pinterest block is rendered"",
+    ""Can assert that Eventbrite block is rendered"",
     async () => {
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_pinterest.default, {
-          pinId,
+        await frontend.isRenderedBlockPresent(_eventbrite.default, {
+          eventId,
         })
       ).toBeTruthy();
     }
@@ -37,7 +39,42 @@ async () => {
 
 ```
 "
-"skipped","Mon Aug 30 12:10:35 UTC 2021","Mon Aug 30 12:10:35 UTC 2021","66","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Mon Aug 30 16:10:21 UTC 2021","Mon Aug 30 16:10:32 UTC 2021","11312","specs","","pro-blocks.test.js","","","Pay with PayPal","
+### Test
+```typescript
+async () => {
+  let blockId;
+  await (0, _reporter.testStep)(""Add a Pay with PayPal block"", async () => {
+    blockId = await blockEditor.insertBlock(
+      _simplePayments.default.name(),
+      _simplePayments.default.title()
+    );
+  });
+  await (0, _reporter.testStep)(
+    ""Fill details of Pay with PayPal block"",
+    async () => {
+      const spBlock = new _simplePayments.default(blockId, page);
+      await spBlock.fillDetails();
+    }
+  );
+  await (0, _reporter.testStep)(
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    async () => {
+      await blockEditor.setTitle(""Pay with PayPal block"");
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _postFrontend.default.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_simplePayments.default)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"skipped","Mon Aug 30 16:10:33 UTC 2021","Mon Aug 30 16:10:33 UTC 2021","104","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -78,24 +115,22 @@ async () => {
 
 ```
 "
-"passed","Mon Aug 30 12:10:58 UTC 2021","Mon Aug 30 12:11:09 UTC 2021","11480","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Mon Aug 30 16:10:43 UTC 2021","Mon Aug 30 16:10:55 UTC 2021","12575","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
-  const eventId = ""112691417062"";
+  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+
+  await (0, _reporter.testStep)(""Add a Pinterest block"", async () => {
+    const blockId = await blockEditor.insertBlock(
+      _pinterest.default.name(),
+      _pinterest.default.title()
+    );
+    const pinterestBlock = new _pinterest.default(blockId, page, pinId);
+    await pinterestBlock.addEmbed();
+  });
   await (0, _reporter.testStep)(
-    ""Can visit the block editor and add a Eventbrite block"",
-    async () => {
-      const blockId = await blockEditor.insertBlock(
-        _eventbrite.default.name(),
-        _eventbrite.default.title()
-      );
-      const eventbriteBlock = new _eventbrite.default(blockId, page, eventId);
-      await eventbriteBlock.addEmbed();
-    }
-  );
-  await (0, _reporter.testStep)(
-    ""Can publish a post with a Eventbrite block"",
+    ""Publish a post with a Pinterest block"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
@@ -103,13 +138,13 @@ async () => {
     }
   );
   await (0, _reporter.testStep)(
-    ""Can assert that Eventbrite block is rendered"",
+    ""Can assert that Pinterest block is rendered"",
     async () => {
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_eventbrite.default, {
-          eventId,
+        await frontend.isRenderedBlockPresent(_pinterest.default, {
+          pinId,
         })
       ).toBeTruthy();
     }
@@ -118,7 +153,7 @@ async () => {
 
 ```
 "
-"passed","Mon Aug 30 12:10:12 UTC 2021","Mon Aug 30 12:10:21 UTC 2021","9453","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Mon Aug 30 16:10:07 UTC 2021","Mon Aug 30 16:10:17 UTC 2021","9971","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -143,41 +178,6 @@ async () => {
 
       expect(
         await frontend.isRenderedBlockPresent(_mailchimp.default)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Mon Aug 30 12:10:25 UTC 2021","Mon Aug 30 12:10:35 UTC 2021","9443","specs","","pro-blocks.test.js","","","Pay with PayPal","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _reporter.testStep)(""Add a Pay with PayPal block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _simplePayments.default.name(),
-      _simplePayments.default.title()
-    );
-  });
-  await (0, _reporter.testStep)(
-    ""Fill details of Pay with PayPal block"",
-    async () => {
-      const spBlock = new _simplePayments.default(blockId, page);
-      await spBlock.fillDetails();
-    }
-  );
-  await (0, _reporter.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _postFrontend.default.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_simplePayments.default)
       ).toBeTruthy();
     }
   );
