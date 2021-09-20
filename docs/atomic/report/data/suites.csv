@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Mon Sep 20 08:05:23 UTC 2021","Mon Sep 20 08:05:33 UTC 2021","9847","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Mon Sep 20 12:05:39 UTC 2021","Mon Sep 20 12:05:47 UTC 2021","8877","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -37,7 +37,47 @@ async () => {
 
 ```
 "
-"passed","Mon Sep 20 08:05:00 UTC 2021","Mon Sep 20 08:05:10 UTC 2021","9793","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Mon Sep 20 12:05:51 UTC 2021","Mon Sep 20 12:06:01 UTC 2021","10596","specs","","free-blocks.test.js","","","Eventbrite block","
+### Test
+```typescript
+async () => {
+  const eventId = ""112691417062"";
+  await (0, _reporter.testStep)(
+    ""Can visit the block editor and add a Eventbrite block"",
+    async () => {
+      const blockId = await blockEditor.insertBlock(
+        _eventbrite.default.name(),
+        _eventbrite.default.title()
+      );
+      const eventbriteBlock = new _eventbrite.default(blockId, page, eventId);
+      await eventbriteBlock.addEmbed();
+    }
+  );
+  await (0, _reporter.testStep)(
+    ""Can publish a post with a Eventbrite block"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+    }
+  );
+  await (0, _reporter.testStep)(
+    ""Can assert that Eventbrite block is rendered"",
+    async () => {
+      const frontend = await _postFrontend.default.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_eventbrite.default, {
+          eventId,
+        })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Mon Sep 20 12:05:17 UTC 2021","Mon Sep 20 12:05:26 UTC 2021","8940","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
@@ -72,7 +112,7 @@ async () => {
 
 ```
 "
-"skipped","Mon Sep 20 08:05:10 UTC 2021","Mon Sep 20 08:05:10 UTC 2021","59","specs","","pro-blocks.test.js","","","WordAds block","
+"skipped","Mon Sep 20 12:05:26 UTC 2021","Mon Sep 20 12:05:26 UTC 2021","71","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -113,47 +153,7 @@ async () => {
 
 ```
 "
-"passed","Mon Sep 20 08:05:36 UTC 2021","Mon Sep 20 08:05:48 UTC 2021","11268","specs","","free-blocks.test.js","","","Eventbrite block","
-### Test
-```typescript
-async () => {
-  const eventId = ""112691417062"";
-  await (0, _reporter.testStep)(
-    ""Can visit the block editor and add a Eventbrite block"",
-    async () => {
-      const blockId = await blockEditor.insertBlock(
-        _eventbrite.default.name(),
-        _eventbrite.default.title()
-      );
-      const eventbriteBlock = new _eventbrite.default(blockId, page, eventId);
-      await eventbriteBlock.addEmbed();
-    }
-  );
-  await (0, _reporter.testStep)(
-    ""Can publish a post with a Eventbrite block"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporter.testStep)(
-    ""Can assert that Eventbrite block is rendered"",
-    async () => {
-      const frontend = await _postFrontend.default.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_eventbrite.default, {
-          eventId,
-        })
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Mon Sep 20 08:04:46 UTC 2021","Mon Sep 20 08:04:56 UTC 2021","9924","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Mon Sep 20 12:05:02 UTC 2021","Mon Sep 20 12:05:13 UTC 2021","11111","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
