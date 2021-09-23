@@ -1,35 +1,32 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Thu Sep 23 04:04:51 UTC 2021","Thu Sep 23 04:04:58 UTC 2021","7537","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Thu Sep 23 08:05:11 UTC 2021","Thu Sep 23 08:05:20 UTC 2021","9635","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
-
-  await (0, _reporter.testStep)(""Add a Pinterest block"", async () => {
-    const blockId = await blockEditor.insertBlock(
-      _pinterest.default.name(),
-      _pinterest.default.title()
+  let blockId;
+  await (0, _reporter.testStep)(""Add a Pay with PayPal block"", async () => {
+    blockId = await blockEditor.insertBlock(
+      _simplePayments.default.name(),
+      _simplePayments.default.title()
     );
-    const pinterestBlock = new _pinterest.default(blockId, page, pinId);
-    await pinterestBlock.addEmbed();
   });
   await (0, _reporter.testStep)(
-    ""Publish a post with a Pinterest block"",
+    ""Fill details of Pay with PayPal block"",
     async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
+      const spBlock = new _simplePayments.default(blockId, page);
+      await spBlock.fillDetails();
     }
   );
   await (0, _reporter.testStep)(
-    ""Can assert that Pinterest block is rendered"",
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
     async () => {
+      await blockEditor.setTitle(""Pay with PayPal block"");
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_pinterest.default, {
-          pinId,
-        })
+        await frontend.isRenderedBlockPresent(_simplePayments.default)
       ).toBeTruthy();
     }
   );
@@ -37,7 +34,7 @@ async () => {
 
 ```
 "
-"skipped","Thu Sep 23 04:04:41 UTC 2021","Thu Sep 23 04:04:41 UTC 2021","67","specs","","pro-blocks.test.js","","","WordAds block","
+"skipped","Thu Sep 23 08:05:20 UTC 2021","Thu Sep 23 08:05:20 UTC 2021","83","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -78,7 +75,7 @@ async () => {
 
 ```
 "
-"passed","Thu Sep 23 04:04:21 UTC 2021","Thu Sep 23 04:04:29 UTC 2021","7828","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Thu Sep 23 08:04:54 UTC 2021","Thu Sep 23 08:05:06 UTC 2021","11758","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -110,7 +107,7 @@ async () => {
 
 ```
 "
-"passed","Thu Sep 23 04:05:01 UTC 2021","Thu Sep 23 04:05:10 UTC 2021","8851","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Thu Sep 23 08:05:49 UTC 2021","Thu Sep 23 08:06:02 UTC 2021","12106","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -150,34 +147,37 @@ async () => {
 
 ```
 "
-"passed","Thu Sep 23 04:04:32 UTC 2021","Thu Sep 23 04:04:40 UTC 2021","8618","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Thu Sep 23 08:05:35 UTC 2021","Thu Sep 23 08:05:46 UTC 2021","10627","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
-  let blockId;
-  await (0, _reporter.testStep)(""Add a Pay with PayPal block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _simplePayments.default.name(),
-      _simplePayments.default.title()
+  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+
+  await (0, _reporter.testStep)(""Add a Pinterest block"", async () => {
+    const blockId = await blockEditor.insertBlock(
+      _pinterest.default.name(),
+      _pinterest.default.title()
     );
+    const pinterestBlock = new _pinterest.default(blockId, page, pinId);
+    await pinterestBlock.addEmbed();
   });
   await (0, _reporter.testStep)(
-    ""Fill details of Pay with PayPal block"",
+    ""Publish a post with a Pinterest block"",
     async () => {
-      const spBlock = new _simplePayments.default(blockId, page);
-      await spBlock.fillDetails();
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
     }
   );
   await (0, _reporter.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    ""Can assert that Pinterest block is rendered"",
     async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_simplePayments.default)
+        await frontend.isRenderedBlockPresent(_pinterest.default, {
+          pinId,
+        })
       ).toBeTruthy();
     }
   );
