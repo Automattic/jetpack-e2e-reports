@@ -1,17 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"broken","Thu Sep 23 16:54:27 UTC 2021","Thu Sep 23 16:54:27 UTC 2021","27","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectDashboard();
-  const dashboard = await _dashboard.default.init(page);
-
-  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"broken","Thu Sep 23 16:54:07 UTC 2021","Thu Sep 23 16:54:07 UTC 2021","112","specs","","search.test.js","","","Can display different result formats","
+"broken","Fri Sep 24 10:12:00 UTC 2021","Fri Sep 24 10:12:00 UTC 2021","92","specs","","search.test.js","","","Can display different result formats","
 ### Test
 ```typescript
 async () => {
@@ -50,19 +38,7 @@ async () => {
 
 ```
 "
-"broken","Thu Sep 23 16:54:27 UTC 2021","Thu Sep 23 16:54:27 UTC 2021","26","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
-### Test
-```typescript
-async () => {
-  await (await _sidebar.default.init(page)).selectJetpack();
-  const jetpackPage = await _jetpack.default.init(page);
-
-  expect(await jetpackPage.isConnectScreenVisible()).toBeTruthy();
-};
-
-```
-"
-"skipped","Thu Sep 23 16:42:41 UTC 2021","Thu Sep 23 16:42:41 UTC 2021","66","specs","","plugin-updater.test.js","","","Plugin updater","
+"skipped","Fri Sep 24 10:00:36 UTC 2021","Fri Sep 24 10:00:36 UTC 2021","57","specs","","plugin-updater.test.js","","","Plugin updater","
 ### Test
 ```typescript
 async () => {
@@ -90,7 +66,7 @@ async () => {
 
 ```
 "
-"broken","Thu Sep 23 16:54:27 UTC 2021","Thu Sep 23 16:54:27 UTC 2021","107","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
+"broken","Fri Sep 24 10:12:18 UTC 2021","Fri Sep 24 10:12:18 UTC 2021","96","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
 ### Test
 ```typescript
 async () => {
@@ -106,7 +82,79 @@ async () => {
 
 ```
 "
-"broken","Thu Sep 23 16:54:06 UTC 2021","Thu Sep 23 16:54:06 UTC 2021","168","specs","","search.test.js","","","Can perform search with default settings","
+"broken","Fri Sep 24 10:12:18 UTC 2021","Fri Sep 24 10:12:18 UTC 2021","28","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectJetpack();
+  const jetpackPage = await _jetpack.default.init(page);
+
+  expect(await jetpackPage.isConnectScreenVisible()).toBeTruthy();
+};
+
+```
+"
+"broken","Fri Sep 24 10:10:59 UTC 2021","Fri Sep 24 10:12:40 UTC 2021","101104","specs","","connection.test.js","","","User-less","
+### Test
+```typescript
+async () => {
+  await (0, _reporter.testStep)(""Can clean up WPCOM cookie"", async () => {
+    await (
+      await _sidebar.default.init(page)
+    ).removeCookieByName(""wordpress_logged_in"");
+  });
+  await (0, _reporter.testStep)(""Can start Site Level connection"", async () => {
+    await (0, _jetpackConnect.doSiteLevelConnection)();
+  });
+  await (0, _reporter.testStep)(
+    ""Can assert that site is connected"",
+    async () => {
+      const jetpackPage = await _jetpack.default.init(page);
+
+      expect(await jetpackPage.isConnected()).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"broken","Fri Sep 24 10:12:00 UTC 2021","Fri Sep 24 10:12:00 UTC 2021","25","specs","","search.test.js","","","Can open and close overlay","
+### Test
+```typescript
+async () => {
+  await (0, _reporter.testStep)(
+    ""Can press enter to to open overlay"",
+    async () => {
+      await homepage.pressEnterInSearchInput();
+      await homepage.waitForSearchResponse();
+
+      expect(await homepage.isOverlayVisible()).toBeTruthy();
+    }
+  );
+  await (0, _reporter.testStep)(
+    ""Can click the cross to close the overlay"",
+    async () => {
+      await homepage.clickCrossToCloseOverlay();
+      expect(await homepage.isOverlayVisible()).toBeFalsy();
+    }
+  );
+};
+
+```
+"
+"broken","Fri Sep 24 10:12:18 UTC 2021","Fri Sep 24 10:12:18 UTC 2021","23","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
+### Test
+```typescript
+async () => {
+  await (await _sidebar.default.init(page)).selectDashboard();
+  const dashboard = await _dashboard.default.init(page);
+
+  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
+};
+
+```
+"
+"broken","Fri Sep 24 10:12:00 UTC 2021","Fri Sep 24 10:12:00 UTC 2021","133","specs","","search.test.js","","","Can perform search with default settings","
 ### Test
 ```typescript
 async () => {
@@ -178,54 +226,6 @@ async () => {
   });
   await (0, _reporter.testStep)(
     ""Can close overlay by clicking the cross"",
-    async () => {
-      await homepage.clickCrossToCloseOverlay();
-      expect(await homepage.isOverlayVisible()).toBeFalsy();
-    }
-  );
-};
-
-```
-"
-"broken","Thu Sep 23 16:51:02 UTC 2021","Thu Sep 23 16:52:43 UTC 2021","100816","specs","","connection.test.js","","","User-less","
-### Test
-```typescript
-async () => {
-  await (0, _reporter.testStep)(""Can clean up WPCOM cookie"", async () => {
-    await (
-      await _sidebar.default.init(page)
-    ).removeCookieByName(""wordpress_logged_in"");
-  });
-  await (0, _reporter.testStep)(""Can start Site Level connection"", async () => {
-    await (0, _jetpackConnect.doSiteLevelConnection)();
-  });
-  await (0, _reporter.testStep)(
-    ""Can assert that site is connected"",
-    async () => {
-      const jetpackPage = await _jetpack.default.init(page);
-
-      expect(await jetpackPage.isConnected()).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"broken","Thu Sep 23 16:54:06 UTC 2021","Thu Sep 23 16:54:07 UTC 2021","81","specs","","search.test.js","","","Can open and close overlay","
-### Test
-```typescript
-async () => {
-  await (0, _reporter.testStep)(
-    ""Can press enter to to open overlay"",
-    async () => {
-      await homepage.pressEnterInSearchInput();
-      await homepage.waitForSearchResponse();
-
-      expect(await homepage.isOverlayVisible()).toBeTruthy();
-    }
-  );
-  await (0, _reporter.testStep)(
-    ""Can click the cross to close the overlay"",
     async () => {
       await homepage.clickCrossToCloseOverlay();
       expect(await homepage.isOverlayVisible()).toBeFalsy();
