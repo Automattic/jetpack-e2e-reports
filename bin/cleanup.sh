@@ -23,11 +23,20 @@ fi
 mapfile -t permanentReports < <(jq -r '.permanent[]' "config.json")
 echo "Permanent reports: ${permanentReports[*]}"
 
-is_merged() {
+# get the last 100 PRs: https://api.github.com/repos/automattic/jetpack/pulls
+
+closedPrs=$(curl -s "https://api.github.com/repos/automattic/jetpack/pulls?state=closed&per_page=100" | jq '.[] | .number')
+openedPrs=$(curl -s "https://api.github.com/repos/automattic/jetpack/pulls?state=open&per_page=100" | jq '.[] | .number')
+
+is_closed() {
   pr=$(basename "$1")
 
   if [[ "${permanentReports[*]}" =~ ${pr} ]]; then
     state="not a PR"
+  elif [[ "${openedPrs[*]}" =~ ${pr} ]]; then
+    state="open"
+  elif [[ "${closedPrs[*]}" =~ ${pr} ]]; then
+      state="closed"
   else
     state=$(curl -s "https://api.github.com/repos/automattic/jetpack/pulls/$pr" | jq -r '.state')
   fi
@@ -105,7 +114,7 @@ ls -d docs/*/ | while read -r path; do
   last_update="$(git log -1 --format="%aD" -- "$path")"
   old_log_entries=$(git log --since "$DAYS days ago" -- "$path")
 
-  if is_merged "$path"; then
+  if is_closed "$path"; then
     # Remove the entire folder because PR is closed
     echo "Removing $path, pull request closed"
     rm -rf "$path"
