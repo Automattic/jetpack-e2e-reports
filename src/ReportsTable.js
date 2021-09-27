@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faCheck,
 	faCodeBranch,
+	faQuestion,
 	faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -79,7 +80,7 @@ export default class ReportsTable extends React.Component {
 		} );
 	}
 
-	renderReportLink( report, metadata, isFailed ) {
+	renderReportLink( report, metadata, isFailed, totalTests ) {
 		const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
 
 		const reportKey = report.name;
@@ -94,12 +95,19 @@ export default class ReportsTable extends React.Component {
 		const branchUrl = `https://github.com/Automattic/jetpack/tree/${ metadata.branch }`;
 		const prUrl = `https://github.com/Automattic/jetpack/pull/${ metadata.pr_number }`;
 
+		let statusIcon = faQuestion;
+		let statusClassName = 'warning';
+		if ( totalTests > 0 ) {
+			statusIcon = isFailed ? faTimes : faCheck;
+			statusClassName = isFailed ? 'failed' : 'passed';
+		}
+
 		return (
 			<ul className={ 'list-unstyled' }>
 				<li>
 					<FontAwesomeIcon
-						className={ isFailed ? 'failed' : 'passed' }
-						icon={ isFailed ? faTimes : faCheck }
+						className={ statusClassName }
+						icon={ statusIcon }
 					/>
 					&nbsp;
 					<a
@@ -190,11 +198,17 @@ export default class ReportsTable extends React.Component {
 		const reports = this.sortTable( sortBy, sortDirection );
 		return reports.map( ( report, id ) => {
 			const { statistic, metadata } = report; //destructuring
-			const isFailed = statistic.total !== statistic.passed + statistic.skipped;
+			const isFailed =
+				statistic.total !== statistic.passed + statistic.skipped;
 			return (
 				<tr key={ id }>
 					<td>
-						{ this.renderReportLink( report, metadata, isFailed ) }
+						{ this.renderReportLink(
+							report,
+							metadata,
+							isFailed,
+							statistic.total
+						) }
 					</td>
 					<td>{ this.renderResults( statistic ) }</td>
 					<td>{ this.renderMetadataCell( report ) }</td>
