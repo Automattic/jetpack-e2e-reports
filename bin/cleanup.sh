@@ -54,7 +54,12 @@ clean_tests() {
   testCasesPath="$1/report/data/test-cases"
 
   if [ ! -f "$historyFile" ]; then
-    echo "$historyFile cannot find history file. Skipping this dir."
+    echo "Cannot find expected history file $historyFile. Skipping cleaning this dir."
+    return
+  fi
+
+  if [ ! -d "$testCasesPath" ]; then
+    echo "Cannot find expected test cases dir $testCasesPath. Skipping cleaning this dir."
     return
   fi
 
