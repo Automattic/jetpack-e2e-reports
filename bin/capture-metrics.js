@@ -1,16 +1,13 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
-
 const reportDir = 'docs/master/report/';
+const metricsFile = 'docs/metrics.json';
 
-const metricsObj = JSON.parse( fs.readFileSync( `docs/metrics.json` ) );
-const runSummary = JSON.parse(
-	fs.readFileSync( `${ reportDir }/widgets/summary.json` )
-);
-
-delete runSummary.reportName;
-delete runSummary.testRuns;
-
+/**
+ * Pull metadata for the failed tests from data/test-cases/UID.json for each failed test,
+ *
+ * @return {Array} Array of objects of failed test cases.
+ */
 function getFailedTests() {
 	const suites = JSON.parse(
 		fs.readFileSync( `${ reportDir }/data/suites.json` )
@@ -18,7 +15,7 @@ function getFailedTests() {
 
 	const tests = suites.reduce( ( acc, fileResults ) => {
 		const fileTests = fileResults.children.map( ( ch ) => {
-			ch.file_name = fileResults.name;
+			ch.fileName = fileResults.name;
 			return ch;
 		} );
 		acc.push( ...fileTests );
@@ -28,7 +25,6 @@ function getFailedTests() {
 	const failedTests = tests.filter( ( t ) =>
 		[ 'failed', 'broken' ].includes( t.status )
 	);
-	console.log( JSON.stringify( tests ) );
 
 	return failedTests.map( ( t ) => {
 		const testCase = JSON.parse(
@@ -48,12 +44,45 @@ function getFailedTests() {
 	} );
 }
 
-const failedTests = getFailedTests();
+/**
+ * Check if two summary objects are the same, comparing by the start/stop timestampts
+ *
+ * @param {Object} lastRecord last record from Metrics file
+ * @param {Object} newRecord Run summary pulled from summary.json
+ * @return {boolean} whether two reports are identical
+ */
+function isDuplicateRecord( lastRecord, newRecord ) {
+	if ( ! lastRecord || ! lastRecord.time ) {
+		return false;
+	}
+	return (
+		lastRecord.time.start === newRecord.time.start &&
+		lastRecord.time.stop === newRecord.time.stop
+	);
+}
 
-metricsObj.stats.push( runSummary );
-metricsObj.failedTests.push( ...failedTests );
+function main() {
+	const metricsObj = JSON.parse( fs.readFileSync( metricsFile ) );
+	const runSummary = JSON.parse(
+		fs.readFileSync( `${ reportDir }/widgets/summary.json` )
+	);
 
-fs.writeFileSync(
-	path.resolve( 'docs/metrics.json' ),
-	JSON.stringify( metricsObj, null, 2 )
-);
+	if ( isDuplicateRecord( metricsObj.stats.at( -1 ), runSummary ) ) {
+		return;
+	}
+
+	delete runSummary.reportName;
+	delete runSummary.testRuns;
+
+	const failedTests = getFailedTests();
+
+	metricsObj.stats.push( runSummary );
+	metricsObj.failedTests.push( ...failedTests );
+
+	fs.writeFileSync(
+		path.resolve( metricsFile ),
+		JSON.stringify( metricsObj, null, 2 )
+	);
+}
+
+main();
