@@ -18,6 +18,7 @@ else
   git config --local user.email "$EMAIL"
   git add .
   git commit -m "$MESSAGE $(date +"%Y-%m-%dT%H:%M:%S%z")"
-  git pull
+  git fetch
+  git merge
   git push
 fi
