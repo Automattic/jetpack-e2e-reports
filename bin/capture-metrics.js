@@ -51,7 +51,7 @@ function getFailedTests() {
 const failedTests = getFailedTests();
 
 metricsObj.stats.push( runSummary );
-metricsObj.failed_tests.push( ...failedTests );
+metricsObj.failedTests.push( ...failedTests );
 
 fs.writeFileSync(
 	path.resolve( 'docs/metrics.json' ),
