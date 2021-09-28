@@ -18,6 +18,6 @@ else
   git config --local user.email "$EMAIL"
   git add .
   git commit -m "$MESSAGE $(date +"%Y-%m-%dT%H:%M:%S%z")"
-  git pull --rebase
+  git pull
   git push
 fi
