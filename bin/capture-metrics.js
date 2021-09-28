@@ -67,7 +67,12 @@ function main() {
 		fs.readFileSync( `${ reportDir }/widgets/summary.json` )
 	);
 
-	if ( isDuplicateRecord( metricsObj.stats.at( -1 ), runSummary ) ) {
+	if (
+		isDuplicateRecord(
+			metricsObj.stats[ metricsObj.stats.length - 1 ],
+			runSummary
+		)
+	) {
 		return;
 	}
 
