@@ -263,13 +263,6 @@ export default class ReportsTable extends React.Component {
 				</caption>
 				<thead>
 					<tr>
-						<th colSpan="3">
-							<h1 className={ 'display-4' }>
-								Jetpack e2e test reports
-							</h1>
-						</th>
-					</tr>
-					<tr>
 						<td colSpan="3" id={ 'sortButtons' }>
 							{ this.renderTableHeader(
 								this.updateSorting,
