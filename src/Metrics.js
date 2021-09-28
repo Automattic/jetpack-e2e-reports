@@ -89,10 +89,9 @@ export default class Metrics extends React.Component {
 
 	renderFailedTests() {
 		const failedTests = this.state.failedTests;
-		// error":{"statusMessage":"TimeoutError","statusTrace"
 		return failedTests.map( ( test, id ) => (
 			<div key={ id }>
-				{ test.file_name } { test.name } { test.error.statusMessage }{ ' ' }
+				{ test.fileName } { test.name } { test.error.statusMessage }{ ' ' }
 				{ test.error.statusTrace.substring( 20 ) }
 			</div>
 		) );
@@ -106,7 +105,6 @@ export default class Metrics extends React.Component {
 					height={ 300 }
 					data={ this.state.statsChartData }
 					margin={ { top: 5, right: 60, bottom: 5, left: 60 } }
-					// padding={ { top: 5, right: 20, bottom: 5, left: 20 } }
 				>
 					<CartesianGrid stroke="white" />
 					<XAxis dataKey="date" stroke="white" />
