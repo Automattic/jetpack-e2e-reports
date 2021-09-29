@@ -16,14 +16,18 @@ function NavBar( { activeNavbar, setActiveNavbar } ) {
 					<Nav.Link
 						href="#"
 						eventKey="0"
-						onSelect={ ( navbar ) => setActiveNavbar( navbar ) }
+						onSelect={ ( navbar ) =>
+							setActiveNavbar( parseInt( navbar ) )
+						}
 					>
 						Recent reports
 					</Nav.Link>
 					<Nav.Link
 						href="#"
 						eventKey="1"
-						onSelect={ ( navbar ) => setActiveNavbar( navbar ) }
+						onSelect={ ( navbar ) =>
+							setActiveNavbar( parseInt( navbar ) )
+						}
 					>
 						Metrics
 					</Nav.Link>
@@ -37,7 +41,7 @@ function AppContent( { activeNavbar } ) {
 	console.log( 'QQQQQQ', activeNavbar );
 	return (
 		<div className="App-content">
-			{ activeNavbar === '0' ? <ReportsTable /> : <Metrics /> }
+			{ activeNavbar === 0 ? <ReportsTable /> : <Metrics /> }
 		</div>
 	);
 }
