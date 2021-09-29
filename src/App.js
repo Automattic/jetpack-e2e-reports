@@ -1,17 +1,57 @@
+import React, { useState } from 'react';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import ReportsTable from './ReportsTable';
+import { Navbar, Container, Nav } from 'react-bootstrap';
+import Metrics from './Metrics';
 
-function reportsList() {
+function NavBar( { activeNavbar, setActiveNavbar } ) {
+	return (
+		<Navbar variant="dark" className="App-nav">
+			<Navbar.Brand href="#">Jetpack E2E Dashboard</Navbar.Brand>
+			<Navbar.Toggle aria-controls="basic-navbar-nav" />
+			<Navbar.Collapse id="basic-navbar-nav">
+				<Nav className="me-auto" activeKey={ activeNavbar }>
+					<Nav.Link
+						href="#"
+						eventKey="0"
+						onSelect={ ( navbar ) => setActiveNavbar( navbar ) }
+					>
+						Recent reports
+					</Nav.Link>
+					<Nav.Link
+						href="#"
+						eventKey="1"
+						onSelect={ ( navbar ) => setActiveNavbar( navbar ) }
+					>
+						Metrics
+					</Nav.Link>
+				</Nav>
+			</Navbar.Collapse>
+		</Navbar>
+	);
+}
+
+function AppContent( { activeNavbar } ) {
+	console.log( 'QQQQQQ', activeNavbar );
 	return (
 		<div className="App-content">
-			<ReportsTable />
+			{ activeNavbar === '0' ? <ReportsTable /> : <Metrics /> }
 		</div>
 	);
 }
 
-function header() {
-	return <header className="App-header">&nbsp;</header>;
+function Header( { activeNavbar, setActiveNavbar } ) {
+	return (
+		<div>
+			<header className="App-header">&nbsp;</header>
+			<NavBar
+				activeNavbar={ activeNavbar }
+				setActiveNavbar={ setActiveNavbar }
+			/>
+		</div>
+	);
 }
 
 function footer() {
@@ -39,12 +79,17 @@ function footer() {
 }
 
 function App() {
+	const [ activeNavbar, setActiveNavbar ] = useState( 0 );
+
 	return (
-		<div className="App">
-			{ header() }
-			{ reportsList() }
+		<Container fluid className="App">
+			<Header
+				activeNavbar={ activeNavbar }
+				setActiveNavbar={ setActiveNavbar }
+			/>
+			<AppContent activeNavbar={ activeNavbar } />
 			{ footer() }
-		</div>
+		</Container>
 	);
 }
 
