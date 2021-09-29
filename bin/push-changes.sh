@@ -18,7 +18,6 @@ else
   git config --local user.email "$EMAIL"
   git add .
   git commit -m "$MESSAGE $(date +"%Y-%m-%dT%H:%M:%S%z")"
-  git fetch origin "$GITHUB_REF"
-  git merge origin "$GITHUB_REF"
-  git push origin "$GITHUB_REF"
+  git pull --rebase
+  git push
 fi
