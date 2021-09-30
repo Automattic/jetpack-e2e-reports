@@ -64,7 +64,7 @@ export default class Metrics extends React.Component {
 			} )
 			.catch( console.log );
 
-		ReactGA.pageview( 'metrics' );
+		ReactGA.pageview( '/metrics' );
 	}
 
 	renderStatsSummary() {
