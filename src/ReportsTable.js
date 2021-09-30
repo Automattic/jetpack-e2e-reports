@@ -7,6 +7,7 @@ import {
 	faQuestion,
 	faTimes,
 } from '@fortawesome/free-solid-svg-icons';
+import ReactGA from 'react-ga';
 
 export default class ReportsTable extends React.Component {
 	constructor( props ) {
@@ -30,6 +31,7 @@ export default class ReportsTable extends React.Component {
 				this.setState( { data: jsonData } );
 			} )
 			.catch( console.log );
+		ReactGA.pageview( 'reports' );
 	}
 
 	updateSorting = ( sortBy, isSortAsc ) =>
@@ -115,6 +117,7 @@ export default class ReportsTable extends React.Component {
 						className="report-link"
 						target="_blank"
 						rel="noreferrer"
+						onClick={ () => ReactGA.pageview( report.name ) }
 					>
 						{ reportTitle }
 						<br />
