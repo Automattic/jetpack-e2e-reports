@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactGA from 'react-ga';
 
 import {
 	LineChart,
@@ -62,6 +63,8 @@ export default class Metrics extends React.Component {
 				this.parseStats();
 			} )
 			.catch( console.log );
+
+		ReactGA.pageview( 'metrics' );
 	}
 
 	renderStatsSummary() {

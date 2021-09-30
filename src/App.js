@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import ReactGA from 'react-ga';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import ReportsTable from './ReportsTable';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import Metrics from './Metrics';
+
+const TRACKING_ID = 'UA-208890082-1';
+ReactGA.initialize( TRACKING_ID );
 
 function NavBar( { activeNavbar, setActiveNavbar } ) {
 	return (
