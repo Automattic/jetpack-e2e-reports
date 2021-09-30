@@ -10,6 +10,11 @@ import Metrics from './Metrics';
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
 
+const linkOnSelect = ( setActiveNavbar, navbar ) => {
+	setActiveNavbar( navbar );
+	location.hash = navbar;
+};
+
 function NavBar( { activeNavbar, setActiveNavbar } ) {
 	return (
 		<Navbar variant="dark" className="App-nav">
@@ -18,19 +23,17 @@ function NavBar( { activeNavbar, setActiveNavbar } ) {
 			<Navbar.Collapse id="basic-navbar-nav">
 				<Nav className="me-auto" activeKey={ activeNavbar }>
 					<Nav.Link
-						href="#"
-						eventKey="0"
+						href="#reports"
 						onSelect={ ( navbar ) =>
-							setActiveNavbar( parseInt( navbar ) )
+							linkOnSelect( setActiveNavbar, navbar )
 						}
 					>
 						Recent reports
 					</Nav.Link>
 					<Nav.Link
-						href="#"
-						eventKey="1"
+						href="#metrics"
 						onSelect={ ( navbar ) =>
-							setActiveNavbar( parseInt( navbar ) )
+							linkOnSelect( setActiveNavbar, navbar )
 						}
 					>
 						Metrics
@@ -45,7 +48,7 @@ function AppContent( { activeNavbar } ) {
 	console.log( 'QQQQQQ', activeNavbar );
 	return (
 		<div className="App-content">
-			{ activeNavbar === 0 ? <ReportsTable /> : <Metrics /> }
+			{ activeNavbar === '#reports' ? <ReportsTable /> : <Metrics /> }
 		</div>
 	);
 }
@@ -87,7 +90,15 @@ function footer() {
 }
 
 function App() {
-	const [ activeNavbar, setActiveNavbar ] = useState( 0 );
+	const [ activeNavbar, setActiveNavbar ] = useState( '#reports' );
+	console.log( 'qqqq', location.hash, activeNavbar );
+	if (
+		location.hash &&
+		[ '#reports', '#metrics' ].includes( location.hash ) &&
+		activeNavbar !== location.hash
+	) {
+		setActiveNavbar( location.hash );
+	}
 
 	return (
 		<Container fluid className="App">
