@@ -31,7 +31,7 @@ export default class ReportsTable extends React.Component {
 				this.setState( { data: jsonData } );
 			} )
 			.catch( console.log );
-		ReactGA.pageview( 'reports' );
+		ReactGA.pageview( '/reports' );
 	}
 
 	updateSorting = ( sortBy, isSortAsc ) =>
@@ -117,7 +117,7 @@ export default class ReportsTable extends React.Component {
 						className="report-link"
 						target="_blank"
 						rel="noreferrer"
-						onClick={ () => ReactGA.pageview( report.name ) }
+						onClick={ () => ReactGA.pageview( '/' + report.name ) }
 					>
 						{ reportTitle }
 						<br />
