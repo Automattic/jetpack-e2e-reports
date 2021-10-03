@@ -1,38 +1,32 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"skipped","Sun Oct 03 00:08:34 UTC 2021","Sun Oct 03 00:08:34 UTC 2021","56","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Sun Oct 03 08:06:08 UTC 2021","Sun Oct 03 08:06:19 UTC 2021","11068","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
-  await (0, _prerequisites.prerequisitesBuilder)()
-    .withActiveModules([""wordads""])
-    .build();
   let blockId;
-  await (0, _reporter.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wordAds.default.name());
+  await (0, _reporter.testStep)(""Add a Pay with PayPal block"", async () => {
     blockId = await blockEditor.insertBlock(
-      _wordAds.default.name(),
-      _wordAds.default.title()
+      _simplePayments.default.name(),
+      _simplePayments.default.title()
     );
-    await blockEditor.selectPostTitle();
   });
   await (0, _reporter.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
+    ""Fill details of Pay with PayPal block"",
     async () => {
-      const adBlock = new _wordAds.default(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
+      const spBlock = new _simplePayments.default(blockId, page);
+      await spBlock.fillDetails();
     }
   );
   await (0, _reporter.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
     async () => {
-      await blockEditor.selectPostTitle();
+      await blockEditor.setTitle(""Pay with PayPal block"");
       await blockEditor.publishPost();
       await blockEditor.viewPost();
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wordAds.default)
+        await frontend.isRenderedBlockPresent(_simplePayments.default)
       ).toBeTruthy();
     }
   );
@@ -40,7 +34,7 @@ async () => {
 
 ```
 "
-"passed","Sun Oct 03 00:08:10 UTC 2021","Sun Oct 03 00:08:19 UTC 2021","8234","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Sun Oct 03 08:05:56 UTC 2021","Sun Oct 03 08:06:04 UTC 2021","8335","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -72,7 +66,7 @@ async () => {
 
 ```
 "
-"passed","Sun Oct 03 00:08:59 UTC 2021","Sun Oct 03 00:09:10 UTC 2021","11215","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Sun Oct 03 08:06:40 UTC 2021","Sun Oct 03 08:06:52 UTC 2021","11636","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -112,7 +106,7 @@ async () => {
 
 ```
 "
-"passed","Sun Oct 03 00:08:46 UTC 2021","Sun Oct 03 00:08:55 UTC 2021","8900","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Sun Oct 03 08:06:28 UTC 2021","Sun Oct 03 08:06:37 UTC 2021","8500","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -150,34 +144,40 @@ async () => {
 
 ```
 "
-"passed","Sun Oct 03 00:08:23 UTC 2021","Sun Oct 03 00:08:34 UTC 2021","10431","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"skipped","Sun Oct 03 08:06:19 UTC 2021","Sun Oct 03 08:06:19 UTC 2021","78","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
+  await (0, _prerequisites.prerequisitesBuilder)()
+    .withActiveModules([""wordads""])
+    .build();
   let blockId;
-  await (0, _reporter.testStep)(""Add a Pay with PayPal block"", async () => {
+  await (0, _reporter.testStep)(""Add a WordAds block"", async () => {
+    await blockEditor.waitForAvailableBlock(_wordAds.default.name());
     blockId = await blockEditor.insertBlock(
-      _simplePayments.default.name(),
-      _simplePayments.default.title()
+      _wordAds.default.name(),
+      _wordAds.default.title()
     );
+    await blockEditor.selectPostTitle();
   });
   await (0, _reporter.testStep)(
-    ""Fill details of Pay with PayPal block"",
+    ""Switch to Wide Skyscraper ad format"",
     async () => {
-      const spBlock = new _simplePayments.default(blockId, page);
-      await spBlock.fillDetails();
+      const adBlock = new _wordAds.default(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
     }
   );
   await (0, _reporter.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    ""Publish a post and assert that WordAds block is rendered"",
     async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
+      await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
       await blockEditor.viewPost();
       const frontend = await _postFrontend.default.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_simplePayments.default)
+        await frontend.isRenderedBlockPresent(_wordAds.default)
       ).toBeTruthy();
     }
   );
