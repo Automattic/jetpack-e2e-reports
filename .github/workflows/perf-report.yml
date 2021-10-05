@@ -3,6 +3,17 @@ name: Performance Report
 on:
   repository_dispatch:
     types: [block-perf]
+
+  workflow_dispatch:
+    inputs:
+      runId:
+        description: 'Run ID'
+        required: true
+        default: '986899084'
+      repository:
+        description: 'Repository'
+        required: true
+        default: 'automattic/jetpack'
 jobs:
   report:
     name: "Create new test report"
@@ -22,11 +33,7 @@ jobs:
 
           if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
             echo "RUN_ID=${{ github.event.inputs.runId }}" >> $GITHUB_ENV
-            echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
-            echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
-            echo "REPORT_NAME=${{ github.event.inputs.report_name }}" >> $GITHUB_ENV
             echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
           else
             echo "Received event '${{ github.event.action }}'"
           echo $CLIENT_PAYLOAD
@@ -58,7 +65,7 @@ jobs:
         env:
           RESULTS_PATH: ../downloads
           SITE_ROOT: docs
-        run: ls -la $RESULTS_PATH
+        run: cat $RESULTS_PATH/test-output-block-perf
 
       # - name: Push changes
       #   env:
