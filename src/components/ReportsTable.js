@@ -10,46 +10,39 @@ import {
 import ReactGA from 'react-ga';
 
 export default class ReportsTable extends React.Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			data: { reports: [] },
-			sortBy: 'lastUpdate',
-			isSortAsc: false,
-		};
-	}
+	state = {
+		reports: this.props.reports,
+		sort: { by: 'lastUpdate', isAsc: false },
+	};
 
 	componentDidMount() {
-		fetch( './summary.json', {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
-				this.setState( { data: jsonData } );
-			} )
-			.catch( console.log );
-		ReactGA.pageview( '/reports' );
+		this.sortTable( this.state.sort.by, this.state.sort.isAsc );
 	}
 
-	updateSorting = ( sortBy, isSortAsc ) =>
-		this.setState( { sortBy, isSortAsc } );
+	static getDerivedStateFromProps( props, state ) {
+		if ( props.reports !== state.reports ) {
+			return {
+				reports: props.reports,
+			};
+		}
+		return null;
+	}
 
-	sortTable( sortBy, isSortAsc ) {
-		switch ( sortBy ) {
+	sortTable( by, isAsc ) {
+		this.setState( { sort: { by, isAsc } } );
+
+		switch ( by ) {
 			case 'name':
-				return this.sortAlphabetically( isSortAsc );
+				return this.sortByName( isAsc );
 			case 'lastUpdate':
-				return this.sortByDate( isSortAsc );
+				return this.sortByDate( isAsc );
 			case 'statistic':
-				return this.sortByStatus( isSortAsc );
+				return this.sortByStatus( isAsc );
 		}
 	}
 
 	sortByDate( isSortAsc ) {
-		return this.state.data.reports.sort( ( r1, r2 ) => {
+		return this.state.reports.sort( ( r1, r2 ) => {
 			if ( isSortAsc ) {
 				return (
 					Date.parse( r1.lastUpdate ) - Date.parse( r2.lastUpdate )
@@ -59,14 +52,14 @@ export default class ReportsTable extends React.Component {
 		} );
 	}
 
-	sortAlphabetically( isSortAsc ) {
-		return this.state.data.reports.sort( ( r1, r2 ) =>
+	sortByName( isSortAsc ) {
+		return this.state.reports.sort( ( r1, r2 ) =>
 			isSortAsc ? r1.name - r2.name : r2.name - r1.name
 		);
 	}
 
 	sortByStatus( isSortAsc ) {
-		return this.state.data.reports.sort( ( r1, r2 ) => {
+		return this.state.reports.sort( ( r1, r2 ) => {
 			if ( isSortAsc ) {
 				return (
 					r1.statistic.failed +
@@ -82,15 +75,86 @@ export default class ReportsTable extends React.Component {
 		} );
 	}
 
-	renderReportLink( report, metadata, isFailed, totalTests ) {
+	getTableHeader() {
+		const head = {
+			name: 'report id',
+			statistic: 'no of failures',
+			lastUpdate: 'most recent',
+		};
+
+		const klass = this.state.sort.isAsc ? 'sort-by-asc' : 'sort-by-desc';
+		let sortButtons;
+
+		if ( this.props.options.sortButtons ) {
+			sortButtons = Object.keys( head ).map( ( key, index ) => {
+				return (
+					<Button
+						variant="dark"
+						key={ index }
+						onClick={ () => {
+							this.sortTable( key, ! this.state.sort.isAsc );
+						} }
+					>
+						{ head[ key ].toUpperCase() }
+						{
+							<span
+								className={
+									this.state.sort.by === key ? klass : ''
+								}
+							/>
+						}
+					</Button>
+				);
+			} );
+		}
+
+		let reportCount;
+		if ( this.props.reportCount ) {
+			reportCount = `${ this.state.reports.length } reports`;
+		}
+
+		return (
+			<thead>
+				<tr className={ 'headerRow' }>
+					<td colSpan="3" className={ 'sortButtons' }>
+						<div className={ 'd-flex justify-content-between' }>
+							<div>{ reportCount }</div>
+							<div>{ sortButtons }</div>
+						</div>
+					</td>
+				</tr>
+			</thead>
+		);
+	}
+
+	getReportRow( report, id ) {
+		const { statistic, metadata } = report; //destructuring
+		const isFailed =
+			statistic.total !== statistic.passed + statistic.skipped;
+		return (
+			<tr key={ id }>
+				<td className={ 'reportNameCell' }>
+					{ this.getReportLinkCell(
+						report,
+						metadata,
+						isFailed,
+						statistic.total
+					) }
+				</td>
+				<td>{ this.getTestResultsCell( statistic ) }</td>
+				<td>{ this.getMetadataCell( report ) }</td>
+			</tr>
+		);
+	}
+
+	getReportLinkCell( report, metadata, isFailed, totalTests ) {
 		const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
 
 		const reportKey = report.name;
 		let reportTitle = report.name;
 
 		if ( metadata.pr_title ) {
-			let prNumber = '';
-			prNumber = `(#${ metadata.pr_number })`;
+			const prNumber = `(#${ metadata.pr_number })`;
 			reportTitle = `${ metadata.pr_title } ${ prNumber }`;
 		}
 
@@ -152,7 +216,7 @@ export default class ReportsTable extends React.Component {
 		);
 	}
 
-	renderResults( statistic ) {
+	getTestResultsCell( statistic ) {
 		const counts = [ 'failed', 'passed', 'total' ].map( ( label, id ) => {
 			const count =
 				label === 'failed'
@@ -168,7 +232,7 @@ export default class ReportsTable extends React.Component {
 		return <div>{ counts }</div>;
 	}
 
-	renderMetadataCell( report ) {
+	getMetadataCell( report ) {
 		const runUrl = `https://github.com/Automattic/jetpack/actions/runs/${ report.metadata.run_id }`;
 		return (
 			<ul className={ 'list-unstyled' }>
@@ -197,61 +261,6 @@ export default class ReportsTable extends React.Component {
 		);
 	}
 
-	renderTableData( sortBy, sortDirection ) {
-		const reports = this.sortTable( sortBy, sortDirection );
-		return reports.map( ( report, id ) => {
-			const { statistic, metadata } = report; //destructuring
-			const isFailed =
-				statistic.total !== statistic.passed + statistic.skipped;
-			return (
-				<tr key={ id }>
-					<td>
-						{ this.renderReportLink(
-							report,
-							metadata,
-							isFailed,
-							statistic.total
-						) }
-					</td>
-					<td>{ this.renderResults( statistic ) }</td>
-					<td>{ this.renderMetadataCell( report ) }</td>
-				</tr>
-			);
-		} );
-	}
-
-	renderTableHeader( updateSorting, sortBy, sortDirection ) {
-		const head = {
-			name: 'report id',
-			statistic: 'results',
-			lastUpdate: 'most recent',
-		};
-
-		const klass = sortDirection ? 'sort-by-asc' : 'sort-by-desc';
-
-		const sortButtons = Object.keys( head ).map( ( key, index ) => {
-			return (
-				<Button
-					variant="dark"
-					key={ index }
-					onClick={ () => {
-						updateSorting( key, ! sortDirection );
-					} }
-				>
-					{ head[ key ].toUpperCase() }
-					<span className={ sortBy === key ? klass : '' } />
-				</Button>
-			);
-		} );
-
-		return (
-			<div className={ 'd-flex justify-content-between' }>
-				<div>{ this.state.data.reportsCount } reports</div>
-				<div>{ sortButtons }</div>
-			</div>
-		);
-	}
-
 	render() {
 		return (
 			<Table
@@ -259,28 +268,19 @@ export default class ReportsTable extends React.Component {
 				responsive="sm"
 				size="sm"
 				variant="dark"
-				id="reportsTable"
+				className="reportsTable"
 			>
-				<caption>
-					<small>docs size: { this.state.data.docsSize }</small>
-				</caption>
-				<thead>
-					<tr>
-						<td colSpan="3" id={ 'sortButtons' }>
-							{ this.renderTableHeader(
-								this.updateSorting,
-								this.state.sortBy,
-								this.state.isSortAsc
-							) }
-						</td>
-					</tr>
-				</thead>
+				{ this.getTableHeader() }
 				<tbody>
-					{ this.renderTableData(
-						this.state.sortBy,
-						this.state.isSortAsc
+					{ this.state.reports.map( ( report, id ) =>
+						this.getReportRow( report, id )
 					) }
 				</tbody>
+				<tfoot>
+					<tr>
+						<td colSpan={ 3 } />
+					</tr>
+				</tfoot>
 			</Table>
 		);
 	}

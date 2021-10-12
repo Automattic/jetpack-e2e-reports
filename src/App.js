@@ -3,8 +3,8 @@ import ReactGA from 'react-ga';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import ReportsTable from './ReportsTable';
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import Reports from './Reports';
 import Metrics from './Metrics';
 
 const TRACKING_ID = 'UA-208890082-1';
@@ -48,7 +48,7 @@ function AppContent( { activeNavbar } ) {
 	console.log( 'QQQQQQ', activeNavbar );
 	return (
 		<div className="App-content">
-			{ activeNavbar === '#reports' ? <ReportsTable /> : <Metrics /> }
+			{ activeNavbar === '#reports' ? <Reports /> : <Metrics /> }
 		</div>
 	);
 }
