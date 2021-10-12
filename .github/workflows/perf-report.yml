@@ -42,13 +42,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Wait for artifacts to be available
         run: ./bin/wait-for-artifacts.sh
 
@@ -61,15 +54,14 @@ jobs:
           run_id: ${{ env.RUN_ID }}
           path: ../downloads
 
-      - name: Generate new test report
+      - name: Generate performance report
         env:
           RESULTS_PATH: ../downloads
-          SITE_ROOT: docs
         run: |
           ls -la $RESULTS_PATH/test-output-block-perf
-          cat $RESULTS_PATH/test-output-block-perf
+          node ./bin/generate-perf-report.js
 
-      # - name: Push changes
-      #   env:
-      #     MESSAGE: "New test report"
-      #   run: ./bin/push-changes.sh
+      - name: Push changes
+        env:
+          MESSAGE: "New performance report"
+        run: ./bin/push-changes.sh
