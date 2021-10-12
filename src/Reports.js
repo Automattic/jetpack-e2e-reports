@@ -7,9 +7,10 @@ export default class Reports extends React.Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
-			data: { reports: [], pinnedReports: [], docsSize: undefined },
-			sortBy: 'lastUpdate',
-			isSortAsc: false,
+			reports: [],
+			pinnedReports: [],
+			docsSize: undefined,
+			reportsCount: undefined,
 		};
 	}
 
@@ -34,11 +35,10 @@ export default class Reports extends React.Component {
 				}
 
 				this.setState( {
-					data: {
-						reports: prReports.reports,
-						pinnedReports: pinnedReports.reports,
-						docsSize: jsonData.docsSize,
-					},
+					reports: prReports.reports,
+					pinnedReports: pinnedReports.reports,
+					docsSize: jsonData.docsSize,
+					reportsCount: jsonData.reportsCount,
 				} );
 			} )
 			.catch( console.log );
@@ -48,21 +48,26 @@ export default class Reports extends React.Component {
 	render() {
 		return (
 			<div>
+				<div className={ 'reports-header' }>
+					{ this.state.reportsCount } reports
+				</div>
 				<ReportsTable
-					reports={ this.state.data.pinnedReports }
+					reports={ this.state.pinnedReports }
 					options={ {
 						reportCount: false,
 						sortButtons: false,
 					} }
 				/>
 				<ReportsTable
-					reports={ this.state.data.reports }
+					reports={ this.state.reports }
 					options={ {
 						reportCount: false,
 						sortButtons: true,
 					} }
 				/>
-				<small>docs size: { this.state.data.docsSize }</small>
+				<small className={ 'footnote' }>
+					docs size: { this.state.docsSize }
+				</small>
 			</div>
 		);
 	}
