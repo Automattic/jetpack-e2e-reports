@@ -20,7 +20,7 @@ if [[ -z "$DAYS" ]]; then
   exit 1
 fi
 
-mapfile -t permanentReports < <(jq -r '.permanent[]' "src/config.json")
+mapfile -t permanentReports < <(jq -r '.permanent[]' "./src/config.json")
 echo "Permanent reports: ${permanentReports[*]}"
 
 # get the last 100 PRs: https://api.github.com/repos/automattic/jetpack/pulls
