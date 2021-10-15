@@ -2,7 +2,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
 
-const excluded = require( '../config.json' ).ignore;
+const excluded = require( '..src/config.json' ).ignore;
 
 const json = { reports: [] };
 
