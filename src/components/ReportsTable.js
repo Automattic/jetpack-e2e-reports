@@ -23,6 +23,7 @@ export default class ReportsTable extends React.Component {
 		if ( props.reports !== state.reports ) {
 			return {
 				reports: props.reports,
+				sort: { by: 'lastUpdate', isAsc: false },
 			};
 		}
 		return null;
