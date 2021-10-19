@@ -11,6 +11,7 @@ export default class Reports extends React.Component {
 			pinnedReports: [],
 			docsSize: undefined,
 			reportsCount: undefined,
+			isDataFetched: false,
 		};
 	}
 
@@ -39,6 +40,7 @@ export default class Reports extends React.Component {
 					pinnedReports: pinnedReports.reports,
 					docsSize: jsonData.docsSize,
 					reportsCount: jsonData.reportsCount,
+					isDataFetched: true,
 				} );
 			} )
 			.catch( console.log );
@@ -46,6 +48,7 @@ export default class Reports extends React.Component {
 	}
 
 	render() {
+		if ( ! this.state.isDataFetched ) return null;
 		return (
 			<div>
 				<div className={ 'reports-header' }>

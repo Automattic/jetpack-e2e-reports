@@ -19,16 +19,6 @@ export default class ReportsTable extends React.Component {
 		this.sortTable( this.state.sort.by, this.state.sort.isAsc );
 	}
 
-	static getDerivedStateFromProps( props, state ) {
-		if ( props.reports !== state.reports ) {
-			return {
-				reports: props.reports,
-				sort: { by: 'lastUpdate', isAsc: false },
-			};
-		}
-		return null;
-	}
-
 	sortTable( by, isAsc ) {
 		this.setState( { sort: { by, isAsc } } );
 
