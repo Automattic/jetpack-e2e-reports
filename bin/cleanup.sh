@@ -138,6 +138,17 @@ ls -d docs/*/ | while read -r path; do
     # Remove the entire folder because it was unchanged since $DAYS days ago
     echo "Removing $path, hasn't been updated in the last $DAYS days"
     rm -rf "$path"
+  else
+    # Folder was recently updated, we should check its content and remove old results
+    echo "Checking $path for old files"
+    initial_file_count=$(find "$path" -type f | wc -l)
+
+    clean_tests "$path"
+
+    final_count=$(find "$path" -type f | wc -l)
+    diff=$((initial_file_count - final_count))
+
+    echo -e "\t$diff files removed from $path"
   fi
 
   echo
