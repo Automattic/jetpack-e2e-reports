@@ -61,8 +61,8 @@ is_closed() {
 }
 
 is_old() {
-  cleanup_date=$(gdate --date="-${DAYS} day" +%Y-%m-%d)
-  last_update=$(gdate --date="$(jq -r '.updated_on' "$1/metadata.json")" +%Y-%m-%d)
+  cleanup_date=$(date --date="-${DAYS} day" +%Y-%m-%d)
+  last_update=$(date --date="$(jq -r '.updated_on' "$1/metadata.json")" +%Y-%m-%d)
 
   echo "Last updated in $last_update"
   [[ $cleanup_date > $last_update ]]
