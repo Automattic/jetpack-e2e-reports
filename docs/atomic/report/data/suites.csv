@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Thu Oct 21 12:05:42 UTC 2021","Thu Oct 21 12:05:50 UTC 2021","7440","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Thu Oct 21 16:16:57 UTC 2021","Thu Oct 21 16:17:06 UTC 2021","8595","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -37,7 +37,7 @@ async () => {
 
 ```
 "
-"passed","Thu Oct 21 12:05:04 UTC 2021","Thu Oct 21 12:05:13 UTC 2021","9039","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Thu Oct 21 16:16:21 UTC 2021","Thu Oct 21 16:16:30 UTC 2021","8977","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -69,7 +69,7 @@ async () => {
 
 ```
 "
-"passed","Thu Oct 21 12:05:18 UTC 2021","Thu Oct 21 12:05:26 UTC 2021","7735","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Thu Oct 21 16:16:36 UTC 2021","Thu Oct 21 16:16:47 UTC 2021","11187","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
@@ -104,46 +104,7 @@ async () => {
 
 ```
 "
-"skipped","Thu Oct 21 12:05:26 UTC 2021","Thu Oct 21 12:05:26 UTC 2021","48","specs","","pro-blocks.test.js","","","WordAds block","
-### Test
-```typescript
-async () => {
-  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
-  let blockId;
-  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.WordAdsBlock.name(),
-      _wpAdmin.WordAdsBlock.title()
-    );
-    await blockEditor.selectPostTitle();
-  });
-  await (0, _reporters.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
-    async () => {
-      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Thu Oct 21 12:05:53 UTC 2021","Thu Oct 21 12:06:04 UTC 2021","11007","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Thu Oct 21 16:17:13 UTC 2021","Thu Oct 21 16:17:26 UTC 2021","12937","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -180,6 +141,45 @@ async () => {
         await frontend.isRenderedBlockPresent(_wpAdmin.EventbriteBlock, {
           eventId,
         })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"skipped","Thu Oct 21 16:16:47 UTC 2021","Thu Oct 21 16:16:47 UTC 2021","78","specs","","pro-blocks.test.js","","","WordAds block","
+### Test
+```typescript
+async () => {
+  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
+  let blockId;
+  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
+    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.WordAdsBlock.name(),
+      _wpAdmin.WordAdsBlock.title()
+    );
+    await blockEditor.selectPostTitle();
+  });
+  await (0, _reporters.testStep)(
+    ""Switch to Wide Skyscraper ad format"",
+    async () => {
+      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that WordAds block is rendered"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
       ).toBeTruthy();
     }
   );
