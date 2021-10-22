@@ -20,8 +20,22 @@ if [[ -z "$DAYS" ]]; then
   exit 1
 fi
 
-mapfile -t permanentReports < <(jq -r '.permanent[]' "./src/config.json")
+echo "Cleaning up reports for closed PRs or older than $DAYS days"
+echo
+
+script_path=$(
+  cd "$(dirname "${BASH_SOURCE[0]}")" || return
+  pwd -P
+)
+
+mapfile -t permanentReports < <(jq -r '.permanent[]' "$script_path/../src/config.json")
 echo "Permanent reports: ${permanentReports[*]}"
+
+# Read the ignore list from config and append "docs" to each folder in list to have a complete path
+mapfile -t ignoreList < <(jq -r '.ignore[]' "$script_path/../src/config.json")
+ignoreList=( "${ignoreList[@]/#/docs/}" )
+echo "Ignore list: ${ignoreList[*]}"
+echo
 
 # get the last 100 PRs: https://api.github.com/repos/automattic/jetpack/pulls
 
@@ -46,8 +60,13 @@ is_closed() {
   [ "$state" == "closed" ]
 }
 
-echo "Cleaning up reports for closed PRs or older than $DAYS days"
-echo
+is_old() {
+  cleanup_date=$(date --date="-${DAYS} day" +%Y-%m-%d)
+  last_update=$(date --date="$(jq -r '.updated_on' "$1/metadata.json")" +%Y-%m-%d)
+
+  echo "Last updated in $last_update"
+  [[ $cleanup_date > $last_update ]]
+}
 
 clean_tests() {
   historyFile="$1/report/history/history.json"
@@ -99,11 +118,6 @@ clean_attachments() {
   done
 }
 
-# Read the ignore list from config and append "docs" to each folder in list to have a complete path
-mapfile -t ignoreList < <(jq -r '.ignore[]' "config.json")
-ignoreList=( "${ignoreList[@]/#/docs/}" )
-echo "Ignore list: ${ignoreList[*]}"
-
 # Go through each sub-folder of `docs` folder
 ls -d docs/*/ | while read -r path; do
   # Remove the last backslash in path
@@ -116,20 +130,17 @@ ls -d docs/*/ | while read -r path; do
     continue
   fi
 
-  last_update="$(git log -1 --format="%aD" -- "$path")"
-  old_log_entries=$(git log --since "$DAYS days ago" -- "$path")
-
   if is_closed "$path"; then
     # Remove the entire folder because PR is closed
     echo "Removing $path, pull request closed"
     rm -rf "$path"
-  elif [ "$old_log_entries" == "" ]; then
+  elif is_old "$path"; then
     # Remove the entire folder because it was unchanged since $DAYS days ago
-    echo "Removing $path, last updated in $last_update"
+    echo "Removing $path, hasn't been updated in the last $DAYS days"
     rm -rf "$path"
   else
     # Folder was recently updated, we should check its content and remove old results
-    echo "Checking $path, last updated in $last_update"
+    echo "Checking $path for old files"
     initial_file_count=$(find "$path" -type f | wc -l)
 
     clean_tests "$path"
@@ -139,5 +150,6 @@ ls -d docs/*/ | while read -r path; do
 
     echo -e "\t$diff files removed from $path"
   fi
+
   echo
 done
