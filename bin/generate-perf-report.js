@@ -15,7 +15,7 @@ function calculateAverageFor( file ) {
 	const contents = JSON.parse( fs.readFileSync( file ) );
 
 	return Object.entries( contents ).reduce( ( prev, [ key, arr ] ) => {
-		const average = arr.reduce( ( p, v ) => p + v );
+		const average = arr.reduce( ( p, v ) => p + v ) / arr.length;
 		prev[ key ] = Math.round( average * 100 ) / 100;
 		return prev;
 	}, {} );
