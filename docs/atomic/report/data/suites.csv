@@ -1,5 +1,43 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Fri Oct 22 16:05:36 UTC 2021","Fri Oct 22 16:05:48 UTC 2021","11648","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Fri Oct 22 20:04:58 UTC 2021","Fri Oct 22 20:05:04 UTC 2021","6932","specs","","free-blocks.test.js","","","Pinterest block","
+### Test
+```typescript
+async () => {
+  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+
+  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
+    const blockId = await blockEditor.insertBlock(
+      _wpAdmin.PinterestBlock.name(),
+      _wpAdmin.PinterestBlock.title()
+    );
+    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
+    await pinterestBlock.addEmbed();
+  });
+  await (0, _reporters.testStep)(
+    ""Publish a post with a Pinterest block"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Can assert that Pinterest block is rendered"",
+    async () => {
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
+          pinId,
+        })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Fri Oct 22 20:05:08 UTC 2021","Fri Oct 22 20:05:17 UTC 2021","9551","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -43,7 +81,7 @@ async () => {
 
 ```
 "
-"skipped","Fri Oct 22 16:05:10 UTC 2021","Fri Oct 22 16:05:10 UTC 2021","72","specs","","pro-blocks.test.js","","","WordAds block","
+"skipped","Fri Oct 22 20:04:44 UTC 2021","Fri Oct 22 20:04:44 UTC 2021","51","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -82,7 +120,7 @@ async () => {
 
 ```
 "
-"passed","Fri Oct 22 16:05:00 UTC 2021","Fri Oct 22 16:05:10 UTC 2021","9880","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Fri Oct 22 20:04:35 UTC 2021","Fri Oct 22 20:04:44 UTC 2021","8580","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
@@ -117,7 +155,7 @@ async () => {
 
 ```
 "
-"passed","Fri Oct 22 16:04:47 UTC 2021","Fri Oct 22 16:04:55 UTC 2021","7655","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Fri Oct 22 20:04:24 UTC 2021","Fri Oct 22 20:04:32 UTC 2021","7070","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -142,44 +180,6 @@ async () => {
 
       expect(
         await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Fri Oct 22 16:05:25 UTC 2021","Fri Oct 22 16:05:32 UTC 2021","7566","specs","","free-blocks.test.js","","","Pinterest block","
-### Test
-```typescript
-async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
-
-  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
-    const blockId = await blockEditor.insertBlock(
-      _wpAdmin.PinterestBlock.name(),
-      _wpAdmin.PinterestBlock.title()
-    );
-    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
-    await pinterestBlock.addEmbed();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post with a Pinterest block"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that Pinterest block is rendered"",
-    async () => {
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
-          pinId,
-        })
       ).toBeTruthy();
     }
   );
