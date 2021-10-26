@@ -1,0 +1,406 @@
+{
+  "uid" : "a0624e81f31d9b21",
+  "name" : "Recommendations (Jetpack Assistant)",
+  "fullName" : "Recommendations (Jetpack Assistant)",
+  "historyId" : "6acbca09fe63fb0db4bf908821bc38aa",
+  "time" : {
+    "start" : 1635266113469,
+    "stop" : 1635266132749,
+    "duration" : 19280
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  let recommendationsPage;\n  await (0, _reporters.testStep)(\n    \"Navigate to the Recommendations module\",\n    async () => {\n      recommendationsPage = await _wpAdmin.RecommendationsPage.visit(page);\n      const isPageVisible =\n        await recommendationsPage.areSiteTypeQuestionsVisible();\n\n      expect(isPageVisible).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-type\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Check Personal and Other checkboxes\",\n    async () => {\n      await recommendationsPage.checkPersonalSiteType();\n      await recommendationsPage.checkOtherSiteType();\n      expect(\n        await recommendationsPage.isPersonalSiteTypeChecked()\n      ).toBeTruthy();\n      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();\n      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();\n      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Save answers and continue to the Monitor step\",\n    async () => {\n      await recommendationsPage.saveSiteTypeAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isMonitorStep =\n        await recommendationsPage.isEnableMonitoringButtonVisible();\n      expect(isMonitorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"monitor\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Enable Monitoring and continue to Related Post step\",\n    async () => {\n      await recommendationsPage.enableMonitoringAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isRelatedPostsStep =\n        await recommendationsPage.isEnableRelatedPostsButtonVisible();\n      expect(isRelatedPostsStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"related-posts\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Enable Related Posts and continue to Creative Mail step\",\n    async () => {\n      await recommendationsPage.enableRelatedPostsAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isCreativeMailStep =\n        await recommendationsPage.isInstallCreativeMailButtonVisible();\n      expect(isCreativeMailStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"creative-mail\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Skip Creative Mail and continue to Site Accelerator\",\n    async () => {\n      await recommendationsPage.skipCreativeMailAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSiteAcceleratorStep =\n        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();\n      expect(isSiteAcceleratorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-accelerator\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Skip Site Accelerator and continue to Summary\",\n    async () => {\n      await recommendationsPage.skipSiteAcceleratorAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSummaryContent =\n        await recommendationsPage.isSummaryContentVisible();\n      const isSummarySidebar =\n        await recommendationsPage.isSummarySidebarVisible();\n      expect(isSummaryContent && isSummarySidebar).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"summary\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Verify Monitoring and Related Posts are enabled\",\n    async () => {\n      const isMonitoringFeatureEnabled =\n        await recommendationsPage.isMonitoringFeatureEnabled();\n      const isRelatedPostsFeatureEnabled =\n        await recommendationsPage.isRelatedPostsFeatureEnabled();\n      expect(\n        isMonitoringFeatureEnabled && isRelatedPostsFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Verify Creative Mail and Site Accelerator are disabled\",\n    async () => {\n      const isCreativeMailFeatureEnabled =\n        await recommendationsPage.isCreativeMailFeatureEnabled();\n      const isSiteAcceleratorFeatureEnabled =\n        await recommendationsPage.isSiteAcceleratorFeatureEnabled();\n      expect(\n        isCreativeMailFeatureEnabled && isSiteAcceleratorFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  let recommendationsPage;\n  await (0, _reporters.testStep)(\n    &quot;Navigate to the Recommendations module&quot;,\n    async () =&gt; {\n      recommendationsPage = await _wpAdmin.RecommendationsPage.visit(page);\n      const isPageVisible =\n        await recommendationsPage.areSiteTypeQuestionsVisible();\n\n      expect(isPageVisible).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;site-type&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Check Personal and Other checkboxes&quot;,\n    async () =&gt; {\n      await recommendationsPage.checkPersonalSiteType();\n      await recommendationsPage.checkOtherSiteType();\n      expect(\n        await recommendationsPage.isPersonalSiteTypeChecked()\n      ).toBeTruthy();\n      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();\n      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();\n      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Save answers and continue to the Monitor step&quot;,\n    async () =&gt; {\n      await recommendationsPage.saveSiteTypeAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isMonitorStep =\n        await recommendationsPage.isEnableMonitoringButtonVisible();\n      expect(isMonitorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;monitor&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Enable Monitoring and continue to Related Post step&quot;,\n    async () =&gt; {\n      await recommendationsPage.enableMonitoringAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isRelatedPostsStep =\n        await recommendationsPage.isEnableRelatedPostsButtonVisible();\n      expect(isRelatedPostsStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;related-posts&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Enable Related Posts and continue to Creative Mail step&quot;,\n    async () =&gt; {\n      await recommendationsPage.enableRelatedPostsAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isCreativeMailStep =\n        await recommendationsPage.isInstallCreativeMailButtonVisible();\n      expect(isCreativeMailStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;creative-mail&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Skip Creative Mail and continue to Site Accelerator&quot;,\n    async () =&gt; {\n      await recommendationsPage.skipCreativeMailAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSiteAcceleratorStep =\n        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();\n      expect(isSiteAcceleratorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;site-accelerator&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Skip Site Accelerator and continue to Summary&quot;,\n    async () =&gt; {\n      await recommendationsPage.skipSiteAcceleratorAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSummaryContent =\n        await recommendationsPage.isSummaryContentVisible();\n      const isSummarySidebar =\n        await recommendationsPage.isSummarySidebarVisible();\n      expect(isSummaryContent &amp;&amp; isSummarySidebar).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(&quot;summary&quot;)\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Verify Monitoring and Related Posts are enabled&quot;,\n    async () =&gt; {\n      const isMonitoringFeatureEnabled =\n        await recommendationsPage.isMonitoringFeatureEnabled();\n      const isRelatedPostsFeatureEnabled =\n        await recommendationsPage.isRelatedPostsFeatureEnabled();\n      expect(\n        isMonitoringFeatureEnabled &amp;&amp; isRelatedPostsFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Verify Creative Mail and Site Accelerator are disabled&quot;,\n    async () =&gt; {\n      const isCreativeMailFeatureEnabled =\n        await recommendationsPage.isCreativeMailFeatureEnabled();\n      const isSiteAcceleratorFeatureEnabled =\n        await recommendationsPage.isSiteAcceleratorFeatureEnabled();\n      expect(\n        isCreativeMailFeatureEnabled &amp;&amp; isSiteAcceleratorFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "description" : "\n### Test\n```typescript\nasync () => {\n  let recommendationsPage;\n  await (0, _reporters.testStep)(\n    \"Navigate to the Recommendations module\",\n    async () => {\n      recommendationsPage = await _wpAdmin.RecommendationsPage.visit(page);\n      const isPageVisible =\n        await recommendationsPage.areSiteTypeQuestionsVisible();\n\n      expect(isPageVisible).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-type\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Check Personal and Other checkboxes\",\n    async () => {\n      await recommendationsPage.checkPersonalSiteType();\n      await recommendationsPage.checkOtherSiteType();\n      expect(\n        await recommendationsPage.isPersonalSiteTypeChecked()\n      ).toBeTruthy();\n      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();\n      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();\n      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Save answers and continue to the Monitor step\",\n    async () => {\n      await recommendationsPage.saveSiteTypeAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isMonitorStep =\n        await recommendationsPage.isEnableMonitoringButtonVisible();\n      expect(isMonitorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"monitor\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Enable Monitoring and continue to Related Post step\",\n    async () => {\n      await recommendationsPage.enableMonitoringAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isRelatedPostsStep =\n        await recommendationsPage.isEnableRelatedPostsButtonVisible();\n      expect(isRelatedPostsStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"related-posts\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Enable Related Posts and continue to Creative Mail step\",\n    async () => {\n      await recommendationsPage.enableRelatedPostsAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isCreativeMailStep =\n        await recommendationsPage.isInstallCreativeMailButtonVisible();\n      expect(isCreativeMailStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"creative-mail\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Skip Creative Mail and continue to Site Accelerator\",\n    async () => {\n      await recommendationsPage.skipCreativeMailAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSiteAcceleratorStep =\n        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();\n      expect(isSiteAcceleratorStep).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"site-accelerator\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Skip Site Accelerator and continue to Summary\",\n    async () => {\n      await recommendationsPage.skipSiteAcceleratorAndContinue();\n      await recommendationsPage.reload();\n      await recommendationsPage.waitForNetworkIdle();\n      const isSummaryContent =\n        await recommendationsPage.isSummaryContentVisible();\n      const isSummarySidebar =\n        await recommendationsPage.isSummarySidebarVisible();\n      expect(isSummaryContent && isSummarySidebar).toBeTruthy();\n      expect(\n        recommendationsPage.isUrlInSyncWithStepName(\"summary\")\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Verify Monitoring and Related Posts are enabled\",\n    async () => {\n      const isMonitoringFeatureEnabled =\n        await recommendationsPage.isMonitoringFeatureEnabled();\n      const isRelatedPostsFeatureEnabled =\n        await recommendationsPage.isRelatedPostsFeatureEnabled();\n      expect(\n        isMonitoringFeatureEnabled && isRelatedPostsFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Verify Creative Mail and Site Accelerator are disabled\",\n    async () => {\n      const isCreativeMailFeatureEnabled =\n        await recommendationsPage.isCreativeMailFeatureEnabled();\n      const isSiteAcceleratorFeatureEnabled =\n        await recommendationsPage.isSiteAcceleratorFeatureEnabled();\n      expect(\n        isCreativeMailFeatureEnabled && isSiteAcceleratorFeatureEnabled\n      ).toBeTruthy();\n    }\n  );\n};\n\n```\n",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Navigate to the Recommendations module",
+      "time" : {
+        "start" : 1635266113538,
+        "stop" : 1635266116552,
+        "duration" : 3014
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Check Personal and Other checkboxes",
+      "time" : {
+        "start" : 1635266116556,
+        "stop" : 1635266116938,
+        "duration" : 382
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Save answers and continue to the Monitor step",
+      "time" : {
+        "start" : 1635266116941,
+        "stop" : 1635266119473,
+        "duration" : 2532
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Enable Monitoring and continue to Related Post step",
+      "time" : {
+        "start" : 1635266119477,
+        "stop" : 1635266122341,
+        "duration" : 2864
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Enable Related Posts and continue to Creative Mail step",
+      "time" : {
+        "start" : 1635266122344,
+        "stop" : 1635266125142,
+        "duration" : 2798
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Skip Creative Mail and continue to Site Accelerator",
+      "time" : {
+        "start" : 1635266125146,
+        "stop" : 1635266129159,
+        "duration" : 4013
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Skip Site Accelerator and continue to Summary",
+      "time" : {
+        "start" : 1635266129163,
+        "stop" : 1635266132627,
+        "duration" : 3464
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Verify Monitoring and Related Posts are enabled",
+      "time" : {
+        "start" : 1635266132630,
+        "stop" : 1635266132674,
+        "duration" : 44
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Verify Creative Mail and Site Accelerator are disabled",
+      "time" : {
+        "start" : 1635266132677,
+        "stop" : 1635266132728,
+        "duration" : 51
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 9,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "recommendations.test.js"
+  }, {
+    "name" : "tag",
+    "value" : "Jetpack version: 10.4-a.0-de509aa8fc735866ab1e7d5eb6c8456ab1d943f1"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 5,
+        "skipped" : 0,
+        "passed" : 879,
+        "unknown" : 0,
+        "total" : 884
+      },
+      "items" : [ {
+        "uid" : "d7e58513bbf10d93",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/d7e58513bbf10d93",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635263073974,
+          "stop" : 1635263091248,
+          "duration" : 17274
+        }
+      }, {
+        "uid" : "b062ac3c9ab7b786",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/b062ac3c9ab7b786",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635260051549,
+          "stop" : 1635260071923,
+          "duration" : 20374
+        }
+      }, {
+        "uid" : "38126e626cf295a",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/38126e626cf295a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635257370433,
+          "stop" : 1635257388888,
+          "duration" : 18455
+        }
+      }, {
+        "uid" : "94102e94584c70d7",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/94102e94584c70d7",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635255498105,
+          "stop" : 1635255512784,
+          "duration" : 14679
+        }
+      }, {
+        "uid" : "25d3c6bb1339e29b",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/25d3c6bb1339e29b",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635251014006,
+          "stop" : 1635251034797,
+          "duration" : 20791
+        }
+      }, {
+        "uid" : "cf0cbca32b66af62",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/cf0cbca32b66af62",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635250011822,
+          "stop" : 1635250027290,
+          "duration" : 15468
+        }
+      }, {
+        "uid" : "ed43caa2aa6463eb",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/ed43caa2aa6463eb",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635245661044,
+          "stop" : 1635245682423,
+          "duration" : 21379
+        }
+      }, {
+        "uid" : "aec780a67d9b4287",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/aec780a67d9b4287",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635244391517,
+          "stop" : 1635244412921,
+          "duration" : 21404
+        }
+      }, {
+        "uid" : "d1a7218c9a70c96f",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/d1a7218c9a70c96f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635240114169,
+          "stop" : 1635240131123,
+          "duration" : 16954
+        }
+      }, {
+        "uid" : "53919dbd83c73d70",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/53919dbd83c73d70",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635206917385,
+          "stop" : 1635206937705,
+          "duration" : 20320
+        }
+      }, {
+        "uid" : "7fcca0815f244b86",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/7fcca0815f244b86",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635201723686,
+          "stop" : 1635201742564,
+          "duration" : 18878
+        }
+      }, {
+        "uid" : "9aa195479f5f5e15",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/9aa195479f5f5e15",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635197854819,
+          "stop" : 1635197874927,
+          "duration" : 20108
+        }
+      }, {
+        "uid" : "aa30f6f6635c69f7",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/aa30f6f6635c69f7",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635194923431,
+          "stop" : 1635194939191,
+          "duration" : 15760
+        }
+      }, {
+        "uid" : "61cafea2ecd5a0d1",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/61cafea2ecd5a0d1",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635188829703,
+          "stop" : 1635188844804,
+          "duration" : 15101
+        }
+      }, {
+        "uid" : "9b5cc6c1d5c041df",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/9b5cc6c1d5c041df",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635187133507,
+          "stop" : 1635187151562,
+          "duration" : 18055
+        }
+      }, {
+        "uid" : "c87d36036e4d4540",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/c87d36036e4d4540",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635184266772,
+          "stop" : 1635184287086,
+          "duration" : 20314
+        }
+      }, {
+        "uid" : "e5bab883f4fd2e4f",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/e5bab883f4fd2e4f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635181560309,
+          "stop" : 1635181576500,
+          "duration" : 16191
+        }
+      }, {
+        "uid" : "8678a74094886533",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/8678a74094886533",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635170423620,
+          "stop" : 1635170440679,
+          "duration" : 17059
+        }
+      }, {
+        "uid" : "190903c3431652b5",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/190903c3431652b5",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635163633262,
+          "stop" : 1635163649226,
+          "duration" : 15964
+        }
+      }, {
+        "uid" : "1e7d7ba8bbd5f689",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/master/report/#testresult/1e7d7ba8bbd5f689",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635163097859,
+          "stop" : 1635163114284,
+          "duration" : 16425
+        }
+      } ]
+    },
+    "tags" : [ "Jetpack version: 10.4-a.0-de509aa8fc735866ab1e7d5eb6c8456ab1d943f1" ]
+  },
+  "source" : "a0624e81f31d9b21.json",
+  "parameterValues" : [ ]
+}
