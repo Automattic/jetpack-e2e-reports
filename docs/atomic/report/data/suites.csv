@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Fri Oct 29 00:08:21 UTC 2021","Fri Oct 29 00:08:31 UTC 2021","9068","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Fri Oct 29 04:05:21 UTC 2021","Fri Oct 29 04:05:29 UTC 2021","8677","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -37,7 +37,46 @@ async () => {
 
 ```
 "
-"passed","Fri Oct 29 00:07:44 UTC 2021","Fri Oct 29 00:07:53 UTC 2021","9215","specs","","pro-blocks.test.js","","","MailChimp Block","
+"skipped","Fri Oct 29 04:05:11 UTC 2021","Fri Oct 29 04:05:11 UTC 2021","76","specs","","pro-blocks.test.js","","","WordAds block","
+### Test
+```typescript
+async () => {
+  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
+  let blockId;
+  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
+    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.WordAdsBlock.name(),
+      _wpAdmin.WordAdsBlock.title()
+    );
+    await blockEditor.selectPostTitle();
+  });
+  await (0, _reporters.testStep)(
+    ""Switch to Wide Skyscraper ad format"",
+    async () => {
+      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that WordAds block is rendered"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Fri Oct 29 04:04:45 UTC 2021","Fri Oct 29 04:04:56 UTC 2021","10444","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -69,7 +108,7 @@ async () => {
 
 ```
 "
-"passed","Fri Oct 29 00:08:35 UTC 2021","Fri Oct 29 00:08:48 UTC 2021","12927","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Fri Oct 29 04:05:34 UTC 2021","Fri Oct 29 04:05:46 UTC 2021","12569","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -113,46 +152,7 @@ async () => {
 
 ```
 "
-"skipped","Fri Oct 29 00:08:10 UTC 2021","Fri Oct 29 00:08:11 UTC 2021","47","specs","","pro-blocks.test.js","","","WordAds block","
-### Test
-```typescript
-async () => {
-  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
-  let blockId;
-  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.WordAdsBlock.name(),
-      _wpAdmin.WordAdsBlock.title()
-    );
-    await blockEditor.selectPostTitle();
-  });
-  await (0, _reporters.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
-    async () => {
-      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Fri Oct 29 00:07:59 UTC 2021","Fri Oct 29 00:08:10 UTC 2021","11323","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Fri Oct 29 04:05:01 UTC 2021","Fri Oct 29 04:05:10 UTC 2021","9072","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
