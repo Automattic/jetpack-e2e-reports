@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Sat Oct 30 00:08:18 UTC 2021","Sat Oct 30 00:08:31 UTC 2021","12359","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Sat Oct 30 04:05:24 UTC 2021","Sat Oct 30 04:05:35 UTC 2021","11611","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -43,58 +43,30 @@ async () => {
 
 ```
 "
-"passed","Sat Oct 30 00:07:44 UTC 2021","Sat Oct 30 00:07:55 UTC 2021","11113","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"skipped","Sat Oct 30 04:04:58 UTC 2021","Sat Oct 30 04:04:58 UTC 2021","69","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
+  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
   let blockId;
-  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
+  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
+    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
     blockId = await blockEditor.insertBlock(
-      _wpAdmin.SimplePaymentBlock.name(),
-      _wpAdmin.SimplePaymentBlock.title()
+      _wpAdmin.WordAdsBlock.name(),
+      _wpAdmin.WordAdsBlock.title()
     );
+    await blockEditor.selectPostTitle();
   });
   await (0, _reporters.testStep)(
-    ""Fill details of Pay with PayPal block"",
+    ""Switch to Wide Skyscraper ad format"",
     async () => {
-      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
-      await spBlock.fillDetails();
+      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
     }
   );
   await (0, _reporters.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Sat Oct 30 00:07:29 UTC 2021","Sat Oct 30 00:07:39 UTC 2021","9123","specs","","pro-blocks.test.js","","","MailChimp Block","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.MailchimpBlock.name(),
-      _wpAdmin.MailchimpBlock.title()
-    );
-  });
-  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
-    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
-    await mcBlock.connect();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that MailChimp block is rendered"",
+    ""Publish a post and assert that WordAds block is rendered"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
@@ -102,7 +74,7 @@ async () => {
       const frontend = await _pages.PostFrontendPage.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
+        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
       ).toBeTruthy();
     }
   );
@@ -110,7 +82,7 @@ async () => {
 
 ```
 "
-"passed","Sat Oct 30 00:08:06 UTC 2021","Sat Oct 30 00:08:14 UTC 2021","8375","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Sat Oct 30 04:05:13 UTC 2021","Sat Oct 30 04:05:20 UTC 2021","7647","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -148,30 +120,58 @@ async () => {
 
 ```
 "
-"skipped","Sat Oct 30 00:07:56 UTC 2021","Sat Oct 30 00:07:56 UTC 2021","56","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Sat Oct 30 04:04:49 UTC 2021","Sat Oct 30 04:04:58 UTC 2021","9121","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
-  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
   let blockId;
-  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
+  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
     blockId = await blockEditor.insertBlock(
-      _wpAdmin.WordAdsBlock.name(),
-      _wpAdmin.WordAdsBlock.title()
+      _wpAdmin.SimplePaymentBlock.name(),
+      _wpAdmin.SimplePaymentBlock.title()
     );
-    await blockEditor.selectPostTitle();
   });
   await (0, _reporters.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
+    ""Fill details of Pay with PayPal block"",
     async () => {
-      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
+      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
+      await spBlock.fillDetails();
     }
   );
   await (0, _reporters.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    async () => {
+      await blockEditor.setTitle(""Pay with PayPal block"");
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Sat Oct 30 04:04:36 UTC 2021","Sat Oct 30 04:04:44 UTC 2021","8323","specs","","pro-blocks.test.js","","","MailChimp Block","
+### Test
+```typescript
+async () => {
+  let blockId;
+  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.MailchimpBlock.name(),
+      _wpAdmin.MailchimpBlock.title()
+    );
+  });
+  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
+    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
+    await mcBlock.connect();
+  });
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that MailChimp block is rendered"",
     async () => {
       await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
@@ -179,7 +179,7 @@ async () => {
       const frontend = await _pages.PostFrontendPage.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
+        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
       ).toBeTruthy();
     }
   );
