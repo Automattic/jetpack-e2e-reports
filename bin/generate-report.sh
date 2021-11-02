@@ -12,6 +12,10 @@ set -eo pipefail
 allure --version
 
 BASE_URL="https://automattic.github.io/jetpack-e2e-reports"
+SCRIPT_PATH=$(
+  cd "$(dirname "${BASH_SOURCE[0]}")" || return
+  pwd -P
+)
 
 if [[ -z "$RESULTS_PATH" ]]; then
   echo "::error::RESULTS_PATH must be set"
@@ -89,6 +93,9 @@ jq -n --arg url "$BASE_URL" \
   '{"type":"github", "buildName":$buildName, "url":$url,"reportUrl":$reportUrl}' \
   >"$TARGET_RESULTS_PATH/executor.json"
 cat "$TARGET_RESULTS_PATH/executor.json"
+
+echo "Overwriting categories.json"
+cp "$SCRIPT_PATH/categories.json" "$TARGET_RESULTS_PATH/categories.json"
 
 echo "Generating new report for $TARGET_DIR"
 allure generate --clean "$TARGET_RESULTS_PATH" --output "$TARGET_REPORT_PATH"
