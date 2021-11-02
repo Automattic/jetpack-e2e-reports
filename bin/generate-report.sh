@@ -82,9 +82,11 @@ if [ -d "$HISTORY_ATTACHMENT_PATH" ]; then
 fi
 
 echo "Creating executor.json"
+
 jq -n --arg url "$BASE_URL" \
   --arg reportUrl "$REPORT_URL" \
-  '{"url":$url,"reportUrl":$reportUrl}' \
+  --arg buildName "run #$RUN_ID" \
+  '{"type":"github", "buildName":$buildName, "url":$url,"reportUrl":$reportUrl}' \
   >"$TARGET_RESULTS_PATH/executor.json"
 cat "$TARGET_RESULTS_PATH/executor.json"
 
@@ -107,5 +109,5 @@ rm -rf "$TARGET_RESULTS_PATH"
 
 echo "Writing metadata to file"
 #echo "$CLIENT_PAYLOAD" >"$TARGET_DIR/metadata.json"
-echo "$CLIENT_PAYLOAD" | jq --arg updateDate "$(date +"%Y-%m-%dT%H:%M:%S%z")" '. + {"updated_on":$updateDate}'  >"$TARGET_DIR/metadata.json"
+echo "$CLIENT_PAYLOAD" | jq --arg updateDate "$(date +"%Y-%m-%dT%H:%M:%S%z")" '. + {"updated_on":$updateDate}' >"$TARGET_DIR/metadata.json"
 cat "$TARGET_DIR/metadata.json"
