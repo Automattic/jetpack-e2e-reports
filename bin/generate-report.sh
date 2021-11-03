@@ -67,7 +67,7 @@ mkdir -p "$TARGET_RESULTS_PATH"
 
 for d in "$RESULTS_PATH"/*; do
   echo "Copy results from $d to $TARGET_RESULTS_PATH"
-  cp -R "$d/allure-results/." "$TARGET_RESULTS_PATH"
+  cp -R "$d/allure-results/." "$TARGET_RESULTS_PATH" || true
 done
 
 if [ -d "$HISTORY_PATH" ]; then
