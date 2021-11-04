@@ -1,0 +1,411 @@
+{
+  "uid" : "dc1a38dc023607b6",
+  "name" : "Can perform search with default settings",
+  "fullName" : "Can perform search with default settings",
+  "historyId" : "8a48effa07b2a0dc8118fcc35772e118",
+  "time" : {
+    "start" : 1636057131834,
+    "stop" : 1636057135313,
+    "duration" : 3479
+  },
+  "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _reporters.testStep)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _reporters.testStep)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _reporters.testStep)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _reporters.testStep)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _reporters.testStep)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+  "descriptionHtml" : "<h3>Test</h3>\n<pre><code class=\"language-typescript\">async () =&gt; {\n  await (0, _reporters.testStep)(\n    &quot;Can open the overlay by entering a query&quot;,\n    async () =&gt; {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Can show search controls in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Can show search results in the overlay&quot;,\n    async () =&gt; {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    &quot;Can sort results by relevance by default&quot;,\n    async () =&gt; {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        &quot;&lt;mark&gt;Test1&lt;/mark&gt; Record 1&quot;\n      );\n    }\n  );\n  await (0, _reporters.testStep)(&quot;Can edit query in search form&quot;, async () =&gt; {\n    await homepage.enterQueryToOverlay(&quot;test2&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 1&quot;\n    );\n  });\n  await (0, _reporters.testStep)(&quot;Can change sort order&quot;, async () =&gt; {\n    await homepage.chooseSortingLink(&quot;newest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;newest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n    await homepage.chooseSortingLink(&quot;oldest&quot;);\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(&quot;oldest&quot;)).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n  });\n  await (0, _reporters.testStep)(&quot;Can apply filters&quot;, async () =&gt; {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 2&quot;\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      &quot;&lt;mark&gt;Test2&lt;/mark&gt; Record 3&quot;\n    );\n  });\n  await (0, _reporters.testStep)(\n    &quot;Can close overlay by clicking the cross&quot;,\n    async () =&gt; {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "newBroken" : false,
+  "newPassed" : false,
+  "retriesCount" : 0,
+  "retriesStatusChange" : false,
+  "beforeStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "description" : "\n### Test\n```typescript\nasync () => {\n  await (0, _reporters.testStep)(\n    \"Can open the overlay by entering a query\",\n    async () => {\n      await homepage.focusSearchInput();\n      await homepage.enterQuery();\n      await homepage.waitForSearchResponse();\n\n      expect(await homepage.isOverlayVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Can show search controls in the overlay\",\n    async () => {\n      expect(await homepage.isSearchFormVisible()).toBeTruthy();\n      expect(await homepage.isSortingVisible()).toBeTruthy();\n      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Can show search results in the overlay\",\n    async () => {\n      expect(await homepage.isSearchResultVisible()).toBeTruthy();\n    }\n  );\n  await (0, _reporters.testStep)(\n    \"Can sort results by relevance by default\",\n    async () => {\n      expect(await homepage.getFirstResultTitle()).toBe(\n        \"<mark>Test1</mark> Record 1\"\n      );\n    }\n  );\n  await (0, _reporters.testStep)(\"Can edit query in search form\", async () => {\n    await homepage.enterQueryToOverlay(\"test2\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 1\"\n    );\n  });\n  await (0, _reporters.testStep)(\"Can change sort order\", async () => {\n    await homepage.chooseSortingLink(\"newest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"newest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n    await homepage.chooseSortingLink(\"oldest\");\n    await homepage.waitForSearchResponse();\n    expect(await homepage.isSortingLinkSelected(\"oldest\")).toBeTruthy();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n  });\n  await (0, _reporters.testStep)(\"Can apply filters\", async () => {\n    await homepage.clickFilterCategory2();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 2\"\n    );\n    await homepage.clickFilterCategory2();\n    await homepage.clickFilterTag3();\n    await homepage.waitForSearchResponse();\n    expect(await homepage.getFirstResultTitle()).toBe(\n      \"<mark>Test2</mark> Record 3\"\n    );\n  });\n  await (0, _reporters.testStep)(\n    \"Can close overlay by clicking the cross\",\n    async () => {\n      await homepage.clickCrossToCloseOverlay();\n      expect(await homepage.isOverlayVisible()).toBeFalsy();\n    }\n  );\n};\n\n```\n",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Can open the overlay by entering a query",
+      "time" : {
+        "start" : 1636057131909,
+        "stop" : 1636057132561,
+        "duration" : 652
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can show search controls in the overlay",
+      "time" : {
+        "start" : 1636057132564,
+        "stop" : 1636057132750,
+        "duration" : 186
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can show search results in the overlay",
+      "time" : {
+        "start" : 1636057132755,
+        "stop" : 1636057132794,
+        "duration" : 39
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can sort results by relevance by default",
+      "time" : {
+        "start" : 1636057132796,
+        "stop" : 1636057132826,
+        "duration" : 30
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can edit query in search form",
+      "time" : {
+        "start" : 1636057132828,
+        "stop" : 1636057133176,
+        "duration" : 348
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can change sort order",
+      "time" : {
+        "start" : 1636057133192,
+        "stop" : 1636057134008,
+        "duration" : 816
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can apply filters",
+      "time" : {
+        "start" : 1636057134010,
+        "stop" : 1636057134666,
+        "duration" : 656
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Can close overlay by clicking the cross",
+      "time" : {
+        "start" : 1636057134669,
+        "stop" : 1636057134780,
+        "duration" : 111
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "time" : { },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "thread",
+    "value" : "1"
+  }, {
+    "name" : "parentSuite",
+    "value" : "specs"
+  }, {
+    "name" : "package",
+    "value" : "specs"
+  }, {
+    "name" : "subSuite",
+    "value" : "search.test.js"
+  }, {
+    "name" : "tag",
+    "value" : "Jetpack version: 10.4-a.2-f95d48ec3f51250a38e0b71a3229e1a6f5ead553"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 1,
+        "skipped" : 0,
+        "passed" : 15,
+        "unknown" : 0,
+        "total" : 16
+      },
+      "items" : [ {
+        "uid" : "21908ecc03f72821",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/21908ecc03f72821",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635972245459,
+          "stop" : 1635972249730,
+          "duration" : 4271
+        }
+      }, {
+        "uid" : "2a15f8080235e670",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/2a15f8080235e670",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635970516218,
+          "stop" : 1635970520969,
+          "duration" : 4751
+        }
+      }, {
+        "uid" : "b13aa261d25ef17f",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/b13aa261d25ef17f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635969757708,
+          "stop" : 1635969762044,
+          "duration" : 4336
+        }
+      }, {
+        "uid" : "3143561f19591e47",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/3143561f19591e47",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635901396844,
+          "stop" : 1635901402316,
+          "duration" : 5472
+        }
+      }, {
+        "uid" : "8029f6bc48ed1458",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/8029f6bc48ed1458",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635896043269,
+          "stop" : 1635896048640,
+          "duration" : 5371
+        }
+      }, {
+        "uid" : "1a8cc784f5cb9873",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/1a8cc784f5cb9873",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635893712684,
+          "stop" : 1635893716664,
+          "duration" : 3980
+        }
+      }, {
+        "uid" : "ef3f678703536008",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/ef3f678703536008",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635451818203,
+          "stop" : 1635451821986,
+          "duration" : 3783
+        }
+      }, {
+        "uid" : "311cf5b315d831b9",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/311cf5b315d831b9",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635450409350,
+          "stop" : 1635450413234,
+          "duration" : 3884
+        }
+      }, {
+        "uid" : "1608c12e57f0f328",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/1608c12e57f0f328",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635425047850,
+          "stop" : 1635425052484,
+          "duration" : 4634
+        }
+      }, {
+        "uid" : "202e11b3aeeea59",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/202e11b3aeeea59",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635348955029,
+          "stop" : 1635348958863,
+          "duration" : 3834
+        }
+      }, {
+        "uid" : "72c193c707c678b9",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/72c193c707c678b9",
+        "status" : "passed",
+        "time" : {
+          "start" : 1635347853412,
+          "stop" : 1635347857874,
+          "duration" : 4462
+        }
+      }, {
+        "uid" : "f6a2586e73024c1e",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/f6a2586e73024c1e",
+        "status" : "broken",
+        "statusDetails" : "Error",
+        "time" : {
+          "start" : 1635345448371,
+          "stop" : 1635345448554,
+          "duration" : 183
+        }
+      }, {
+        "uid" : "c0b52a2dbe960a2",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/c0b52a2dbe960a2",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634749184565,
+          "stop" : 1634749189096,
+          "duration" : 4531
+        }
+      }, {
+        "uid" : "63dbac0537fb9188",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/63dbac0537fb9188",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634746443679,
+          "stop" : 1634746447725,
+          "duration" : 4046
+        }
+      }, {
+        "uid" : "e635ff803ec43324",
+        "reportUrl" : "https://automattic.github.io/jetpack-e2e-reports/21474/report/#testresult/e635ff803ec43324",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634745638109,
+          "stop" : 1634745641636,
+          "duration" : 3527
+        }
+      } ]
+    },
+    "tags" : [ "Jetpack version: 10.4-a.2-f95d48ec3f51250a38e0b71a3229e1a6f5ead553" ]
+  },
+  "source" : "dc1a38dc023607b6.json",
+  "parameterValues" : [ ]
+}
