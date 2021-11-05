@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Fri Nov 05 04:05:40 UTC 2021","Fri Nov 05 04:05:52 UTC 2021","12671","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Fri Nov 05 08:05:18 UTC 2021","Fri Nov 05 08:05:28 UTC 2021","9914","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -43,7 +43,7 @@ async () => {
 
 ```
 "
-"passed","Fri Nov 05 04:04:51 UTC 2021","Fri Nov 05 04:05:01 UTC 2021","10357","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Fri Nov 05 08:04:38 UTC 2021","Fri Nov 05 08:04:46 UTC 2021","7945","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -75,7 +75,46 @@ async () => {
 
 ```
 "
-"passed","Fri Nov 05 04:05:26 UTC 2021","Fri Nov 05 04:05:35 UTC 2021","8943","specs","","free-blocks.test.js","","","Pinterest block","
+"skipped","Fri Nov 05 08:04:57 UTC 2021","Fri Nov 05 08:04:58 UTC 2021","39","specs","","pro-blocks.test.js","","","WordAds block","
+### Test
+```typescript
+async () => {
+  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
+  let blockId;
+  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
+    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.WordAdsBlock.name(),
+      _wpAdmin.WordAdsBlock.title()
+    );
+    await blockEditor.selectPostTitle();
+  });
+  await (0, _reporters.testStep)(
+    ""Switch to Wide Skyscraper ad format"",
+    async () => {
+      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that WordAds block is rendered"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Fri Nov 05 08:05:05 UTC 2021","Fri Nov 05 08:05:15 UTC 2021","9593","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -113,7 +152,7 @@ async () => {
 
 ```
 "
-"passed","Fri Nov 05 04:05:07 UTC 2021","Fri Nov 05 04:05:16 UTC 2021","8668","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Fri Nov 05 08:04:50 UTC 2021","Fri Nov 05 08:04:57 UTC 2021","7325","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
@@ -141,45 +180,6 @@ async () => {
 
       expect(
         await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"skipped","Fri Nov 05 04:05:16 UTC 2021","Fri Nov 05 04:05:16 UTC 2021","43","specs","","pro-blocks.test.js","","","WordAds block","
-### Test
-```typescript
-async () => {
-  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
-  let blockId;
-  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.WordAdsBlock.name(),
-      _wpAdmin.WordAdsBlock.title()
-    );
-    await blockEditor.selectPostTitle();
-  });
-  await (0, _reporters.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
-    async () => {
-      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
       ).toBeTruthy();
     }
   );
