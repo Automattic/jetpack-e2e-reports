@@ -1,32 +1,29 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Sun Nov 07 12:05:32 UTC 2021","Sun Nov 07 12:05:41 UTC 2021","9616","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Sun Nov 07 16:08:13 UTC 2021","Sun Nov 07 16:08:20 UTC 2021","7529","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
   let blockId;
-  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
+  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
     blockId = await blockEditor.insertBlock(
-      _wpAdmin.SimplePaymentBlock.name(),
-      _wpAdmin.SimplePaymentBlock.title()
+      _wpAdmin.MailchimpBlock.name(),
+      _wpAdmin.MailchimpBlock.title()
     );
   });
+  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
+    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
+    await mcBlock.connect();
+  });
   await (0, _reporters.testStep)(
-    ""Fill details of Pay with PayPal block"",
+    ""Publish a post and assert that MailChimp block is rendered"",
     async () => {
-      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
-      await spBlock.fillDetails();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
+      await blockEditor.selectPostTitle();
       await blockEditor.publishPost();
       await blockEditor.viewPost();
       const frontend = await _pages.PostFrontendPage.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
+        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
       ).toBeTruthy();
     }
   );
@@ -34,7 +31,7 @@ async () => {
 
 ```
 "
-"passed","Sun Nov 07 12:06:04 UTC 2021","Sun Nov 07 12:06:16 UTC 2021","12096","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Sun Nov 07 16:08:50 UTC 2021","Sun Nov 07 16:09:01 UTC 2021","10114","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -78,31 +75,34 @@ async () => {
 
 ```
 "
-"passed","Sun Nov 07 12:05:17 UTC 2021","Sun Nov 07 12:05:26 UTC 2021","9228","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Sun Nov 07 16:08:25 UTC 2021","Sun Nov 07 16:08:33 UTC 2021","7947","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
   let blockId;
-  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
+  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
     blockId = await blockEditor.insertBlock(
-      _wpAdmin.MailchimpBlock.name(),
-      _wpAdmin.MailchimpBlock.title()
+      _wpAdmin.SimplePaymentBlock.name(),
+      _wpAdmin.SimplePaymentBlock.title()
     );
   });
-  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
-    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
-    await mcBlock.connect();
-  });
   await (0, _reporters.testStep)(
-    ""Publish a post and assert that MailChimp block is rendered"",
+    ""Fill details of Pay with PayPal block"",
     async () => {
-      await blockEditor.selectPostTitle();
+      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
+      await spBlock.fillDetails();
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    async () => {
+      await blockEditor.setTitle(""Pay with PayPal block"");
       await blockEditor.publishPost();
       await blockEditor.viewPost();
       const frontend = await _pages.PostFrontendPage.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
+        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
       ).toBeTruthy();
     }
   );
@@ -110,7 +110,7 @@ async () => {
 
 ```
 "
-"skipped","Sun Nov 07 12:05:41 UTC 2021","Sun Nov 07 12:05:41 UTC 2021","87","specs","","pro-blocks.test.js","","","WordAds block","
+"skipped","Sun Nov 07 16:08:33 UTC 2021","Sun Nov 07 16:08:33 UTC 2021","64","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -149,7 +149,7 @@ async () => {
 
 ```
 "
-"passed","Sun Nov 07 12:05:51 UTC 2021","Sun Nov 07 12:06:00 UTC 2021","8240","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Sun Nov 07 16:08:40 UTC 2021","Sun Nov 07 16:08:47 UTC 2021","6731","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
