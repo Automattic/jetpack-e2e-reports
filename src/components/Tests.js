@@ -56,13 +56,13 @@ export default class Tests extends React.Component {
 	}
 
 	getResultsLine( test ) {
-		const badges = test.results.slice( -50 ).map( ( result, id ) => {
+		const badges = test.results.slice( -100 ).map( ( result, id ) => {
 			return (
 				<Badge
 					key={ id }
 					className={ `label label-small label-status-${ result.status }` }
 				>
-					{ result.status.substr( 0, 1 ).toUpperCase() }
+					&nbsp;
 				</Badge>
 			);
 		} );
@@ -94,6 +94,10 @@ export default class Tests extends React.Component {
 				).length;
 				test.total += test[ status ];
 			}
+
+			test.results.sort( ( a, b ) => {
+				return a.time - b.time;
+			} );
 		}
 
 		console.log( tests );
