@@ -1,8 +1,8 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
-const { getReportsDirs } = require( './utils' );
+const { getReportsDirs, cleanStacktrace } = require( './utils' );
 
-const json = { tests: [], lastUpdate: '' };
+const json = { errors: [], lastUpdate: '' };
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
@@ -20,40 +20,49 @@ for ( const dirName of getReportsDirs() ) {
 		const filePath = `./docs/${ dirName }/report/data/test-cases/${ testFile }`;
 		const testInfo = JSON.parse( fs.readFileSync( filePath ).toString() );
 
-		const existingTest = json.tests.filter(
-			( t ) => t.name === testInfo.fullName
+		if (
+			( ! testInfo.statusTrace && ! testInfo.statusMessage ) ||
+			testInfo.status === 'skipped'
+		) {
+			continue;
+		}
+
+		const existingError = json.errors.filter(
+			( e ) =>
+				e.trace ===
+				cleanStacktrace( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
-		if ( existingTest.length > 0 ) {
-			const existingResult = existingTest[ 0 ].results.filter(
+		if ( existingError.length > 0 ) {
+			const existingReport = existingError[ 0 ].results.filter(
 				( t ) => t.time === testInfo.time.stop
 			);
 
-			if ( existingResult.length === 0 ) {
-				existingTest[ 0 ].results.push( {
+			if ( existingReport.length === 0 ) {
+				existingError[ 0 ].results.push( {
 					time: testInfo.time.stop,
 					report: dirName,
-					status:
-						testInfo.status === 'broken'
-							? 'failed'
-							: testInfo.status,
+					source: testInfo.source,
+					test: testInfo.fullName,
 				} );
 			}
 		} else {
-			const test = {
-				name: testInfo.name,
+			const error = {
+				trace: cleanStacktrace(
+					testInfo.statusMessage,
+					testInfo.statusTrace
+				),
 				results: [],
 			};
 
-			test.results.push( {
+			error.results.push( {
 				time: testInfo.time.stop,
 				report: dirName,
-				status:
-					testInfo.status === 'broken' ? 'failed' : testInfo.status,
 				source: testInfo.source,
+				test: testInfo.fullName,
 			} );
 
-			json.tests.push( test );
+			json.errors.push( error );
 		}
 	}
 }
@@ -62,10 +71,10 @@ json.lastUpdate = new Date();
 // console.log( JSON.stringify( json, null, 2 ) );
 
 if ( process.env.CLEAN_DATA ) {
-	fs.writeFileSync( path.resolve( 'docs/data/tests.json' ), '' );
+	fs.writeFileSync( path.resolve( 'docs/data/errors.json' ), '' );
 }
 
 fs.writeFileSync(
-	path.resolve( 'docs/data/tests.json' ),
+	path.resolve( 'docs/data/errors.json' ),
 	JSON.stringify( json )
 );

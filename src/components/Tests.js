@@ -4,7 +4,7 @@ import ReactGA from 'react-ga';
 
 export default class Tests extends React.Component {
 	state = {
-		tests: this.props.tests,
+		tests: [],
 		isDataFetched: false,
 	};
 
