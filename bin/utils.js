@@ -19,7 +19,12 @@ function cleanStacktrace( message, trace ) {
 		.filter( ( line ) => ! line.includes( '=====' ) )
 		.filter( ( line ) => ! line.includes( 'Playwright logs' ) )
 		.join( '\n' )
-		.replace( /\n+/g, '\n' );
+		.replace( /\n+/g, '\n' )
+		.replace( /https:\/\/.+.a8c-localtunnel.cyou/g, 'SITE-URL' )
+		.replace(
+			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
+			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
+		);
 
 	return `${ message }\n${ trace }`;
 }
