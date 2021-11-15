@@ -18,9 +18,9 @@ for ( const dirName of dirs ) {
 		continue;
 	}
 
-	// get the statistics from report/widgets/summary.json
+	// get the statistics from report/widgets/reports.json
 	const summaryData = fs.readFileSync(
-		path.resolve( 'docs', dirName, 'report/widgets/summary.json' )
+		path.resolve( 'docs', dirName, 'report/widgets/reports.json' )
 	);
 	const statistic = JSON.parse( summaryData ).statistic;
 
@@ -66,6 +66,6 @@ const docsSize = execSync( 'du -sh docs | cut -f1' )
 json.docsSize = docsSize;
 
 fs.writeFileSync(
-	path.resolve( 'docs/data/summary.json' ),
+	path.resolve( 'docs/data/reports.json' ),
 	JSON.stringify( json, null, 2 )
 );
