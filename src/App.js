@@ -6,53 +6,16 @@ import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import Reports from './Reports';
 import Metrics from './Metrics';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
 
-const linkOnSelect = ( setActiveNavbar, navbar ) => {
-	setActiveNavbar( navbar );
-	location.hash = navbar;
-};
-
-function NavBar( { activeNavbar, setActiveNavbar } ) {
-	return (
-		<Navbar variant="dark" expand="md" className="app-nav-bar">
-			<Container fluid className="app-nav-bar-inner-container">
-				<Navbar.Brand href="#">
-					Jetpack test results dashboard
-				</Navbar.Brand>
-				<Navbar.Toggle aria-controls="basic-navbar-nav" />
-				<Navbar.Collapse id="basic-navbar-nav">
-					<Nav activeKey={ activeNavbar } className="ml-auto">
-						<Nav.Link
-							href="#reports"
-							onSelect={ ( navbar ) =>
-								linkOnSelect( setActiveNavbar, navbar )
-							}
-						>
-							Recent reports
-						</Nav.Link>
-						<Nav.Link
-							href="#metrics"
-							onSelect={ ( navbar ) =>
-								linkOnSelect( setActiveNavbar, navbar )
-							}
-						>
-							Metrics
-						</Nav.Link>
-					</Nav>
-				</Navbar.Collapse>
-			</Container>
-		</Navbar>
-	);
-}
-
 function App() {
-	const [ activeNavbar, setActiveNavbar ] = useState( '#reports' );
+	const [ activeNavbar, setActiveNavbar ] = useState( 'reports' );
 	if (
 		location.hash &&
-		[ '#reports', '#metrics' ].includes( location.hash ) &&
+		[ 'reports', 'metrics' ].includes( location.hash ) &&
 		activeNavbar !== location.hash
 	) {
 		setActiveNavbar( location.hash );
@@ -61,11 +24,30 @@ function App() {
 	return (
 		<Container fluid className="App">
 			<div className="App-content">
-				<NavBar
-					activeNavbar={ activeNavbar }
-					setActiveNavbar={ setActiveNavbar }
-				/>
-				{ activeNavbar === '#reports' ? <Reports /> : <Metrics /> }
+				<Navbar variant="dark" expand="md" className="app-nav-bar">
+					<Container fluid className="app-nav-bar-inner-container">
+						<Navbar.Brand href="/reports">
+							Jetpack test results dashboard
+						</Navbar.Brand>
+						<Navbar.Toggle aria-controls="basic-navbar-nav" />
+						<Navbar.Collapse id="basic-navbar-nav">
+							<Nav
+								activeKey={ location.pathname }
+								className="ml-auto"
+							>
+								<Nav.Link href="/reports">Reports</Nav.Link>
+								<Nav.Link href="/metrics">Metrics</Nav.Link>
+							</Nav>
+						</Navbar.Collapse>
+					</Container>
+				</Navbar>
+				<BrowserRouter>
+				<Routes>
+					<Navigate from="/" to="/reports" />
+					<Route exact path="/reports" element={ <Reports /> } />
+					<Route exact path="/metrics" element={ <Metrics /> } />
+				</Routes>
+				</BrowserRouter>
 			</div>
 			<footer className="App-footer">
 				<div>
