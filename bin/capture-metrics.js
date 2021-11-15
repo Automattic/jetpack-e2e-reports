@@ -48,7 +48,7 @@ function getFailedTests() {
  * Check if two summary objects are the same, comparing by the start/stop timestampts
  *
  * @param {Object} lastRecord last record from Metrics file
- * @param {Object} newRecord  Run summary pulled from summary.json
+ * @param {Object} newRecord  Run summary pulled from reports.json
  * @return {boolean} whether two reports are identical
  */
 function isDuplicateRecord( lastRecord, newRecord ) {
