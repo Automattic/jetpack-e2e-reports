@@ -16,7 +16,7 @@ export default class Reports extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch( './summary.json', {
+		fetch( './data/summary.json', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',

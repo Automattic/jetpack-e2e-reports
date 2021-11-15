@@ -48,7 +48,7 @@ export default class E2EMetrics extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch( './metrics.json', {
+		fetch( './data/metrics.json', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',

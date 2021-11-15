@@ -3,7 +3,7 @@ const path = require( 'path' );
 const resultsDir = `${ process.env.RESULTS_PATH }/test-output-block-perf`;
 const baseReport = path.resolve( resultsDir, 'base.test.results.json' );
 const jetpackReport = path.resolve( resultsDir, 'jetpack.test.results.json' );
-const perfMetricsFile = 'docs/perf-metrics.json';
+const perfMetricsFile = 'docs/data/perf-metrics.json';
 
 /**
  * Loops through the performance report, and calculates an average per key

@@ -66,6 +66,6 @@ const docsSize = execSync( 'du -sh docs | cut -f1' )
 json.docsSize = docsSize;
 
 fs.writeFileSync(
-	path.resolve( 'docs/summary.json' ),
+	path.resolve( 'docs/data/summary.json' ),
 	JSON.stringify( json, null, 2 )
 );
