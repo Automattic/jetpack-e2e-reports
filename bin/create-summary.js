@@ -25,7 +25,7 @@ for ( const dirName of getReportsDirs() ) {
 
 	try {
 		const fileData = fs.readFileSync( `docs/${ dirName }/metadata.json` );
-		metadata = JSON.parse( fileData );
+		metadata = JSON.parse( fileData.toString() );
 	} catch ( error ) {
 		if ( error.code === 'ENOENT' ) {
 		} else {
