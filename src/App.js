@@ -4,9 +4,11 @@ import ReactGA from 'react-ga';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import Reports from './Reports';
-import Metrics from './Metrics';
+import Reports from './components/Reports';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Tests from './components/Tests';
+import Failures from './components/Failures';
+import Performance from './components/Performance';
 
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
@@ -31,7 +33,11 @@ function App() {
 								className="ml-auto"
 							>
 								<Nav.Link href="/reports">Reports</Nav.Link>
-								<Nav.Link href="/metrics">Metrics</Nav.Link>
+								<Nav.Link href="/tests">Tests</Nav.Link>
+								<Nav.Link href="/failures">Failures</Nav.Link>
+								<Nav.Link href="/performance">
+									Performance
+								</Nav.Link>
 							</Nav>
 						</Navbar.Collapse>
 					</Container>
@@ -39,7 +45,17 @@ function App() {
 				<BrowserRouter>
 					<Routes>
 						<Route exact path="/reports" element={ <Reports /> } />
-						<Route exact path="/metrics" element={ <Metrics /> } />
+						<Route exact path="/tests" element={ <Tests /> } />
+						<Route
+							exact
+							path="/failures"
+							element={ <Failures /> }
+						/>
+						<Route
+							exact
+							path="/performance"
+							element={ <Performance /> }
+						/>
 					</Routes>
 				</BrowserRouter>
 			</div>
