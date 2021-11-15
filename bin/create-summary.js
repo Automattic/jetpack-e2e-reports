@@ -1,28 +1,16 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
-
-const excluded = require( '../src/config.json' ).ignore;
+const { getReportsDirs } = require( './utils' );
 
 const json = { reports: [] };
 
-const dirs = fs
-	.readdirSync( 'docs', { withFileTypes: true } )
-	.filter( ( dirent ) => dirent.isDirectory() )
-	.map( ( dirent ) => dirent.name );
-
-for ( const dirName of dirs ) {
-	// Skip excluded dirs
-	if ( excluded.includes( dirName ) ) {
-		console.log( `Ignore ${ dirName }` );
-		continue;
-	}
-
+for ( const dirName of getReportsDirs() ) {
 	// get the statistics from report/widgets/reports.json
 	const summaryData = fs.readFileSync(
 		path.resolve( 'docs', dirName, 'report/widgets/reports.json' )
 	);
-	const statistic = JSON.parse( summaryData ).statistic;
+	const statistic = JSON.parse( summaryData.toString() ).statistic;
 
 	// metadata
 

@@ -11,7 +11,7 @@ import {
 	Legend,
 } from 'recharts';
 
-export default class PerfMetrics extends React.Component {
+export default class Performance extends React.Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -65,7 +65,7 @@ export default class PerfMetrics extends React.Component {
 			} );
 		} );
 
-		console.log( JSON.stringify( result ) );
+		// console.log( JSON.stringify( result ) );
 		this.setState( { chartData: Object.values( result ) } );
 	}
 
@@ -96,7 +96,7 @@ export default class PerfMetrics extends React.Component {
 			},
 			{ failed: 0, testCases: 0, total: 0 }
 		);
-		console.log( JSON.stringify( stats ) );
+		// console.log( JSON.stringify( stats ) );
 
 		const failureRate = ( stats.failed / stats.testCases ) * 100;
 		return (
@@ -185,7 +185,7 @@ export default class PerfMetrics extends React.Component {
 	render() {
 		return (
 			<div>
-				<span>PERF METRICS</span>
+				<span>Performance metrics</span>
 				{ this.renderChart() }
 			</div>
 		);
