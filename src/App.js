@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactGA from 'react-ga';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,19 +6,14 @@ import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import Reports from './Reports';
 import Metrics from './Metrics';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
 
 function App() {
-	const [ activeNavbar, setActiveNavbar ] = useState( 'reports' );
-	if (
-		location.hash &&
-		[ 'reports', 'metrics' ].includes( location.hash ) &&
-		activeNavbar !== location.hash
-	) {
-		setActiveNavbar( location.hash );
+	if ( location.pathname === '/' ) {
+		location.pathname = '/reports';
 	}
 
 	return (
@@ -26,7 +21,7 @@ function App() {
 			<div className="App-content">
 				<Navbar variant="dark" expand="md" className="app-nav-bar">
 					<Container fluid className="app-nav-bar-inner-container">
-						<Navbar.Brand href="/reports">
+						<Navbar.Brand href="/">
 							Jetpack test results dashboard
 						</Navbar.Brand>
 						<Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -42,11 +37,10 @@ function App() {
 					</Container>
 				</Navbar>
 				<BrowserRouter>
-				<Routes>
-					<Navigate from="/" to="/reports" />
-					<Route exact path="/reports" element={ <Reports /> } />
-					<Route exact path="/metrics" element={ <Metrics /> } />
-				</Routes>
+					<Routes>
+						<Route exact path="/reports" element={ <Reports /> } />
+						<Route exact path="/metrics" element={ <Metrics /> } />
+					</Routes>
 				</BrowserRouter>
 			</div>
 			<footer className="App-footer">
