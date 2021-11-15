@@ -70,7 +70,7 @@ export default class PerfMetrics extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch( './perf-metrics.json', {
+		fetch( './data/perf-metrics.json', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
