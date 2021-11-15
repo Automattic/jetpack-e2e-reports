@@ -57,9 +57,11 @@ for ( const dirName of getReportsDirs() ) {
 				report: dirName,
 				status:
 					testInfo.status === 'broken' ? 'failed' : testInfo.status,
+				source: testInfo.source,
 			};
 
 			test.results.push( result );
+
 			json.tests.push( test );
 		}
 	}
