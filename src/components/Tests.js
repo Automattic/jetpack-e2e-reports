@@ -88,10 +88,16 @@ export default class Tests extends React.Component {
 
 	getResultsLine( test ) {
 		const badges = test.results.slice( -100 ).map( ( result, id ) => {
+			let className = 'no-source';
+
+			if ( result.source ) {
+				className = '';
+			}
+
 			return (
 				<Badge
 					key={ id }
-					className={ `label label-small label-status-${ result.status }` }
+					className={ `label label-small label-status-${ result.status } ${ className }` }
 				>
 					&nbsp;
 				</Badge>
@@ -105,10 +111,10 @@ export default class Tests extends React.Component {
 			<div key={ id } className="test-container">
 				<h1>{ test.name }</h1>
 				<div className="row">
-					<div className="col-sm-auto test-container-totals-badges">
+					<div className="col-sm-auto left">
 						{ this.getTotalsBadges( test ) }
 					</div>
-					<div className="col test-container-results">
+					<div className="col left">
 						{ this.getResultsLine( test ) }
 					</div>
 				</div>
@@ -244,6 +250,7 @@ export default class Tests extends React.Component {
 		return (
 			<div>
 				<ReactEcharts option={ chartOptions } />
+				<hr />
 				<div>
 					{ tests.map( ( test, id ) =>
 						this.getTestContent( test, id )

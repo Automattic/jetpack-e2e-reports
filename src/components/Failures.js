@@ -3,6 +3,7 @@ import ReactGA from 'react-ga';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import { sort } from '../utils';
+import { Badge } from 'react-bootstrap';
 
 export default class Failures extends React.Component {
 	state = {
@@ -94,15 +95,62 @@ export default class Failures extends React.Component {
 
 	getListOfTests( tests ) {
 		return (
-			<ul className="test-container-results list-unstyled">
-				{ tests.slice( -100 ).map( ( test, id ) => {
+			<div>
+				{ tests.map( ( test, id ) => {
 					return (
-						<li key={ id }>
-							{ test.times.length } x { test.name }
-						</li>
+						<Badge
+							key={ id }
+							className="label label-status-skipped"
+						>
+							{ test.name }{ ' ' }
+							<Badge className={ `badge-pill stat-pill` }>
+								{ test.times.length }
+							</Badge>
+						</Badge>
 					);
 				} ) }
-			</ul>
+			</div>
+		);
+	}
+
+	getListOfFailures( results ) {
+		sort( results, 'time', true );
+
+		return (
+			<div>
+				{ results.map( ( result, id ) => {
+					let badge = moment( result.time ).format(
+						'MMM Do, h:mm a'
+					);
+
+					let className = 'no-source';
+
+					if ( result.source ) {
+						const url = `${ result.report }/report/#testresult/${ result.source }`;
+						badge = (
+							<a
+								href={ url }
+								target="_blank"
+								rel="noreferrer"
+								className="badge-link"
+							>
+								{ badge }
+							</a>
+						);
+
+						className = '';
+					}
+
+					return (
+						<Badge
+							key={ id }
+							className={ `label label-status-failed ${ className }` }
+						>
+							{ badge }
+						</Badge>
+					);
+				} ) }
+			</div>
 		);
 	}
 
@@ -117,12 +165,15 @@ export default class Failures extends React.Component {
 
 		return (
 			<div className="error-container" key={ id }>
-				<div className="error-container-header">
+				<div className="row left">
 					<pre className="error-container-trace">{ error.trace }</pre>
 				</div>
-				<div className="error-container-stats">{ details }</div>
-				<div className="error-container-tests-list">
+				<div className="row error-details">{ details }</div>
+				<div className="row">
 					{ this.getListOfTests( error.tests ) }
+				</div>
+				<div className="row">
+					{ this.getListOfFailures( error.results ) }
 				</div>
 			</div>
 		);
@@ -273,12 +324,15 @@ export default class Failures extends React.Component {
 						</div>
 					</div>
 				</div>
+				<hr />
 				<div className="row">
 					<div className="text-right col small">
 						updated { lastUpdate }
 					</div>
 				</div>
+				<hr />
 				<ReactEcharts option={ chartOptions } />
+				<hr />
 				<div>
 					{ errors.map( ( error, id ) =>
 						this.getErrorContent( error, id )
