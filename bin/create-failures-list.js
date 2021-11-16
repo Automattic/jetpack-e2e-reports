@@ -1,24 +1,19 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
-const { getReportsDirs, cleanStacktrace } = require( './utils' );
+const {
+	getReportsDirs,
+	cleanStacktrace,
+	getFilesFromDir,
+	getTestInfoFromTestCaseFile,
+} = require( './utils' );
 
 const json = { errors: [], lastUpdate: '' };
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
-	const testFiles = fs
-		.readdirSync( dirPath, {
-			withFileTypes: true,
-		} )
-		.filter(
-			( dirent ) => dirent.isFile() && dirent.name.endsWith( '.json' )
-		)
-		.map( ( dirent ) => dirent.name );
 
-	for ( const testFile of testFiles ) {
-		// console.log( `Reading test files for report ${ dirName }` );
-		const filePath = `./docs/${ dirName }/report/data/test-cases/${ testFile }`;
-		const testInfo = JSON.parse( fs.readFileSync( filePath ).toString() );
+	for ( const testFile of getFilesFromDir( dirPath, '.json' ) ) {
+		const testInfo = getTestInfoFromTestCaseFile( dirName, testFile );
 
 		if (
 			( ! testInfo.statusTrace && ! testInfo.statusMessage ) ||
