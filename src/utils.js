@@ -56,6 +56,7 @@ function writeJson( jsonData, filePath, pretty = false ) {
 
 function sort( data, sortKey, desc = false ) {
 	const sorted = data.sort( ( a, b ) =>
+		// eslint-disable-next-line no-nested-ternary
 		a[ sortKey ] > b[ sortKey ] ? 1 : b[ sortKey ] > a[ sortKey ] ? -1 : 0
 	);
 
