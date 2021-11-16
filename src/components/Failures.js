@@ -1,15 +1,18 @@
 import React from 'react';
 import ReactGA from 'react-ga';
+import moment from 'moment';
+import ReactEcharts from 'echarts-for-react';
+import { sort } from '../utils';
 
 export default class Failures extends React.Component {
 	state = {
-		errors: [],
-		lastUpdate: undefined,
+		errorsData: {},
+		weeklyData: [],
 		isDataFetched: false,
 	};
 
-	componentDidMount() {
-		fetch( './data/errors.json', {
+	async componentDidMount() {
+		await fetch( './data/errors.json', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
@@ -18,12 +21,29 @@ export default class Failures extends React.Component {
 			.then( ( response ) => response.json() )
 			.then( ( jsonData ) => {
 				this.setState( {
-					errors: jsonData.errors,
-					lastUpdate: jsonData.lastUpdate,
-					isDataFetched: true,
+					errorsData: jsonData,
 				} );
 			} )
 			.catch( console.log );
+
+		await fetch( './data/weekly.json', {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		} )
+			.then( ( response ) => response.json() )
+			.then( ( jsonData ) => {
+				this.setState( {
+					weeklyData: jsonData,
+				} );
+			} )
+			.catch( console.log );
+
+		this.setState( {
+			isDataFetched: true,
+		} );
+
 		ReactGA.pageview( '/failures' );
 	}
 
@@ -40,27 +60,6 @@ export default class Failures extends React.Component {
 	getResultBadge( result ) {
 		const reportUrl = `https://automattic.github.io/jetpack-e2e-reports/${ result.report }/report/`;
 		const sourceUrl = `${ result.report }/report/#testresult/${ result.source }`;
-
-		// let badge = `${ result.test }\n
-		// 					${ result.report }, ${ new Date( result.time ).toLocaleString() }`;
-
-		// if ( result.source ) {
-		// 	const sourceUrl = `${ result.report }/report/#testresult/${ result.source }`;
-		// 	badge = (
-		// 		<a
-		// 			className="report-link"
-		// 			href={ sourceUrl }
-		// 			target="_blank"
-		// 			rel="noreferrer"
-		// 		>
-		// 			{ `${ result.test }` }
-		// 			<br />
-		// 			{ `${ result.report }, ${ new Date(
-		// 				result.time
-		// 			).toLocaleString() }` }
-		// 		</a>
-		// 	);
-		// }
 
 		return (
 			<div className={ 'label label-status-neutral' }>
@@ -108,16 +107,20 @@ export default class Failures extends React.Component {
 	}
 
 	getErrorContent( error, id ) {
+		let details = `${ error.total } times since ${ moment(
+			error.oldest
+		).fromNow() }. Last failed ${ moment( error.newest ).fromNow() }`;
+
+		if ( error.total === 1 ) {
+			details = `once ${ moment( error.oldest ).fromNow() }`;
+		}
+
 		return (
 			<div className="error-container" key={ id }>
 				<div className="error-container-header">
 					<pre className="error-container-trace">{ error.trace }</pre>
 				</div>
-				<div className="error-container-stats">
-					{ error.total } times since{ ' ' }
-					{ new Date( error.oldest ).toLocaleString() }. Last failed
-					on { new Date( error.oldest ).toLocaleString() }
-				</div>
+				<div className="error-container-stats">{ details }</div>
 				<div className="error-container-tests-list">
 					{ this.getListOfTests( error.tests ) }
 				</div>
@@ -128,7 +131,7 @@ export default class Failures extends React.Component {
 	render() {
 		if ( ! this.state.isDataFetched ) return null;
 
-		const errors = this.state.errors;
+		const errors = this.state.errorsData.errors;
 
 		for ( const error of errors ) {
 			error.total = error.results.length;
@@ -162,6 +165,90 @@ export default class Failures extends React.Component {
 		const allErrors = errors.map( ( e ) => e.results ).flat();
 		const totalErrors = allErrors.length;
 
+		const lastUpdate = moment( this.state.errorsData.lastUpdate ).fromNow();
+
+		const weeklyStats = this.state.weeklyData;
+
+		weeklyStats.forEach( ( week ) => {
+			week.failedRate = ( week.failed / week.total ).toFixed( 2 );
+		} );
+
+		sort( weeklyStats, 'date' );
+
+		const chartOptions = {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'cross',
+				},
+			},
+			xAxis: [
+				{
+					type: 'category',
+					data: weeklyStats.map( function ( e ) {
+						return e.date;
+					} ),
+				},
+			],
+			yAxis: [
+				{
+					type: 'value',
+					splitLine: {
+						lineStyle: {
+							type: 'dotted',
+							color: '#6b6d76',
+						},
+					},
+				},
+				{
+					type: 'value',
+					splitLine: {
+						lineStyle: {
+							type: 'dashed',
+							color: '#6b6d76',
+						},
+					},
+					min: 0,
+					axisLabel: {
+						formatter: '{value} %',
+					},
+				},
+			],
+			// dataZoom: [
+			// 	{
+			// 		type: 'inside',
+			// 		start: 0,
+			// 		end: 100,
+			// 	},
+			// 	{
+			// 		start: 0,
+			// 		end: 100,
+			// 	},
+			// ],
+			series: [
+				{
+					name: 'failure rate',
+					type: 'line',
+					yAxisIndex: 1,
+					color: '#e38474',
+					data: weeklyStats.map( function ( e ) {
+						return e.failedRate;
+					} ),
+				},
+				{
+					name: 'failed tests',
+					type: 'bar',
+					emphasis: {
+						focus: 'series',
+					},
+					color: '#fd5a3e',
+					data: weeklyStats.map( function ( e ) {
+						return e.failed;
+					} ),
+				},
+			],
+		};
+
 		return (
 			<div>
 				<div className="row text-center">
@@ -188,12 +275,15 @@ export default class Failures extends React.Component {
 				</div>
 				<div className="row">
 					<div className="text-right col small">
-						Last updated on { this.state.lastUpdate }
+						updated { lastUpdate }
 					</div>
 				</div>
-				{ errors.map( ( error, id ) =>
-					this.getErrorContent( error, id )
-				) }
+				<ReactEcharts option={ chartOptions } />
+				<div>
+					{ errors.map( ( error, id ) =>
+						this.getErrorContent( error, id )
+					) }
+				</div>
 			</div>
 		);
 	}

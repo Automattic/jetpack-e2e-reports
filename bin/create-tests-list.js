@@ -4,7 +4,7 @@ const {
 	getReportsDirs,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
-} = require( './utils' );
+} = require( '../src/utils' );
 
 const json = { tests: [], lastUpdate: '' };
 

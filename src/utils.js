@@ -1,4 +1,5 @@
 const fs = require( 'fs' );
+const path = require( 'path' );
 
 function getReportsDirs() {
 	const excluded = require( '../src/config.json' ).ignore;
@@ -46,9 +47,30 @@ function getTestInfoFromTestCaseFile( reportName, fileName ) {
 	return JSON.parse( fs.readFileSync( filePath ).toString() );
 }
 
+function writeJson( jsonData, filePath, pretty = false ) {
+	fs.writeFileSync(
+		path.resolve( filePath ),
+		JSON.stringify( jsonData, null, pretty ? 2 : 0 )
+	);
+}
+
+function sort( data, sortKey, desc = false ) {
+	const sorted = data.sort( ( a, b ) =>
+		a[ sortKey ] > b[ sortKey ] ? 1 : b[ sortKey ] > a[ sortKey ] ? -1 : 0
+	);
+
+	if ( desc ) {
+		return sorted.reverse();
+	}
+
+	return sorted;
+}
+
 module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
 	cleanStacktrace,
+	writeJson,
+	sort,
 };
