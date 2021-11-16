@@ -1,14 +1,10 @@
 import React from 'react';
 import ReactGA from 'react-ga';
-import { Badge } from 'react-bootstrap';
-import * as path from 'path';
-import * as fs from 'fs';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCodeBranch } from '@fortawesome/free-solid-svg-icons';
 
 export default class Failures extends React.Component {
 	state = {
 		errors: [],
+		lastUpdate: undefined,
 		isDataFetched: false,
 	};
 
@@ -23,6 +19,7 @@ export default class Failures extends React.Component {
 			.then( ( jsonData ) => {
 				this.setState( {
 					errors: jsonData.errors,
+					lastUpdate: jsonData.lastUpdate,
 					isDataFetched: true,
 				} );
 			} )
@@ -155,16 +152,45 @@ export default class Failures extends React.Component {
 					times: resultsForTest.map( ( r ) => r.time ),
 				} );
 			}
-
-			console.log( error.tests );
 		}
 
 		errors.sort( ( a, b ) => {
 			return b.results.length - a.results.length;
 		} );
 
+		const distinctErrors = errors.length;
+		const allErrors = errors.map( ( e ) => e.results ).flat();
+		const totalErrors = allErrors.length;
+
 		return (
 			<div>
+				<div className="row text-center">
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">{ totalErrors }</span>
+							<br />
+							<span className="stat-description">
+								total errors
+							</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ distinctErrors }
+							</span>
+							<br />
+							<span className="stat-description">
+								distinct errors
+							</span>
+						</div>
+					</div>
+				</div>
+				<div className="row">
+					<div className="text-right col small">
+						Last updated on { this.state.lastUpdate }
+					</div>
+				</div>
 				{ errors.map( ( error, id ) =>
 					this.getErrorContent( error, id )
 				) }

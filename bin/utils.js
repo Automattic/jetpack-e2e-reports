@@ -13,6 +13,18 @@ function getReportsDirs() {
 		.map( ( dirent ) => dirent.name );
 }
 
+function getFilesFromDir( dirPath, fileExtension = '' ) {
+	return fs
+		.readdirSync( dirPath, {
+			withFileTypes: true,
+		} )
+		.filter(
+			( dirent ) =>
+				dirent.isFile() && dirent.name.endsWith( fileExtension )
+		)
+		.map( ( dirent ) => dirent.name );
+}
+
 function cleanStacktrace( message, trace ) {
 	trace = trace
 		.split( '\n' )
@@ -29,7 +41,14 @@ function cleanStacktrace( message, trace ) {
 	return `${ message }\n${ trace }`;
 }
 
+function getTestInfoFromTestCaseFile( reportName, fileName ) {
+	const filePath = `./docs/${ reportName }/report/data/test-cases/${ fileName }`;
+	return JSON.parse( fs.readFileSync( filePath ).toString() );
+}
+
 module.exports = {
 	getReportsDirs,
+	getFilesFromDir,
+	getTestInfoFromTestCaseFile,
 	cleanStacktrace,
 };
