@@ -5,7 +5,7 @@ const {
 	cleanStacktrace,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
-} = require( './utils' );
+} = require( '../src/utils' );
 
 const json = { errors: [], lastUpdate: '' };
 
