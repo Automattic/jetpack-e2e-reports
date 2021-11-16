@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Tue Nov 16 04:05:08 UTC 2021","Tue Nov 16 04:05:18 UTC 2021","10118","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Tue Nov 16 08:05:11 UTC 2021","Tue Nov 16 08:05:21 UTC 2021","10427","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -43,7 +43,7 @@ async () => {
 
 ```
 "
-"skipped","Tue Nov 16 04:04:44 UTC 2021","Tue Nov 16 04:04:44 UTC 2021","56","specs","","pro-blocks.test.js","","","WordAds block","
+"skipped","Tue Nov 16 08:04:50 UTC 2021","Tue Nov 16 08:04:50 UTC 2021","56","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -82,7 +82,39 @@ async () => {
 
 ```
 "
-"passed","Tue Nov 16 04:04:57 UTC 2021","Tue Nov 16 04:05:04 UTC 2021","7441","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Tue Nov 16 08:04:31 UTC 2021","Tue Nov 16 08:04:39 UTC 2021","8170","specs","","pro-blocks.test.js","","","MailChimp Block","
+### Test
+```typescript
+async () => {
+  let blockId;
+  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.MailchimpBlock.name(),
+      _wpAdmin.MailchimpBlock.title()
+    );
+  });
+  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
+    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
+    await mcBlock.connect();
+  });
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that MailChimp block is rendered"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Tue Nov 16 08:04:58 UTC 2021","Tue Nov 16 08:05:06 UTC 2021","8141","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -120,39 +152,7 @@ async () => {
 
 ```
 "
-"passed","Tue Nov 16 04:04:21 UTC 2021","Tue Nov 16 04:04:30 UTC 2021","8383","specs","","pro-blocks.test.js","","","MailChimp Block","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.MailchimpBlock.name(),
-      _wpAdmin.MailchimpBlock.title()
-    );
-  });
-  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
-    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
-    await mcBlock.connect();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that MailChimp block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 16 04:04:36 UTC 2021","Tue Nov 16 04:04:44 UTC 2021","7584","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Tue Nov 16 08:04:42 UTC 2021","Tue Nov 16 08:04:50 UTC 2021","7195","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
