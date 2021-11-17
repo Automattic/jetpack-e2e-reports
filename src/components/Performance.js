@@ -58,8 +58,6 @@ export default class Performance extends React.Component {
 			} );
 		} );
 
-		// console.log( JSON.stringify( result ) );
-		// this.setState( { chartData: Object.values( result ) } );
 		return Object.values( result );
 	}
 
@@ -76,7 +74,6 @@ export default class Performance extends React.Component {
 					rawData: jsonData,
 					isDataFetched: true,
 				} );
-				// this.prepareChartData( jsonData );
 			} )
 			.catch( console.log );
 
