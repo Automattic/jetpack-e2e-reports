@@ -184,6 +184,10 @@ export default class Failures extends React.Component {
 		sort( weeklyStats, 'date' );
 
 		const chartOptions = {
+			grid: {
+				left: 50,
+				right: 50,
+			},
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -227,17 +231,6 @@ export default class Failures extends React.Component {
 					},
 				},
 			],
-			// dataZoom: [
-			// 	{
-			// 		type: 'inside',
-			// 		start: 0,
-			// 		end: 100,
-			// 	},
-			// 	{
-			// 		start: 0,
-			// 		end: 100,
-			// 	},
-			// ],
 			series: [
 				{
 					name: 'failure rate',

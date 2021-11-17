@@ -166,6 +166,10 @@ export default class Tests extends React.Component {
 
 		// chart options
 		const chartOptions = {
+			grid: {
+				left: 50,
+				right: 50,
+			},
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -212,11 +216,11 @@ export default class Tests extends React.Component {
 			dataZoom: [
 				{
 					type: 'inside',
-					start: 70,
+					start: 60,
 					end: 100,
 				},
 				{
-					start: 70,
+					start: 60,
 					end: 100,
 				},
 			],
