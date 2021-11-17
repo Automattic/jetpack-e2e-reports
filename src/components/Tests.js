@@ -155,6 +155,11 @@ export default class Tests extends React.Component {
 					type: 'cross',
 				},
 			},
+			legend: {
+				textStyle: {
+					color: '#6b6d76',
+				},
+			},
 			xAxis: [
 				{
 					type: 'category',
@@ -178,7 +183,7 @@ export default class Tests extends React.Component {
 					splitLine: {
 						lineStyle: {
 							type: 'dashed',
-							color: '#6b6d76',
+							color: 'rgba(107,109,118,0.47)',
 						},
 					},
 					min: 0,
@@ -204,6 +209,8 @@ export default class Tests extends React.Component {
 					type: 'line',
 					yAxisIndex: 1,
 					color: '#e38474',
+					symbol: 'roundRect',
+					symbolSize: 7,
 					data: dailyStats.map( function ( e ) {
 						return e.failedRate;
 					} ),
