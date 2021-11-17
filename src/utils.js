@@ -74,13 +74,15 @@ function sort( data, sortKey, desc = false ) {
  * @param {Array} arr
  */
 function cleanSources( arr ) {
-	for ( const item of arr ) {
-		const sourcePath = `docs/${ item.report }/report/data/test-cases/${ item.source }`;
-		if ( ! fs.existsSync( sourcePath ) ) {
-			console.log( `${ sourcePath } not found, removing source` );
-			delete item.source;
+	arr.forEach( ( item ) => {
+		if ( item.source ) {
+			const sourcePath = `docs/${ item.report }/report/data/test-cases/${ item.source }`;
+			if ( ! fs.existsSync( sourcePath ) ) {
+				console.log( `${ sourcePath } not found, removing source` );
+				delete item.source;
+			}
 		}
-	}
+	} );
 }
 
 module.exports = {
