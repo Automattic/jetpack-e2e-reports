@@ -53,6 +53,7 @@ export default class Tests extends React.Component {
 			( label, id ) => {
 				const count = test[ label ];
 
+				// hide statuses with no results
 				const classHide = count === 0 ? 'hide' : '';
 
 				let rate = (
@@ -122,14 +123,16 @@ export default class Tests extends React.Component {
 	getTestContent( test, id ) {
 		return (
 			<div key={ id } className="test-container">
-				<h1>{ test.name }</h1>
 				<div className="row">
-					<div className="col-sm-auto left">
+					<div className="col-sm-auto">
+						<h1>{ test.name }</h1>
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-sm-auto">
 						{ this.getTotalsBadges( test ) }
 					</div>
-					<div className="col left">
-						{ this.getResultsLine( test ) }
-					</div>
+					<div className="col">{ this.getResultsLine( test ) }</div>
 				</div>
 			</div>
 		);
@@ -171,12 +174,23 @@ export default class Tests extends React.Component {
 
 		sort( dailyStats, 'date' );
 
+		const allDates = dailyStats.map( function ( e ) {
+			return e.date;
+		} );
+
 		// chart options
 		const chartOptions = {
 			grid: {
 				left: 50,
 				right: 50,
 			},
+			dataZoom: [
+				{
+					type: 'slider',
+					startValue: allDates[ allDates.length - 14 ],
+					endValue: allDates[ allDates.length - 1 ],
+				},
+			],
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -218,17 +232,6 @@ export default class Tests extends React.Component {
 					axisLabel: {
 						formatter: '{value} %',
 					},
-				},
-			],
-			dataZoom: [
-				{
-					type: 'inside',
-					start: 60,
-					end: 100,
-				},
-				{
-					start: 60,
-					end: 100,
 				},
 			],
 			series: [
