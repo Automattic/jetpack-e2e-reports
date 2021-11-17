@@ -4,6 +4,7 @@ const {
 	getReportsDirs,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
+	cleanSources,
 } = require( '../src/utils' );
 
 const json = { tests: [], lastUpdate: '' };
@@ -54,11 +55,7 @@ for ( const dirName of getReportsDirs() ) {
 }
 
 // clean missing sources
-// const allResults = json.tests.map( ( results ) => results ).flat();
-//
-// for ( const result of allResults ) {
-// 	console.log( result.source );
-// }
+cleanSources( json.tests.map( ( t ) => t.results ).flat() );
 
 json.lastUpdate = new Date();
 // console.log( JSON.stringify( json, null, 2 ) );
