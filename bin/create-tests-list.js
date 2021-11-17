@@ -31,6 +31,7 @@ for ( const dirName of getReportsDirs() ) {
 						testInfo.status === 'broken'
 							? 'failed'
 							: testInfo.status,
+					source: testInfo.source,
 				} );
 			}
 		} else {
@@ -51,6 +52,13 @@ for ( const dirName of getReportsDirs() ) {
 		}
 	}
 }
+
+// clean missing sources
+// const allResults = json.tests.map( ( results ) => results ).flat();
+//
+// for ( const result of allResults ) {
+// 	console.log( result.source );
+// }
 
 json.lastUpdate = new Date();
 // console.log( JSON.stringify( json, null, 2 ) );
