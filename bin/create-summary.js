@@ -1,28 +1,16 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
-
-const excluded = require( '../src/config.json' ).ignore;
+const { getReportsDirs } = require( '../src/utils' );
 
 const json = { reports: [] };
 
-const dirs = fs
-	.readdirSync( 'docs', { withFileTypes: true } )
-	.filter( ( dirent ) => dirent.isDirectory() )
-	.map( ( dirent ) => dirent.name );
-
-for ( const dirName of dirs ) {
-	// Skip excluded dirs
-	if ( excluded.includes( dirName ) ) {
-		console.log( `Ignore ${ dirName }` );
-		continue;
-	}
-
-	// get the statistics from report/widgets/summary.json
+for ( const dirName of getReportsDirs() ) {
+	// get the statistics from report/widgets/reports.json
 	const summaryData = fs.readFileSync(
-		path.resolve( 'docs', dirName, 'report/widgets/summary.json' )
+		path.resolve( 'docs', dirName, 'report/widgets/reports.json' )
 	);
-	const statistic = JSON.parse( summaryData ).statistic;
+	const statistic = JSON.parse( summaryData.toString() ).statistic;
 
 	// metadata
 
@@ -37,7 +25,7 @@ for ( const dirName of dirs ) {
 
 	try {
 		const fileData = fs.readFileSync( `docs/${ dirName }/metadata.json` );
-		metadata = JSON.parse( fileData );
+		metadata = JSON.parse( fileData.toString() );
 	} catch ( error ) {
 		if ( error.code === 'ENOENT' ) {
 		} else {
@@ -66,6 +54,6 @@ const docsSize = execSync( 'du -sh docs | cut -f1' )
 json.docsSize = docsSize;
 
 fs.writeFileSync(
-	path.resolve( 'docs/data/summary.json' ),
+	path.resolve( 'docs/data/reports.json' ),
 	JSON.stringify( json, null, 2 )
 );
