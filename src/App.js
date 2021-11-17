@@ -21,7 +21,7 @@ function App() {
 			<div className="App-content">
 				<Navbar variant="dark" expand="md" className="app-nav-bar">
 					<Container fluid className="app-nav-bar-inner-container">
-						<Navbar.Brand href={ `${basename}/#/` }>
+						<Navbar.Brand href={ `${ basename }/#/` }>
 							Jetpack test dashboard
 						</Navbar.Brand>
 						<Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -30,16 +30,18 @@ function App() {
 								activeKey={ location.pathname }
 								className="ml-auto"
 							>
-								<Nav.Link href={ `${basename}/#/reports` }>
+								<Nav.Link href={ `${ basename }/#/reports` }>
 									Reports
 								</Nav.Link>
-								<Nav.Link href={ `${basename}/#/tests` }>
+								<Nav.Link href={ `${ basename }/#/tests` }>
 									Tests
 								</Nav.Link>
-								<Nav.Link href={ `${basename}/#/failures` }>
+								<Nav.Link href={ `${ basename }/#/failures` }>
 									Failures
 								</Nav.Link>
-								<Nav.Link href={ `${basename}/#/performance` }>
+								<Nav.Link
+									href={ `${ basename }/#/performance` }
+								>
 									Performance
 								</Nav.Link>
 							</Nav>
