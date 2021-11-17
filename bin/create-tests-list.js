@@ -5,9 +5,12 @@ const {
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
 	cleanSources,
+	writeJson,
 } = require( '../src/utils' );
 
-const json = { tests: [], lastUpdate: '' };
+const dataFilePath = path.resolve( 'docs/data/tests.json' );
+// const json = { tests: [], lastUpdate: '' };
+const json = JSON.parse( fs.readFileSync( dataFilePath ).toString() );
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
@@ -20,11 +23,13 @@ for ( const dirName of getReportsDirs() ) {
 		);
 
 		if ( existingTest.length > 0 ) {
+			// test already exists
 			const existingResult = existingTest[ 0 ].results.filter(
 				( t ) => t.time === testInfo.time.stop
 			);
 
 			if ( existingResult.length === 0 ) {
+				// result doesn't exists, push it
 				existingTest[ 0 ].results.push( {
 					time: testInfo.time.stop,
 					report: dirName,
@@ -36,6 +41,7 @@ for ( const dirName of getReportsDirs() ) {
 				} );
 			}
 		} else {
+			// test doesn't exist
 			const test = {
 				name: testInfo.name,
 				results: [],
@@ -58,13 +64,5 @@ for ( const dirName of getReportsDirs() ) {
 cleanSources( json.tests.map( ( t ) => t.results ).flat() );
 
 json.lastUpdate = new Date();
-// console.log( JSON.stringify( json, null, 2 ) );
 
-if ( process.env.CLEAN_DATA ) {
-	fs.writeFileSync( path.resolve( 'docs/data/tests.json' ), '' );
-}
-
-fs.writeFileSync(
-	path.resolve( 'docs/data/tests.json' ),
-	JSON.stringify( json )
-);
+writeJson( json, dataFilePath );

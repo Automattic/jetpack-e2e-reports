@@ -1,14 +1,15 @@
 const fs = require( 'fs' );
-const path = require( 'path' );
 const {
 	getReportsDirs,
 	cleanStacktrace,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
 	cleanSources,
+	writeJson,
 } = require( '../src/utils' );
 
-const json = { errors: [], lastUpdate: '' };
+const dataFile = 'docs/data/errors.json';
+const json = JSON.parse( fs.readFileSync( dataFile ).toString() );
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
@@ -68,11 +69,4 @@ cleanSources( json.errors.map( ( e ) => e.results ).flat() );
 
 json.lastUpdate = new Date();
 
-if ( process.env.CLEAN_DATA ) {
-	fs.writeFileSync( path.resolve( 'docs/data/errors.json' ), '' );
-}
-
-fs.writeFileSync(
-	path.resolve( 'docs/data/errors.json' ),
-	JSON.stringify( json )
-);
+writeJson( json, dataFile );

@@ -6,9 +6,12 @@ const {
 	sort,
 } = require( '../src/utils' );
 const moment = require( 'moment' );
+const fs = require( 'fs' );
 
-const dailyJson = [];
-const weeklyJson = [];
+const dailyDataFile = 'docs/data/daily.json';
+const weeklyDataFile = 'docs/data/weekly.json';
+const dailyJson = JSON.parse( fs.readFileSync( dailyDataFile ).toString() );
+const weeklyJson = JSON.parse( fs.readFileSync( weeklyDataFile ).toString() );
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
@@ -32,13 +35,8 @@ dailyJson.sort( ( a, b ) => {
 
 sort( weeklyJson, 'date', true );
 
-if ( process.env.CLEAN_DATA ) {
-	writeJson( '', 'docs/data/daily.json' );
-	writeJson( '', 'docs/data/weekly.json' );
-}
-
-writeJson( dailyJson, 'docs/data/daily.json' );
-writeJson( weeklyJson, 'docs/data/weekly.json' );
+writeJson( dailyJson, dailyDataFile );
+writeJson( weeklyJson, weeklyDataFile );
 
 function pushData( data, date, testInfo ) {
 	const existingKey = data.filter( ( k ) => k.date === date );
