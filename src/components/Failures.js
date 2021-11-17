@@ -81,7 +81,12 @@ export default class Failures extends React.Component {
 					let className = 'no-source';
 
 					if ( result.source ) {
-						const url = `${ result.report }/report/#testresult/${ result.source }`;
+						const url = `${
+							result.report
+						}/report/#testresult/${ result.source.replace(
+							/.json/,
+							''
+						) }`;
 						badge = (
 							<a
 								href={ url }
