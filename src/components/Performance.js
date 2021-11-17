@@ -1,31 +1,24 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 
-import {
-	LineChart,
-	Line,
-	Tooltip,
-	CartesianGrid,
-	XAxis,
-	YAxis,
-	Legend,
-} from 'recharts';
+import ReactEcharts from 'echarts-for-react';
 
 export default class Performance extends React.Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
 			rawData: [],
+			isDataFetched: false,
 		};
 	}
 
-	prepareChartData() {
+	prepareChartData( jsonData ) {
 		const result = {};
 
 		const calcPercent = ( base, comp ) => ( comp / base - 1 ) * 100;
 
 		const byDate = {};
-		this.state.rawData.forEach( ( record ) => {
+		jsonData.forEach( ( record ) => {
 			let date = new Date( record.date );
 			date = date.toISOString().split( 'T' )[ 0 ];
 			if ( ! byDate[ date ] ) {
@@ -66,11 +59,12 @@ export default class Performance extends React.Component {
 		} );
 
 		// console.log( JSON.stringify( result ) );
-		this.setState( { chartData: Object.values( result ) } );
+		// this.setState( { chartData: Object.values( result ) } );
+		return Object.values( result );
 	}
 
-	componentDidMount() {
-		fetch( './data/perf-metrics.json', {
+	async componentDidMount() {
+		await fetch( './data/perf-metrics.json', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
@@ -78,115 +72,144 @@ export default class Performance extends React.Component {
 		} )
 			.then( ( response ) => response.json() )
 			.then( ( jsonData ) => {
-				this.setState( { rawData: jsonData } );
-				this.prepareChartData();
+				this.setState( {
+					rawData: jsonData,
+					isDataFetched: true,
+				} );
+				// this.prepareChartData( jsonData );
 			} )
 			.catch( console.log );
 
-		ReactGA.pageview( '#metrics' );
-	}
-
-	renderStatsSummary() {
-		const stats = this.state.stats.reduce(
-			( acc, stat ) => {
-				acc.failed += stat.statistic.failed + stat.statistic.broken;
-				acc.testCases += stat.statistic.total;
-				acc.total++;
-				return acc;
-			},
-			{ failed: 0, testCases: 0, total: 0 }
-		);
-		// console.log( JSON.stringify( stats ) );
-
-		const failureRate = ( stats.failed / stats.testCases ) * 100;
-		return (
-			<div>
-				<p>
-					Failures: { failureRate }% Test case runs:{ ' ' }
-					{ stats.testCases } Total runs: { stats.total }
-				</p>
-			</div>
-		);
-	}
-
-	renderFailedTests() {
-		const failedTests = this.state.failedTests;
-		return failedTests.map( ( test, id ) => (
-			<div key={ id }>
-				{ test.fileName } { test.name } { test.error.statusMessage }{ ' ' }
-				{ test.error.statusTrace.substring( 20 ) }
-			</div>
-		) );
-	}
-
-	// const {
-	// 	serverResponse,
-	// 	firstPaint,
-	// 	domContentLoaded,
-	// 	loaded,
-	// 	firstContentfulPaint,
-	// 	firstBlock,
-	// 	type,
-	// 	focus,
-	// 	inserterOpen,
-	// 	inserterHover,
-	// 	inserterSearch,
-	// } = JSON.parse( results );
-	renderChart() {
-		return (
-			<div>
-				<LineChart
-					width={ 1200 }
-					height={ 300 }
-					data={ this.state.chartData }
-					margin={ { top: 5, right: 60, bottom: 5, left: 60 } }
-				>
-					<CartesianGrid stroke="white" />
-					<XAxis dataKey="date" stroke="white" />
-					<YAxis stroke="white" />
-					<Tooltip />
-					<Legend />
-					<Line
-						type="monotone"
-						dataKey="loaded"
-						stroke="blue"
-						isAnimationActive={ false }
-					/>
-					<Line
-						type="monotone"
-						dataKey="firstContentfulPaint"
-						stroke="green"
-						isAnimationActive={ false }
-					/>
-					<Line
-						type="monotone"
-						dataKey="type"
-						stroke="red"
-						isAnimationActive={ false }
-					/>
-
-					<Line
-						type="monotone"
-						dataKey="focus"
-						stroke="grey"
-						isAnimationActive={ false }
-					/>
-					<Line
-						type="monotone"
-						dataKey="inserterOpen"
-						stroke="magenta"
-						isAnimationActive={ false }
-					/>
-				</LineChart>
-			</div>
-		);
+		ReactGA.pageview( 'performance' );
 	}
 
 	render() {
+		if ( ! this.state.isDataFetched ) return null;
+
+		const chartData = this.prepareChartData( this.state.rawData );
+
+		const chartOptions = {
+			grid: {
+				left: 40,
+				right: 0,
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'cross',
+				},
+			},
+			legend: {
+				textStyle: {
+					color: '#6b6d76',
+				},
+			},
+			xAxis: [
+				{
+					type: 'category',
+					data: chartData.map( function ( e ) {
+						return e.date;
+					} ),
+				},
+			],
+			yAxis: [
+				{
+					type: 'value',
+					splitLine: {
+						lineStyle: {
+							type: 'dotted',
+							color: '#6b6d76',
+						},
+					},
+				},
+				{
+					type: 'value',
+					splitLine: {
+						lineStyle: {
+							type: 'dashed',
+							color: 'rgba(107,109,118,0.47)',
+						},
+					},
+					min: 0,
+					axisLabel: {
+						formatter: '{value} %',
+					},
+				},
+			],
+			dataZoom: [
+				{
+					type: 'inside',
+					start: 70,
+					end: 100,
+				},
+				{
+					start: 70,
+					end: 100,
+				},
+			],
+			series: [
+				{
+					name: 'loaded',
+					type: 'bar',
+					emphasis: {
+						focus: 'series',
+					},
+					color: 'rgba(115, 151, 75, 0.73)',
+					data: chartData.map( function ( e ) {
+						return e.loaded;
+					} ),
+				},
+				{
+					name: 'firstContentfulPaint',
+					type: 'bar',
+					emphasis: {
+						focus: 'series',
+					},
+					color: 'rgba(0,123,255,0.73)',
+					data: chartData.map( function ( e ) {
+						return e.firstContentfulPaint;
+					} ),
+				},
+				{
+					name: 'type',
+					type: 'bar',
+					emphasis: {
+						focus: 'series',
+					},
+					color: 'rgba(253,90,62,0.71)',
+					data: chartData.map( function ( e ) {
+						return e.type;
+					} ),
+				},
+				{
+					name: 'focus',
+					type: 'bar',
+					emphasis: {
+						focus: 'series',
+					},
+					color: 'rgb(107,109,118)',
+					data: chartData.map( function ( e ) {
+						return e.focus;
+					} ),
+				},
+				{
+					name: 'inserterOpen',
+					type: 'bar',
+					emphasis: {
+						focus: 'series',
+					},
+					color: 'rgb(160,248,228)',
+					data: chartData.map( function ( e ) {
+						return e.inserterOpen;
+					} ),
+				},
+			],
+		};
+
 		return (
 			<div>
-				<span>Performance metrics</span>
-				{ this.renderChart() }
+				<h4>Performance metrics</h4>
+				<ReactEcharts option={ chartOptions } />
 			</div>
 		);
 	}
