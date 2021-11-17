@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import Reports from './components/Reports';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import Tests from './components/Tests';
 import Failures from './components/Failures';
 import Performance from './components/Performance';
@@ -16,8 +16,9 @@ ReactGA.initialize( TRACKING_ID );
 function App() {
 	const basename = '/jetpack-e2e-reports';
 
+	// console.log(location.pathname)
 	// if ( location.pathname === `${ basename }/` ) {
-	// 	location.pathname = `${ basename }/reports`;
+	// 	location.pathname = `${ basename }/#/reports`;
 	// }
 
 	return (
@@ -25,7 +26,7 @@ function App() {
 			<div className="App-content">
 				<Navbar variant="dark" expand="md" className="app-nav-bar">
 					<Container fluid className="app-nav-bar-inner-container">
-						<Navbar.Brand href={ `${ basename }/` }>
+						<Navbar.Brand href={ `${basename}/#/` }>
 							Jetpack test dashboard
 						</Navbar.Brand>
 						<Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -34,23 +35,23 @@ function App() {
 								activeKey={ location.pathname }
 								className="ml-auto"
 							>
-								<Nav.Link href={ `/reports` }>
+								<Nav.Link href={ `${basename}/#/reports` }>
 									Reports
 								</Nav.Link>
-								<Nav.Link href={ `/tests` }>
+								<Nav.Link href={ `${basename}/#/tests` }>
 									Tests
 								</Nav.Link>
-								<Nav.Link href={ `/failures` }>
+								<Nav.Link href={ `${basename}/#/failures` }>
 									Failures
 								</Nav.Link>
-								<Nav.Link href={ `/performance` }>
+								<Nav.Link href={ `${basename}/#/performance` }>
 									Performance
 								</Nav.Link>
 							</Nav>
 						</Navbar.Collapse>
 					</Container>
 				</Navbar>
-				<BrowserRouter basename={ basename }>
+				<HashRouter>
 					<Routes>
 						<Route exact path="/reports" element={ <Reports /> } />
 						<Route exact path="/tests" element={ <Tests /> } />
@@ -65,7 +66,7 @@ function App() {
 							element={ <Performance /> }
 						/>
 					</Routes>
-				</BrowserRouter>
+				</HashRouter>
 			</div>
 			<footer className="App-footer">
 				<div>
