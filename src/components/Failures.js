@@ -48,51 +48,6 @@ export default class Failures extends React.Component {
 		ReactGA.pageview( '/failures' );
 	}
 
-	getListOfResults( error ) {
-		return (
-			<div className="test-container-results">
-				{ error.results.slice( -10 ).map( ( result ) => {
-					return this.getResultBadge( result );
-				} ) }
-			</div>
-		);
-	}
-
-	getResultBadge( result ) {
-		const reportUrl = `https://automattic.github.io/jetpack-e2e-reports/${ result.report }/report/`;
-		const sourceUrl = `${ result.report }/report/#testresult/${ result.source }`;
-
-		return (
-			<div className={ 'label label-status-neutral' }>
-				<ul className={ 'list-unstyled' }>
-					<li>
-						<a
-							href={ sourceUrl }
-							className="report-link"
-							target="_blank"
-							rel="noreferrer"
-						>
-							{ result.test }
-							<br />
-						</a>
-					</li>
-					<li>
-						<small>
-							<a
-								href={ reportUrl }
-								target={ '_blank' }
-								className={ 'report-link' }
-								rel={ 'noreferrer' }
-							>
-								{ result.report }
-							</a>
-						</small>
-					</li>
-				</ul>
-			</div>
-		);
-	}
-
 	getListOfTests( tests ) {
 		return (
 			<div>
@@ -182,8 +137,10 @@ export default class Failures extends React.Component {
 	render() {
 		if ( ! this.state.isDataFetched ) return null;
 
+		// process errors data
 		const errors = this.state.errorsData.errors;
 
+		// calculate some stats for each error
 		for ( const error of errors ) {
 			error.total = error.results.length;
 			const times = error.results.map( ( r ) => r.time );
@@ -332,18 +289,18 @@ export default class Failures extends React.Component {
 					</div>
 				</div>
 				<hr />
-				<div className="row">
-					<div className="text-right col small">
-						updated { lastUpdate }
-					</div>
-				</div>
-				<hr />
 				<ReactEcharts option={ chartOptions } />
 				<hr />
 				<div>
 					{ errors.map( ( error, id ) =>
 						this.getErrorContent( error, id )
 					) }
+				</div>
+				<hr />
+				<div className="row">
+					<div className="text-right col small">
+						updated { lastUpdate }
+					</div>
 				</div>
 			</div>
 		);
