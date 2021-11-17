@@ -7,9 +7,20 @@ const json = { reports: [] };
 
 for ( const dirName of getReportsDirs() ) {
 	// get the statistics from report/widgets/reports.json
-	const summaryData = fs.readFileSync(
-		path.resolve( 'docs', dirName, 'report/widgets/reports.json' )
+	const filePath = path.resolve(
+		'docs',
+		dirName,
+		'report/widgets/summary.json'
 	);
+
+	let summaryData;
+	try {
+		summaryData = fs.readFileSync( filePath );
+	} catch ( err ) {
+		console.error( `Cannot read ${ filePath } ${ err }` );
+		continue;
+	}
+
 	const statistic = JSON.parse( summaryData.toString() ).statistic;
 
 	// metadata
