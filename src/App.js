@@ -14,8 +14,10 @@ const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
 
 function App() {
-	if ( location.pathname === '/' ) {
-		location.pathname = '/reports';
+	const basename = '/jetpack-e2e-reports';
+
+	if ( location.pathname === `${ basename }/` ) {
+		location.pathname = `${ basename }/reports`;
 	}
 
 	return (
@@ -23,7 +25,7 @@ function App() {
 			<div className="App-content">
 				<Navbar variant="dark" expand="md" className="app-nav-bar">
 					<Container fluid className="app-nav-bar-inner-container">
-						<Navbar.Brand href="/">
+						<Navbar.Brand href={ `${ basename }/` }>
 							Jetpack test dashboard
 						</Navbar.Brand>
 						<Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -32,17 +34,23 @@ function App() {
 								activeKey={ location.pathname }
 								className="ml-auto"
 							>
-								<Nav.Link href="/reports">Reports</Nav.Link>
-								<Nav.Link href="/tests">Tests</Nav.Link>
-								<Nav.Link href="/failures">Failures</Nav.Link>
-								<Nav.Link href="/performance">
+								<Nav.Link href={ `${ basename }/reports` }>
+									Reports
+								</Nav.Link>
+								<Nav.Link href={ `${ basename }/tests` }>
+									Tests
+								</Nav.Link>
+								<Nav.Link href={ `${ basename }/failures` }>
+									Failures
+								</Nav.Link>
+								<Nav.Link href={ `${ basename }/performance` }>
 									Performance
 								</Nav.Link>
 							</Nav>
 						</Navbar.Collapse>
 					</Container>
 				</Navbar>
-				<BrowserRouter>
+				<BrowserRouter basename="/jetpack-e2e-reports">
 					<Routes>
 						<Route exact path="/reports" element={ <Reports /> } />
 						<Route exact path="/tests" element={ <Tests /> } />
