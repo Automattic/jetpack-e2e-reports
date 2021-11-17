@@ -90,14 +90,21 @@ export default class Tests extends React.Component {
 	getResultsLine( test ) {
 		const badges = test.results.slice( -500 ).map( ( result, id ) => {
 			let classHasSource = 'no-source';
+			let url;
 
 			if ( result.source ) {
 				classHasSource = '';
+				url = `${
+					result.report
+				}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
 			}
 
 			return (
 				<Badge
 					key={ id }
+					onClick={ () => {
+						if ( url ) window.open( url, '_blank' );
+					} }
 					className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
 				>
 					&nbsp;
