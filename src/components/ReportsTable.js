@@ -8,6 +8,7 @@ import {
 	faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import ReactGA from 'react-ga';
+import moment from 'moment';
 
 export default class ReportsTable extends React.Component {
 	state = {
@@ -229,10 +230,7 @@ export default class ReportsTable extends React.Component {
 			<ul className={ 'list-unstyled' }>
 				<li>
 					<small>
-						last update:{ ' ' }
-						{ new Date(
-							Date.parse( report.lastUpdate )
-						).toLocaleString() }
+						last update: { moment( report.lastUpdate ).fromNow() }
 					</small>
 				</li>
 				<li>
