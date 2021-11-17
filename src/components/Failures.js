@@ -92,7 +92,7 @@ export default class Failures extends React.Component {
 								href={ url }
 								target="_blank"
 								rel="noreferrer"
-								className="badge-link"
+								className="report-link"
 							>
 								{ badge }
 							</a>
@@ -102,12 +102,12 @@ export default class Failures extends React.Component {
 					}
 
 					return (
-						<Badge
+						<span
 							key={ id }
-							className={ `label label-status-failed ${ className }` }
+							className={ `failure-link ${ className }` }
 						>
 							{ badge }
-						</Badge>
+						</span>
 					);
 				} ) }
 			</div>
@@ -115,20 +115,20 @@ export default class Failures extends React.Component {
 	}
 
 	getErrorContent( error, id ) {
-		let details = `${ error.total } times since ${ moment(
+		let details = `${ error.total } times, since ${ moment(
 			error.oldest
 		).fromNow() }. Last failed ${ moment( error.newest ).fromNow() }`;
 
 		if ( error.total === 1 ) {
-			details = `once ${ moment( error.oldest ).fromNow() }`;
+			details = `once, ${ moment( error.oldest ).fromNow() }`;
 		}
 
 		return (
 			<div className="error-container" key={ id }>
-				<div className="row left">
+				<div className="row">
 					<pre className="error-container-trace">{ error.trace }</pre>
+					<div>{ details }</div>
 				</div>
-				<div className="row error-details">{ details }</div>
 				<div className="row">
 					{ this.getListOfTests( error.tests ) }
 				</div>
@@ -294,7 +294,6 @@ export default class Failures extends React.Component {
 						this.getErrorContent( error, id )
 					) }
 				</div>
-				<hr />
 				<div className="row">
 					<div className="text-right col small">
 						updated { lastUpdate }
