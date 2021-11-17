@@ -16,11 +16,6 @@ ReactGA.initialize( TRACKING_ID );
 function App() {
 	const basename = '/jetpack-e2e-reports';
 
-	// console.log(location.pathname)
-	// if ( location.pathname === `${ basename }/` ) {
-	// 	location.pathname = `${ basename }/#/reports`;
-	// }
-
 	return (
 		<Container fluid className="App">
 			<div className="App-content">
@@ -53,6 +48,7 @@ function App() {
 				</Navbar>
 				<HashRouter>
 					<Routes>
+						<Route exact path="/" element={ <Reports /> } />
 						<Route exact path="/reports" element={ <Reports /> } />
 						<Route exact path="/tests" element={ <Tests /> } />
 						<Route
