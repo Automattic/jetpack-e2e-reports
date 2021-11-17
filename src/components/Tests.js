@@ -3,6 +3,7 @@ import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import ReactEcharts from 'echarts-for-react';
 import { sort } from '../utils';
+import moment from 'moment';
 
 export default class Tests extends React.Component {
 	state = {
@@ -51,6 +52,9 @@ export default class Tests extends React.Component {
 		const badges = [ 'failed', 'passed', 'skipped', 'total' ].map(
 			( label, id ) => {
 				const count = test[ label ];
+
+				const classHide = count === 0 ? 'hide' : '';
+
 				let rate = (
 					( count /
 						( test.total -
@@ -68,14 +72,11 @@ export default class Tests extends React.Component {
 					<li key={ id }>
 						<Badge
 							key={ id }
-							className={ `label label-status-${ label }` }
+							className={ `label label-fill label-status-${ label } ${ classHide }` }
 						>
-							{ label }{ ' ' }
+							{ count } { label }
 							<Badge className={ `badge-pill stat-pill` }>
 								{ rate }
-							</Badge>
-							<Badge className={ `badge-pill stat-pill` }>
-								{ count }
 							</Badge>
 						</Badge>
 					</li>
@@ -87,19 +88,24 @@ export default class Tests extends React.Component {
 	}
 
 	getResultsLine( test ) {
-		const badges = test.results.slice( -100 ).map( ( result, id ) => {
-			let className = 'no-source';
+		const badges = test.results.slice( -500 ).map( ( result, id ) => {
+			let classHasSource = 'no-source';
 
 			if ( result.source ) {
-				className = '';
+				classHasSource = '';
 			}
 
 			return (
 				<Badge
 					key={ id }
-					className={ `label label-small label-status-${ result.status } ${ className }` }
+					className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
 				>
 					&nbsp;
+					<span className="tooltip-content">
+						{ moment( result.time ).format( 'MMM Do, h:mm a' ) }
+						<br />
+						{ result.source }
+					</span>
 				</Badge>
 			);
 		} );
@@ -125,8 +131,8 @@ export default class Tests extends React.Component {
 	render() {
 		if ( ! this.state.isDataFetched ) return null;
 
+		// process tests data
 		const tests = this.state.tests.tests;
-
 		for ( const test of tests ) {
 			test.total = 0;
 			for ( const status of [ 'passed', 'failed', 'skipped' ] ) {
@@ -141,6 +147,16 @@ export default class Tests extends React.Component {
 			} );
 		}
 
+		let totalTestResults = 0;
+		const distinctTests = tests.length;
+		let failedResults = 0;
+		tests.forEach( ( t ) => {
+			totalTestResults += t.total;
+			failedResults += t.failed;
+		} );
+		const failedRate = ( failedResults / totalTestResults ).toFixed( 2 );
+
+		// process daily stats data
 		const dailyStats = this.state.daily;
 		dailyStats.forEach( ( day ) => {
 			day.failedRate = ( day.failed / day.total ).toFixed( 2 );
@@ -148,6 +164,7 @@ export default class Tests extends React.Component {
 
 		sort( dailyStats, 'date' );
 
+		// chart options
 		const chartOptions = {
 			tooltip: {
 				trigger: 'axis',
@@ -256,6 +273,45 @@ export default class Tests extends React.Component {
 
 		return (
 			<div>
+				<div className="row text-center">
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ distinctTests }
+							</span>
+							<br />
+							<span className="stat-description">tests</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ totalTestResults }
+							</span>
+							<br />
+							<span className="stat-description">results</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ failedResults }
+							</span>
+							<br />
+							<span className="stat-description">failures</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">{ failedRate }%</span>
+							<br />
+							<span className="stat-description">
+								failure rate
+							</span>
+						</div>
+					</div>
+				</div>
+				<hr />
 				<ReactEcharts option={ chartOptions } />
 				<hr />
 				<div>
