@@ -241,7 +241,7 @@ export default class Tests extends React.Component {
 					},
 					color: 'rgba(170, 170, 170, 0.73)',
 					data: dailyStats.map( function ( e ) {
-						return e.passed;
+						return e.skipped;
 					} ),
 				},
 			],
