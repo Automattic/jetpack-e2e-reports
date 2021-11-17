@@ -5,6 +5,7 @@ const {
 	cleanStacktrace,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
+	cleanSources,
 } = require( '../src/utils' );
 
 const json = { errors: [], lastUpdate: '' };
@@ -62,8 +63,10 @@ for ( const dirName of getReportsDirs() ) {
 	}
 }
 
+// clean missing sources
+cleanSources( json.errors.map( ( e ) => e.results ).flat() );
+
 json.lastUpdate = new Date();
-// console.log( JSON.stringify( json, null, 2 ) );
 
 if ( process.env.CLEAN_DATA ) {
 	fs.writeFileSync( path.resolve( 'docs/data/errors.json' ), '' );

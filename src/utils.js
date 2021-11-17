@@ -67,6 +67,22 @@ function sort( data, sortKey, desc = false ) {
 	return sorted;
 }
 
+/**
+ * Removes the source property of each element in an array of objects of the file corresponding to the source doesn't exist
+ * Expected object structure: {report: xx, source: xx}
+ *
+ * @param {Array} arr
+ */
+function cleanSources( arr ) {
+	for ( const item of arr ) {
+		const sourcePath = `docs/${ item.report }/report/data/test-cases/${ item.source }`;
+		if ( ! fs.existsSync( sourcePath ) ) {
+			console.log( `${ sourcePath } not found, removing source` );
+			delete item.source;
+		}
+	}
+}
+
 module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
@@ -74,4 +90,5 @@ module.exports = {
 	cleanStacktrace,
 	writeJson,
 	sort,
+	cleanSources,
 };
