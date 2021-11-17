@@ -233,6 +233,11 @@ export default class Failures extends React.Component {
 					type: 'cross',
 				},
 			},
+			legend: {
+				textStyle: {
+					color: '#6b6d76',
+				},
+			},
 			xAxis: [
 				{
 					type: 'category',
@@ -282,6 +287,8 @@ export default class Failures extends React.Component {
 					type: 'line',
 					yAxisIndex: 1,
 					color: '#e38474',
+					symbol: 'roundRect',
+					symbolSize: 7,
 					data: weeklyStats.map( function ( e ) {
 						return e.failedRate;
 					} ),
