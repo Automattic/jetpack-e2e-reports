@@ -2,8 +2,9 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
-import { fetchJsonData, sort } from '../utils';
 import { Badge, Button } from 'react-bootstrap';
+import { fetchJsonData } from '../utils/fetch';
+import { sortArray } from '../utils/sort';
 
 export default class Failures extends React.Component {
 	state = {
@@ -135,7 +136,7 @@ export default class Failures extends React.Component {
 			week.failedRate = ( week.failed / week.total ).toFixed( 2 );
 		} );
 
-		sort( weeks, 'date' );
+		sortArray( weeks, 'date' );
 
 		this.setState( { weeks } );
 	}
@@ -161,8 +162,6 @@ export default class Failures extends React.Component {
 	}
 
 	getListOfFailures( results ) {
-		sort( results, 'time', true );
-
 		return (
 			<div>
 				{ results.map( ( result, id ) => {

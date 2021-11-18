@@ -2,8 +2,8 @@ import React from 'react';
 import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import ReactEcharts from 'echarts-for-react';
-import { fetchJsonData, sort } from '../utils';
 import moment from 'moment';
+import { fetchJsonData } from '../utils/fetch';
 
 export default class Tests extends React.Component {
 	state = {
@@ -146,7 +146,7 @@ export default class Tests extends React.Component {
 			day.failedRate = ( day.failed / day.total ).toFixed( 2 );
 		} );
 
-		sort( dailyStats, 'date' );
+		// sort( dailyStats, 'date' );
 
 		const allDates = dailyStats.map( function ( e ) {
 			return e.date;

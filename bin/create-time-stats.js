@@ -1,4 +1,4 @@
-const { writeJson, sort } = require( '../src/utils' );
+const { writeJson, sort } = require( './utils' );
 const moment = require( 'moment' );
 const fs = require( 'fs' );
 

@@ -6,7 +6,7 @@ const {
 	getTestInfoFromTestCaseFile,
 	cleanSources,
 	writeJson,
-} = require( '../src/utils' );
+} = require( './utils' );
 
 const dataFilePath = path.resolve( 'docs/data/tests.json' );
 // const json = { tests: [], lastUpdate: '' };
