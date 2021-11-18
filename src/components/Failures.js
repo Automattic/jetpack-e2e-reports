@@ -5,6 +5,7 @@ import ReactEcharts from 'echarts-for-react';
 import { Badge, Button } from 'react-bootstrap';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
+import { masterRuns } from '../config.json';
 
 export default class Failures extends React.Component {
 	state = {
@@ -60,7 +61,9 @@ export default class Failures extends React.Component {
 
 		if ( this.state.isMasterOnly ) {
 			errors.forEach( ( e ) => {
-				e.results = e.results.filter( ( r ) => r.report === 'master' );
+				e.results = e.results.filter( ( r ) =>
+					masterRuns.includes( r.report )
+				);
 			} );
 		}
 
