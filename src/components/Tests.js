@@ -1,13 +1,14 @@
 import React from 'react';
-import { Badge, Button } from 'react-bootstrap';
+import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
 import { masterRuns } from '../config.json';
+import BaseComponent from './BaseComponent';
 
-export default class Tests extends React.Component {
+export default class Tests extends BaseComponent {
 	state = {
 		rawData: {
 			testsData: {},
@@ -243,35 +244,6 @@ export default class Tests extends React.Component {
 		};
 	}
 
-	getSortButtons() {
-		const sortOptions = {
-			total: 'most runs',
-			failed: 'most failures',
-		};
-
-		const klass = this.state.sort.isAsc ? 'sort-by-asc' : 'sort-by-desc';
-		return Object.keys( sortOptions ).map( ( key, index ) => {
-			return (
-				<Button
-					variant="dark"
-					key={ index }
-					onClick={ () => {
-						this.sortData( key, ! this.state.sort.isAsc );
-					} }
-				>
-					{ sortOptions[ key ].toUpperCase() }
-					{
-						<span
-							className={
-								this.state.sort.by === key ? klass : ''
-							}
-						/>
-					}
-				</Button>
-			);
-		} );
-	}
-
 	getTotalsBadges( test ) {
 		const badges = [ 'failed', 'passed', 'skipped', 'total' ].map(
 			( label, id ) => {
@@ -412,25 +384,17 @@ export default class Tests extends React.Component {
 				<hr />
 				<div className="row">
 					<div className="col-sm filters">
-						<label
-							htmlFor="only-master"
-							className="checkbox-container"
-						>
-							only master
-							<input
-								type="checkbox"
-								id={ 'only-master' }
-								onChange={ ( e ) =>
-									this.setState( {
-										isMasterOnly: e.target.checked,
-									} )
-								}
-							/>
-							<span className="checkmark" />
-						</label>
+						{ this.getMasterOnlyFilterButton() }
 					</div>
 					<div className="col-md sort-buttons">
-						{ this.getSortButtons() }
+						{ this.getSortButtons(
+							{
+								total: 'most runs',
+								failed: 'most failures',
+							},
+							this.state.sort.by,
+							this.state.sort.isAsc
+						) }
 					</div>
 				</div>
 				<hr />
