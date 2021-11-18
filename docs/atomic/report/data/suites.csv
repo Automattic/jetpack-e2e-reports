@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Thu Nov 18 00:08:34 UTC 2021","Thu Nov 18 00:08:43 UTC 2021","9050","specs","","free-blocks.test.js","","","Pinterest block","
+"passed","Thu Nov 18 04:08:07 UTC 2021","Thu Nov 18 04:08:16 UTC 2021","8923","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
@@ -37,7 +37,42 @@ async () => {
 
 ```
 "
-"skipped","Thu Nov 18 00:08:24 UTC 2021","Thu Nov 18 00:08:24 UTC 2021","81","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Thu Nov 18 04:07:47 UTC 2021","Thu Nov 18 04:07:54 UTC 2021","7633","specs","","pro-blocks.test.js","","","Pay with PayPal","
+### Test
+```typescript
+async () => {
+  let blockId;
+  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.SimplePaymentBlock.name(),
+      _wpAdmin.SimplePaymentBlock.title()
+    );
+  });
+  await (0, _reporters.testStep)(
+    ""Fill details of Pay with PayPal block"",
+    async () => {
+      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
+      await spBlock.fillDetails();
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    async () => {
+      await blockEditor.setTitle(""Pay with PayPal block"");
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"skipped","Thu Nov 18 04:07:55 UTC 2021","Thu Nov 18 04:07:55 UTC 2021","54","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -76,7 +111,7 @@ async () => {
 
 ```
 "
-"passed","Thu Nov 18 00:07:56 UTC 2021","Thu Nov 18 00:08:06 UTC 2021","9590","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Thu Nov 18 04:07:34 UTC 2021","Thu Nov 18 04:07:42 UTC 2021","8413","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -108,42 +143,7 @@ async () => {
 
 ```
 "
-"passed","Thu Nov 18 00:08:12 UTC 2021","Thu Nov 18 00:08:24 UTC 2021","11490","specs","","pro-blocks.test.js","","","Pay with PayPal","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.SimplePaymentBlock.name(),
-      _wpAdmin.SimplePaymentBlock.title()
-    );
-  });
-  await (0, _reporters.testStep)(
-    ""Fill details of Pay with PayPal block"",
-    async () => {
-      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
-      await spBlock.fillDetails();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Thu Nov 18 00:08:48 UTC 2021","Thu Nov 18 00:09:01 UTC 2021","12967","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Thu Nov 18 04:08:20 UTC 2021","Thu Nov 18 04:08:29 UTC 2021","9539","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
