@@ -49,8 +49,8 @@ export default class Tests extends React.Component {
 			this.setTestsData();
 		}
 
-		if ( this.state.sort !== prevState.sort ) {
-			this.sortData();
+		if ( this.state.tests.list !== prevState.tests.list ) {
+			this.sortData( this.state.sort.by, this.state.sort.isAsc );
 		}
 	}
 
@@ -103,27 +103,16 @@ export default class Tests extends React.Component {
 				failedRate,
 			},
 		} );
-
-		this.sortData();
 	}
 
-	sortData() {
-		switch ( this.state.sort.by ) {
-			case 'total':
-				this.state.tests.list.sort( ( a, b ) =>
-					this.state.sort.isAsc
-						? a.total - b.total
-						: b.total - a.total
-				);
-				break;
-			case 'failures':
-				this.state.tests.list.sort( ( a, b ) =>
-					this.state.sort.isAsc
-						? b.failed - a.failed
-						: a.failed - b.failed
-				);
-				break;
-		}
+	sortData( by, isAsc ) {
+		this.state.tests.list.sort( ( a, b ) =>
+			isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ]
+		);
+
+		this.setState( {
+			sort: { by, isAsc },
+		} );
 	}
 
 	setDailyStatsData() {
@@ -257,7 +246,7 @@ export default class Tests extends React.Component {
 	getSortButtons() {
 		const sortOptions = {
 			total: 'most runs',
-			failures: 'most failures',
+			failed: 'most failures',
 		};
 
 		const klass = this.state.sort.isAsc ? 'sort-by-asc' : 'sort-by-desc';
@@ -267,9 +256,7 @@ export default class Tests extends React.Component {
 					variant="dark"
 					key={ index }
 					onClick={ () => {
-						this.setState( {
-							sort: { by: key, isAsc: ! this.state.sort.isAsc },
-						} );
+						this.sortData( key, ! this.state.sort.isAsc );
 					} }
 				>
 					{ sortOptions[ key ].toUpperCase() }

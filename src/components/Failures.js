@@ -47,8 +47,8 @@ export default class Failures extends React.Component {
 			this.setErrorsData();
 		}
 
-		if ( this.state.sort !== prevState.sort ) {
-			this.sortData();
+		if ( this.state.errors.list !== prevState.errors.list ) {
+			this.sortData( this.state.sort.by, this.state.sort.isAsc );
 		}
 	}
 
@@ -104,27 +104,27 @@ export default class Failures extends React.Component {
 				totalErrors: allErrors.length,
 			},
 		} );
-
-		this.sortData();
 	}
 
-	sortData() {
-		switch ( this.state.sort.by ) {
+	sortData( by, isAsc ) {
+		switch ( by ) {
 			case 'recent':
 				this.state.errors.list.sort( ( a, b ) =>
-					this.state.sort.isAsc
-						? a.newest - b.newest
-						: b.newest - a.newest
+					isAsc ? a.newest - b.newest : b.newest - a.newest
 				);
 				break;
 			case 'common':
 				this.state.errors.list.sort( ( a, b ) =>
-					this.state.sort.isAsc
+					isAsc
 						? a.results.length - b.results.length
 						: b.results.length - a.results.length
 				);
 				break;
 		}
+
+		this.setState( {
+			sort: { by, isAsc },
+		} );
 	}
 
 	setWeeklyStatsData() {
@@ -245,9 +245,7 @@ export default class Failures extends React.Component {
 					variant="dark"
 					key={ index }
 					onClick={ () => {
-						this.setState( {
-							sort: { by: key, isAsc: ! this.state.sort.isAsc },
-						} );
+						this.sortData( key, ! this.state.sort.isAsc );
 					} }
 				>
 					{ sortOptions[ key ].toUpperCase() }
