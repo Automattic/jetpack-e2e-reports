@@ -110,12 +110,11 @@ export default class Failures extends React.Component {
 			case 'recent':
 				this.state.errors.list.sort( ( a, b ) =>
 					this.state.sort.isAsc
-						? b.newest - a.newest
-						: a.newest - b.newest
+						? a.newest - b.newest
+						: b.newest - a.newest
 				);
 				break;
 			case 'common':
-				console.log( 'sorting by common' );
 				this.state.errors.list.sort( ( a, b ) =>
 					this.state.sort.isAsc
 						? a.results.length - b.results.length
@@ -391,16 +390,6 @@ export default class Failures extends React.Component {
 							/>
 							<span className="checkmark" />
 						</label>
-						{ /*<FormCheck*/ }
-						{ /*	type={ 'checkbox' }*/ }
-						{ /*	id={ 'only-master' }*/ }
-						{ /*	label={ `only master` }*/ }
-						{ /*	onChange={ ( e ) =>*/ }
-						{ /*		this.setState( {*/ }
-						{ /*			isMasterOnly: e.target.checked,*/ }
-						{ /*		} )*/ }
-						{ /*	}*/ }
-						{ /*/>*/ }
 					</div>
 					<div className="col-md sort-buttons">
 						{ this.getSortButtons() }
