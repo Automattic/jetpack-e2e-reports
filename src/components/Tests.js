@@ -5,6 +5,7 @@ import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
+import { masterRuns } from '../config.json';
 
 export default class Tests extends React.Component {
 	state = {
@@ -62,7 +63,9 @@ export default class Tests extends React.Component {
 
 		if ( this.state.isMasterOnly ) {
 			tests.forEach( ( e ) => {
-				e.results = e.results.filter( ( r ) => r.report === 'master' );
+				e.results = e.results.filter( ( r ) =>
+					masterRuns.includes( r.report )
+				);
 			} );
 		}
 
