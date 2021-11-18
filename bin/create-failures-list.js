@@ -6,7 +6,7 @@ const {
 	getTestInfoFromTestCaseFile,
 	cleanSources,
 	writeJson,
-} = require( '../src/utils' );
+} = require( './utils' );
 
 const dataFile = 'docs/data/errors.json';
 const json = JSON.parse( fs.readFileSync( dataFile ).toString() );

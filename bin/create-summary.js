@@ -1,7 +1,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
-const { getReportsDirs } = require( '../src/utils' );
+const { getReportsDirs } = require( './utils' );
 
 const json = { reports: [] };
 
