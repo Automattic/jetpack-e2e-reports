@@ -2,50 +2,142 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
-import { sort } from '../utils';
-import { Badge } from 'react-bootstrap';
+import { fetchJsonData, sort } from '../utils';
+import { Badge, Button } from 'react-bootstrap';
 
 export default class Failures extends React.Component {
 	state = {
-		errorsData: {},
-		weeklyData: [],
-		isDataFetched: false,
+		rawData: {
+			errorsData: {},
+			weeklyData: [],
+		},
+		errors: {
+			list: [],
+			totalErrors: 0,
+			distinctErrors: 0,
+		},
+		weeks: [],
+		isMasterOnly: false,
+		sort: { by: 'common', isAsc: false },
+		isDataReady: false,
 	};
 
 	async componentDidMount() {
-		await fetch( './data/errors.json', {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
+		this.setState( {
+			rawData: {
+				errorsData: await fetchJsonData( './data/errors.json' ),
+				weeklyData: await fetchJsonData( './data/weekly.json' ),
 			},
-		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
-				this.setState( {
-					errorsData: jsonData,
-				} );
-			} )
-			.catch( console.log );
+		} );
 
-		await fetch( './data/weekly.json', {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
-				this.setState( {
-					weeklyData: jsonData,
-				} );
-			} )
-			.catch( console.log );
+		this.setErrorsData();
+		this.setWeeklyStatsData();
 
 		this.setState( {
-			isDataFetched: true,
+			isDataReady: true,
 		} );
 
 		ReactGA.pageview( '/failures' );
+	}
+
+	componentDidUpdate( prevProps, prevState ) {
+		if ( this.state.isMasterOnly !== prevState.isMasterOnly ) {
+			this.setErrorsData();
+		}
+
+		if ( this.state.sort !== prevState.sort ) {
+			this.sortData();
+		}
+	}
+
+	setErrorsData() {
+		// make a copy of raw data errors object to process
+		// wwe don't modify the original data
+		let errors = JSON.parse(
+			JSON.stringify( this.state.rawData.errorsData.errors )
+		);
+
+		if ( this.state.isMasterOnly ) {
+			errors.forEach( ( e ) => {
+				e.results = e.results.filter( ( r ) => r.report === 'master' );
+			} );
+		}
+
+		// filter out errors with 0 occurrences
+		errors = errors.filter( ( e ) => e.results.length > 0 );
+
+		// calculate some stats for each error
+		for ( const error of errors ) {
+			error.total = error.results.length;
+			const times = error.results.map( ( r ) => r.time );
+			error.newest = Math.max( ...times );
+			error.oldest = Math.min( ...times );
+
+			const testsNames = [
+				...new Set( error.results.map( ( r ) => r.test ) ),
+			];
+
+			error.tests = [];
+
+			for ( const testName of testsNames ) {
+				const resultsForTest = error.results.filter(
+					( r ) => r.test === testName
+				);
+
+				error.tests.push( {
+					name: testName,
+					times: resultsForTest.map( ( r ) => r.time ),
+				} );
+			}
+		}
+
+		const allErrors = errors.map( ( e ) => e.results ).flat();
+
+		this.setState( {
+			errors: {
+				list: errors,
+				distinctErrors: errors.length,
+				totalErrors: allErrors.length,
+			},
+		} );
+
+		this.sortData();
+	}
+
+	sortData() {
+		switch ( this.state.sort.by ) {
+			case 'recent':
+				this.state.errors.list.sort( ( a, b ) =>
+					this.state.sort.isAsc
+						? b.newest - a.newest
+						: a.newest - b.newest
+				);
+				break;
+			case 'common':
+				console.log( 'sorting by common' );
+				this.state.errors.list.sort( ( a, b ) =>
+					this.state.sort.isAsc
+						? a.results.length - b.results.length
+						: b.results.length - a.results.length
+				);
+				break;
+		}
+	}
+
+	setWeeklyStatsData() {
+		// make a copy of raw data object
+		// we don't modify the original data
+		const weeks = JSON.parse(
+			JSON.stringify( this.state.rawData.weeklyData )
+		);
+
+		weeks.forEach( ( week ) => {
+			week.failedRate = ( week.failed / week.total ).toFixed( 2 );
+		} );
+
+		sort( weeks, 'date' );
+
+		this.setState( { weeks } );
 	}
 
 	getListOfTests( tests ) {
@@ -139,56 +231,39 @@ export default class Failures extends React.Component {
 		);
 	}
 
-	render() {
-		if ( ! this.state.isDataFetched ) return null;
+	getSortButtons() {
+		const sortOptions = {
+			recent: 'most recent',
+			common: 'most common',
+		};
 
-		// process errors data
-		const errors = this.state.errorsData.errors;
-
-		// calculate some stats for each error
-		for ( const error of errors ) {
-			error.total = error.results.length;
-			const times = error.results.map( ( r ) => r.time );
-			error.newest = Math.max( ...times );
-			error.oldest = Math.min( ...times );
-
-			const testsNames = [
-				...new Set( error.results.map( ( r ) => r.test ) ),
-			];
-
-			error.tests = [];
-
-			for ( const testName of testsNames ) {
-				const resultsForTest = error.results.filter(
-					( r ) => r.test === testName
-				);
-
-				error.tests.push( {
-					name: testName,
-					times: resultsForTest.map( ( r ) => r.time ),
-				} );
-			}
-		}
-
-		errors.sort( ( a, b ) => {
-			return b.results.length - a.results.length;
+		const klass = this.state.sort.isAsc ? 'sort-by-asc' : 'sort-by-desc';
+		return Object.keys( sortOptions ).map( ( key, index ) => {
+			return (
+				<Button
+					variant="dark"
+					key={ index }
+					onClick={ () => {
+						this.setState( {
+							sort: { by: key, isAsc: ! this.state.sort.isAsc },
+						} );
+					} }
+				>
+					{ sortOptions[ key ].toUpperCase() }
+					{
+						<span
+							className={
+								this.state.sort.by === key ? klass : ''
+							}
+						/>
+					}
+				</Button>
+			);
 		} );
+	}
 
-		const distinctErrors = errors.length;
-		const allErrors = errors.map( ( e ) => e.results ).flat();
-		const totalErrors = allErrors.length;
-
-		const lastUpdate = moment( this.state.errorsData.lastUpdate ).fromNow();
-
-		const weeklyStats = this.state.weeklyData;
-
-		weeklyStats.forEach( ( week ) => {
-			week.failedRate = ( week.failed / week.total ).toFixed( 2 );
-		} );
-
-		sort( weeklyStats, 'date' );
-
-		const chartOptions = {
+	chartOptions() {
+		return {
 			grid: {
 				left: 50,
 				right: 50,
@@ -207,7 +282,7 @@ export default class Failures extends React.Component {
 			xAxis: [
 				{
 					type: 'category',
-					data: weeklyStats.map( function ( e ) {
+					data: this.state.weeks.map( function ( e ) {
 						return e.date;
 					} ),
 				},
@@ -244,7 +319,7 @@ export default class Failures extends React.Component {
 					color: '#e38474',
 					symbol: 'roundRect',
 					symbolSize: 7,
-					data: weeklyStats.map( function ( e ) {
+					data: this.state.weeks.map( function ( e ) {
 						return e.failedRate;
 					} ),
 				},
@@ -255,19 +330,31 @@ export default class Failures extends React.Component {
 						focus: 'series',
 					},
 					color: '#fd5a3e',
-					data: weeklyStats.map( function ( e ) {
+					data: this.state.weeks.map( function ( e ) {
 						return e.failed;
 					} ),
 				},
 			],
 		};
+	}
+
+	render() {
+		if ( ! this.state.isDataReady ) return null;
+
+		const lastUpdate = moment(
+			this.state.rawData.errorsData.lastUpdate
+		).fromNow();
 
 		return (
 			<div>
+				<ReactEcharts option={ this.chartOptions() } />
+				<hr />
 				<div className="row text-center">
 					<div className="col-sm">
 						<div className="stat-box">
-							<span className="stat-number">{ totalErrors }</span>
+							<span className="stat-number">
+								{ this.state.errors.totalErrors }
+							</span>
 							<br />
 							<span className="stat-description">
 								total errors
@@ -277,7 +364,7 @@ export default class Failures extends React.Component {
 					<div className="col-sm">
 						<div className="stat-box">
 							<span className="stat-number">
-								{ distinctErrors }
+								{ this.state.errors.distinctErrors }
 							</span>
 							<br />
 							<span className="stat-description">
@@ -287,10 +374,42 @@ export default class Failures extends React.Component {
 					</div>
 				</div>
 				<hr />
-				<ReactEcharts option={ chartOptions } />
+				<div className="row">
+					<div className="col-sm filters">
+						<label
+							htmlFor="only-master"
+							className="checkbox-container"
+						>
+							only master
+							<input
+								type="checkbox"
+								id={ 'only-master' }
+								onChange={ ( e ) =>
+									this.setState( {
+										isMasterOnly: e.target.checked,
+									} )
+								}
+							/>
+							<span className="checkmark" />
+						</label>
+						{ /*<FormCheck*/ }
+						{ /*	type={ 'checkbox' }*/ }
+						{ /*	id={ 'only-master' }*/ }
+						{ /*	label={ `only master` }*/ }
+						{ /*	onChange={ ( e ) =>*/ }
+						{ /*		this.setState( {*/ }
+						{ /*			isMasterOnly: e.target.checked,*/ }
+						{ /*		} )*/ }
+						{ /*	}*/ }
+						{ /*/>*/ }
+					</div>
+					<div className="col-md sort-buttons">
+						{ this.getSortButtons() }
+					</div>
+				</div>
 				<hr />
 				<div>
-					{ errors.map( ( error, id ) =>
+					{ this.state.errors.list.map( ( error, id ) =>
 						this.getErrorContent( error, id )
 					) }
 				</div>

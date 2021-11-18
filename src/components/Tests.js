@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import ReactEcharts from 'echarts-for-react';
-import { sort } from '../utils';
+import { fetchJsonData, sort } from '../utils';
 import moment from 'moment';
 
 export default class Tests extends React.Component {
@@ -13,35 +13,9 @@ export default class Tests extends React.Component {
 	};
 
 	async componentDidMount() {
-		await fetch( './data/tests.json', {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
-				this.setState( {
-					tests: jsonData,
-				} );
-			} )
-			.catch( console.log );
-
-		await fetch( './data/daily.json', {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
-				this.setState( {
-					daily: jsonData,
-				} );
-			} )
-			.catch( console.log );
-
 		this.setState( {
+			tests: await fetchJsonData( './data/tests.json' ),
+			daily: await fetchJsonData( './data/daily.json' ),
 			isDataFetched: true,
 		} );
 
