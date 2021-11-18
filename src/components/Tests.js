@@ -112,8 +112,8 @@ export default class Tests extends React.Component {
 			case 'total':
 				this.state.tests.list.sort( ( a, b ) =>
 					this.state.sort.isAsc
-						? b.total - a.total
-						: a.total - b.total
+						? a.total - b.total
+						: b.total - a.total
 				);
 				break;
 			case 'failures':
