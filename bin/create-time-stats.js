@@ -1,31 +1,24 @@
-const {
-	getReportsDirs,
-	getFilesFromDir,
-	getTestInfoFromTestCaseFile,
-	writeJson,
-	sort,
-} = require( '../src/utils' );
+const { writeJson, sort } = require( '../src/utils' );
 const moment = require( 'moment' );
 const fs = require( 'fs' );
 
+const srcDataFile = 'docs/data/tests.json';
 const dailyDataFile = 'docs/data/daily.json';
 const weeklyDataFile = 'docs/data/weekly.json';
-const dailyJson = JSON.parse( fs.readFileSync( dailyDataFile ).toString() );
-const weeklyJson = JSON.parse( fs.readFileSync( weeklyDataFile ).toString() );
+const dailyJson = [];
+const weeklyJson = [];
 
-for ( const dirName of getReportsDirs() ) {
-	const dirPath = `docs/${ dirName }/report/data/test-cases`;
+const srcData = JSON.parse( fs.readFileSync( srcDataFile ).toString() );
 
-	for ( const testFile of getFilesFromDir( dirPath, '.json' ) ) {
-		// console.log( `Reading test files for report ${ dirName }` );
-		const testInfo = getTestInfoFromTestCaseFile( dirName, testFile );
-		const date = moment( testInfo.time.stop ).format( 'YYYY-MM-DD' );
-		const week = `${ moment(
-			testInfo.time.stop
-		).isoWeekYear() }-week-${ moment( testInfo.time.stop ).isoWeek() }`;
+for ( const test of srcData.tests ) {
+	for ( const result of test.results ) {
+		const date = moment( result.time ).format( 'YYYY-MM-DD' );
+		const week = `${ moment( result.time ).isoWeekYear() }-week-${ moment(
+			result.time
+		).isoWeek() }`;
 
-		pushData( dailyJson, date, testInfo );
-		pushData( weeklyJson, week, testInfo );
+		pushData( dailyJson, date, result );
+		pushData( weeklyJson, week, result );
 	}
 }
 
@@ -38,12 +31,12 @@ sort( weeklyJson, 'date', true );
 writeJson( dailyJson, dailyDataFile );
 writeJson( weeklyJson, weeklyDataFile );
 
-function pushData( data, date, testInfo ) {
+function pushData( data, date, result ) {
 	const existingKey = data.filter( ( k ) => k.date === date );
 
 	if ( existingKey.length > 0 ) {
 		existingKey[ 0 ][
-			testInfo.status === 'broken' ? 'failed' : testInfo.status
+			result.status === 'broken' ? 'failed' : result.status
 		]++;
 		existingKey[ 0 ].total++;
 	} else {
@@ -55,7 +48,7 @@ function pushData( data, date, testInfo ) {
 			total: 0,
 		};
 
-		entry[ testInfo.status === 'broken' ? 'failed' : testInfo.status ]++;
+		entry[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry.total++;
 
 		data.push( entry );
