@@ -108,7 +108,7 @@ export default class ReportsTable extends React.Component {
 		return (
 			<thead>
 				<tr className={ 'headerRow' }>
-					<td colSpan="3" className={ 'sortButtons' }>
+					<td colSpan="3" className={ 'sort-buttons' }>
 						<div className={ 'd-flex justify-content-between' }>
 							<div>{ reportCount }</div>
 							<div>{ sortButtons }</div>
