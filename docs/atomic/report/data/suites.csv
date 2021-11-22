@@ -1,32 +1,35 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Mon Nov 22 04:04:55 UTC 2021","Mon Nov 22 04:05:05 UTC 2021","10004","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Mon Nov 22 08:05:17 UTC 2021","Mon Nov 22 08:05:25 UTC 2021","7833","specs","","free-blocks.test.js","","","Pinterest block","
 ### Test
 ```typescript
 async () => {
-  let blockId;
-  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.SimplePaymentBlock.name(),
-      _wpAdmin.SimplePaymentBlock.title()
+  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+
+  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
+    const blockId = await blockEditor.insertBlock(
+      _wpAdmin.PinterestBlock.name(),
+      _wpAdmin.PinterestBlock.title()
     );
+    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
+    await pinterestBlock.addEmbed();
   });
   await (0, _reporters.testStep)(
-    ""Fill details of Pay with PayPal block"",
+    ""Publish a post with a Pinterest block"",
     async () => {
-      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
-      await spBlock.fillDetails();
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
     }
   );
   await (0, _reporters.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
+    ""Can assert that Pinterest block is rendered"",
     async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
       const frontend = await _pages.PostFrontendPage.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
+        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
+          pinId,
+        })
       ).toBeTruthy();
     }
   );
@@ -34,7 +37,51 @@ async () => {
 
 ```
 "
-"skipped","Mon Nov 22 04:05:05 UTC 2021","Mon Nov 22 04:05:05 UTC 2021","58","specs","","pro-blocks.test.js","","","WordAds block","
+"passed","Mon Nov 22 08:05:29 UTC 2021","Mon Nov 22 08:05:40 UTC 2021","10775","specs","","free-blocks.test.js","","","Eventbrite block","
+### Test
+```typescript
+async () => {
+  const eventId = ""112691417062"";
+  await (0, _reporters.testStep)(
+    ""Can visit the block editor and add a Eventbrite block"",
+    async () => {
+      const blockId = await blockEditor.insertBlock(
+        _wpAdmin.EventbriteBlock.name(),
+        _wpAdmin.EventbriteBlock.title()
+      );
+      const eventbriteBlock = new _wpAdmin.EventbriteBlock(
+        blockId,
+        page,
+        eventId
+      );
+      await eventbriteBlock.addEmbed();
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Can publish a post with a Eventbrite block"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Can assert that Eventbrite block is rendered"",
+    async () => {
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.EventbriteBlock, {
+          eventId,
+        })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"skipped","Mon Nov 22 08:05:04 UTC 2021","Mon Nov 22 08:05:04 UTC 2021","66","specs","","pro-blocks.test.js","","","WordAds block","
 ### Test
 ```typescript
 async () => {
@@ -73,45 +120,7 @@ async () => {
 
 ```
 "
-"passed","Mon Nov 22 04:05:19 UTC 2021","Mon Nov 22 04:05:26 UTC 2021","7766","specs","","free-blocks.test.js","","","Pinterest block","
-### Test
-```typescript
-async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
-
-  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
-    const blockId = await blockEditor.insertBlock(
-      _wpAdmin.PinterestBlock.name(),
-      _wpAdmin.PinterestBlock.title()
-    );
-    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
-    await pinterestBlock.addEmbed();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post with a Pinterest block"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that Pinterest block is rendered"",
-    async () => {
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
-          pinId,
-        })
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Mon Nov 22 04:04:41 UTC 2021","Mon Nov 22 04:04:50 UTC 2021","8652","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Mon Nov 22 08:04:40 UTC 2021","Mon Nov 22 08:04:49 UTC 2021","8780","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -143,43 +152,34 @@ async () => {
 
 ```
 "
-"passed","Mon Nov 22 04:05:31 UTC 2021","Mon Nov 22 04:05:42 UTC 2021","10899","specs","","free-blocks.test.js","","","Eventbrite block","
+"passed","Mon Nov 22 08:04:54 UTC 2021","Mon Nov 22 08:05:03 UTC 2021","9244","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
-  const eventId = ""112691417062"";
+  let blockId;
+  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.SimplePaymentBlock.name(),
+      _wpAdmin.SimplePaymentBlock.title()
+    );
+  });
   await (0, _reporters.testStep)(
-    ""Can visit the block editor and add a Eventbrite block"",
+    ""Fill details of Pay with PayPal block"",
     async () => {
-      const blockId = await blockEditor.insertBlock(
-        _wpAdmin.EventbriteBlock.name(),
-        _wpAdmin.EventbriteBlock.title()
-      );
-      const eventbriteBlock = new _wpAdmin.EventbriteBlock(
-        blockId,
-        page,
-        eventId
-      );
-      await eventbriteBlock.addEmbed();
+      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
+      await spBlock.fillDetails();
     }
   );
   await (0, _reporters.testStep)(
-    ""Can publish a post with a Eventbrite block"",
+    ""Publish a post and assert that Pay with PayPal block is rendered"",
     async () => {
-      await blockEditor.selectPostTitle();
+      await blockEditor.setTitle(""Pay with PayPal block"");
       await blockEditor.publishPost();
       await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that Eventbrite block is rendered"",
-    async () => {
       const frontend = await _pages.PostFrontendPage.init(page);
 
       expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.EventbriteBlock, {
-          eventId,
-        })
+        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
       ).toBeTruthy();
     }
   );
