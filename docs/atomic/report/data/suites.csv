@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Mon Nov 22 12:09:53 UTC 2021","Mon Nov 22 12:10:00 UTC 2021","6860","specs","","pro-blocks.test.js","","","Pay with PayPal","
+"passed","Mon Nov 22 16:10:40 UTC 2021","Mon Nov 22 16:10:51 UTC 2021","10641","specs","","pro-blocks.test.js","","","Pay with PayPal","
 ### Test
 ```typescript
 async () => {
@@ -34,7 +34,84 @@ async () => {
 
 ```
 "
-"passed","Mon Nov 22 12:10:18 UTC 2021","Mon Nov 22 12:10:27 UTC 2021","8471","specs","","free-blocks.test.js","","","Eventbrite block","
+"skipped","Mon Nov 22 16:10:51 UTC 2021","Mon Nov 22 16:10:51 UTC 2021","36","specs","","pro-blocks.test.js","","","WordAds block","
+### Test
+```typescript
+async () => {
+  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
+  let blockId;
+  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
+    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
+    blockId = await blockEditor.insertBlock(
+      _wpAdmin.WordAdsBlock.name(),
+      _wpAdmin.WordAdsBlock.title()
+    );
+    await blockEditor.selectPostTitle();
+  });
+  await (0, _reporters.testStep)(
+    ""Switch to Wide Skyscraper ad format"",
+    async () => {
+      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
+      await adBlock.focus();
+      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Publish a post and assert that WordAds block is rendered"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Mon Nov 22 16:11:05 UTC 2021","Mon Nov 22 16:11:14 UTC 2021","8962","specs","","free-blocks.test.js","","","Pinterest block","
+### Test
+```typescript
+async () => {
+  const pinId = _config.default.get(""blocks.pinterest.pinId"");
+
+  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
+    const blockId = await blockEditor.insertBlock(
+      _wpAdmin.PinterestBlock.name(),
+      _wpAdmin.PinterestBlock.title()
+    );
+    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
+    await pinterestBlock.addEmbed();
+  });
+  await (0, _reporters.testStep)(
+    ""Publish a post with a Pinterest block"",
+    async () => {
+      await blockEditor.selectPostTitle();
+      await blockEditor.publishPost();
+      await blockEditor.viewPost();
+    }
+  );
+  await (0, _reporters.testStep)(
+    ""Can assert that Pinterest block is rendered"",
+    async () => {
+      const frontend = await _pages.PostFrontendPage.init(page);
+
+      expect(
+        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
+          pinId,
+        })
+      ).toBeTruthy();
+    }
+  );
+};
+
+```
+"
+"passed","Mon Nov 22 16:11:19 UTC 2021","Mon Nov 22 16:11:32 UTC 2021","13346","specs","","free-blocks.test.js","","","Eventbrite block","
 ### Test
 ```typescript
 async () => {
@@ -78,46 +155,7 @@ async () => {
 
 ```
 "
-"skipped","Mon Nov 22 12:10:00 UTC 2021","Mon Nov 22 12:10:00 UTC 2021","54","specs","","pro-blocks.test.js","","","WordAds block","
-### Test
-```typescript
-async () => {
-  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
-  let blockId;
-  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.WordAdsBlock.name(),
-      _wpAdmin.WordAdsBlock.title()
-    );
-    await blockEditor.selectPostTitle();
-  });
-  await (0, _reporters.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
-    async () => {
-      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Mon Nov 22 12:09:38 UTC 2021","Mon Nov 22 12:09:46 UTC 2021","8076","specs","","pro-blocks.test.js","","","MailChimp Block","
+"passed","Mon Nov 22 16:10:22 UTC 2021","Mon Nov 22 16:10:33 UTC 2021","11200","specs","","pro-blocks.test.js","","","MailChimp Block","
 ### Test
 ```typescript
 async () => {
@@ -142,44 +180,6 @@ async () => {
 
       expect(
         await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Mon Nov 22 12:10:08 UTC 2021","Mon Nov 22 12:10:15 UTC 2021","6635","specs","","free-blocks.test.js","","","Pinterest block","
-### Test
-```typescript
-async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
-
-  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
-    const blockId = await blockEditor.insertBlock(
-      _wpAdmin.PinterestBlock.name(),
-      _wpAdmin.PinterestBlock.title()
-    );
-    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
-    await pinterestBlock.addEmbed();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post with a Pinterest block"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that Pinterest block is rendered"",
-    async () => {
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
-          pinId,
-        })
       ).toBeTruthy();
     }
   );
