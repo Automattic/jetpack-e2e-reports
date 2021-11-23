@@ -1,578 +1,111 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Tue Nov 23 21:50:23 UTC 2021","Tue Nov 23 21:50:44 UTC 2021","20457","specs","","recommendations.test.js","","","Recommendations (Jetpack Assistant)","
+"passed","Tue Nov 23 22:36:17 UTC 2021","Tue Nov 23 22:36:17 UTC 2021","374","specs","","homepage.test.js","","","Should display ""HelloWord"" text on page","
 ### Test
 ```typescript
 async () => {
-  let recommendationsPage;
-  await (0, _reporters.testStep)(
-    ""Navigate to the Recommendations module"",
-    async () => {
-      recommendationsPage = await _wpAdmin.RecommendationsPage.visit(page);
-      const isPageVisible =
-        await recommendationsPage.areSiteTypeQuestionsVisible();
+  await expect(page).toHaveText(""h1"", ""HelloWord"");
+};
 
-      expect(isPageVisible).toBeTruthy();
-      expect(
-        recommendationsPage.isUrlInSyncWithStepName(""site-type"")
-      ).toBeTruthy();
-    }
+```
+"
+"passed","Tue Nov 23 22:36:09 UTC 2021","Tue Nov 23 22:36:10 UTC 2021","550","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module state should revert back to original state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 22:36:07 UTC 2021","Tue Nov 23 22:36:07 UTC 2021","643","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module state should revert back to original state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 22:35:51 UTC 2021","Tue Nov 23 22:35:51 UTC 2021","167","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module should be enabled by default","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 22:35:48 UTC 2021","Tue Nov 23 22:35:50 UTC 2021","1499","specs","jetpack-boost","modules-common.test.js","","","The critical-css module should be disabled by default","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"skipped","Tue Nov 23 22:36:19 UTC 2021","Tue Nov 23 22:36:19 UTC 2021","9","specs","","homepage.test.js","","","Should be ready","
+### Test
+```typescript
+async () => {
+  const metaTag = await page.$$(
+    ""//meta[@name='jetpack-boost-ready' and @content='true']""
   );
-  await (0, _reporters.testStep)(
-    ""Check Personal and Other checkboxes"",
-    async () => {
-      await recommendationsPage.checkPersonalSiteType();
-      await recommendationsPage.checkOtherSiteType();
-      expect(
-        await recommendationsPage.isPersonalSiteTypeChecked()
-      ).toBeTruthy();
-      expect(await recommendationsPage.isOtherSiteTypeChecked()).toBeTruthy();
-      expect(await recommendationsPage.isBusinessTypeUnchecked()).toBeFalsy();
-      expect(await recommendationsPage.isStoreTypeUnchecked()).toBeFalsy();
-    }
+
+  expect(metaTag.length).toBeGreaterThan(0);
+};
+
+```
+"
+"passed","Tue Nov 23 22:35:54 UTC 2021","Tue Nov 23 22:35:55 UTC 2021","593","specs","jetpack-boost","modules-common.test.js","","","The critical-css module state should toggle to an inverse state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 22:36:04 UTC 2021","Tue Nov 23 22:36:05 UTC 2021","1519","specs","jetpack-boost","modules-common.test.js","","","The critical-css module state should revert back to original state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 22:36:18 UTC 2021","Tue Nov 23 22:36:19 UTC 2021","259","specs","","homepage.test.js","","","Should include the jetpack boost meta tag(s)","
+### Test
+```typescript
+async () => {
+  const metaTag = await page.$$(""//meta[@name='jetpack-boost-ready']"");
+
+  expect(metaTag.length).toBeGreaterThan(0);
+};
+
+```
+"
+"passed","Tue Nov 23 22:35:57 UTC 2021","Tue Nov 23 22:35:59 UTC 2021","2492","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module state should toggle to an inverse state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 22:36:26 UTC 2021","Tue Nov 23 22:36:27 UTC 2021","474","specs","jetpack-boost","speed-score.test.js","","","Should display a mobile and desktop speed score greater than zero","
+### Test
+```typescript
+async () => {
+  await expect(await jetpackBoostPage.getSpeedScore(""mobile"")).toBeGreaterThan(
+    0
   );
-  await (0, _reporters.testStep)(
-    ""Save answers and continue to the Monitor step"",
-    async () => {
-      await recommendationsPage.saveSiteTypeAndContinue();
-      await recommendationsPage.reload();
-      await recommendationsPage.waitForNetworkIdle();
-      const isMonitorStep =
-        await recommendationsPage.isEnableMonitoringButtonVisible();
-      expect(isMonitorStep).toBeTruthy();
-      expect(
-        recommendationsPage.isUrlInSyncWithStepName(""monitor"")
-      ).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Enable Monitoring and continue to Related Post step"",
-    async () => {
-      await recommendationsPage.enableMonitoringAndContinue();
-      await recommendationsPage.reload();
-      await recommendationsPage.waitForNetworkIdle();
-      const isRelatedPostsStep =
-        await recommendationsPage.isEnableRelatedPostsButtonVisible();
-      expect(isRelatedPostsStep).toBeTruthy();
-      expect(
-        recommendationsPage.isUrlInSyncWithStepName(""related-posts"")
-      ).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Enable Related Posts and continue to Creative Mail step"",
-    async () => {
-      await recommendationsPage.enableRelatedPostsAndContinue();
-      await recommendationsPage.reload();
-      await recommendationsPage.waitForNetworkIdle();
-      const isCreativeMailStep =
-        await recommendationsPage.isInstallCreativeMailButtonVisible();
-      expect(isCreativeMailStep).toBeTruthy();
-      expect(
-        recommendationsPage.isUrlInSyncWithStepName(""creative-mail"")
-      ).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Skip Creative Mail and continue to Site Accelerator"",
-    async () => {
-      await recommendationsPage.skipCreativeMailAndContinue();
-      await recommendationsPage.reload();
-      await recommendationsPage.waitForNetworkIdle();
-      const isSiteAcceleratorStep =
-        await recommendationsPage.isEnableSiteAcceleratorButtonVisible();
-      expect(isSiteAcceleratorStep).toBeTruthy();
-      expect(
-        recommendationsPage.isUrlInSyncWithStepName(""site-accelerator"")
-      ).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Skip Site Accelerator and continue to Summary"",
-    async () => {
-      await recommendationsPage.skipSiteAcceleratorAndContinue();
-      await recommendationsPage.reload();
-      await recommendationsPage.waitForNetworkIdle();
-      const isSummaryContent =
-        await recommendationsPage.isSummaryContentVisible();
-      const isSummarySidebar =
-        await recommendationsPage.isSummarySidebarVisible();
-      expect(isSummaryContent && isSummarySidebar).toBeTruthy();
-      expect(
-        recommendationsPage.isUrlInSyncWithStepName(""summary"")
-      ).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Verify Monitoring and Related Posts are enabled"",
-    async () => {
-      const isMonitoringFeatureEnabled =
-        await recommendationsPage.isMonitoringFeatureEnabled();
-      const isRelatedPostsFeatureEnabled =
-        await recommendationsPage.isRelatedPostsFeatureEnabled();
-      expect(
-        isMonitoringFeatureEnabled && isRelatedPostsFeatureEnabled
-      ).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Verify Creative Mail and Site Accelerator are disabled"",
-    async () => {
-      const isCreativeMailFeatureEnabled =
-        await recommendationsPage.isCreativeMailFeatureEnabled();
-      const isSiteAcceleratorFeatureEnabled =
-        await recommendationsPage.isSiteAcceleratorFeatureEnabled();
-      expect(
-        isCreativeMailFeatureEnabled && isSiteAcceleratorFeatureEnabled
-      ).toBeTruthy();
-    }
+  await expect(await jetpackBoostPage.getSpeedScore(""desktop"")).toBeGreaterThan(
+    0
   );
 };
 
 ```
 "
-"skipped","Tue Nov 23 21:50:02 UTC 2021","Tue Nov 23 21:50:02 UTC 2021","55","specs","","plugin-updater.test.js","","","Plugin updater","
+"passed","Tue Nov 23 22:36:01 UTC 2021","Tue Nov 23 22:36:03 UTC 2021","1351","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module state should toggle to an inverse state","
 ### Test
 ```typescript
-async () => {
-  await (0, _reporters.testStep)(
-    ""Can login and navigate to Plugins page"",
-    async () => {
-      await (await _wpAdmin.Sidebar.init(page)).selectInstalledPlugins();
-      await _wpAdmin.PluginsPage.init(page);
-    }
-  );
-  await (0, _reporters.testStep)(""Can update Jetpack"", async () => {
-    const pluginsPage = await _wpAdmin.PluginsPage.init(page); // const versionBefore = await pluginsPage.getJetpackVersion();
-
-    await pluginsPage.updateJetpack(); // const versionAfter = await pluginsPage.getJetpackVersion();
-    //
-    expect(versionBefore).not.toBe(versionAfter);
-  });
-  await (0, _reporters.testStep)(""Can connect Jetpack"", async () => {
-    await (await _wpAdmin.Sidebar.init(page)).selectJetpack();
-    await (0, _flows.doClassicConnection)();
-    const jetpackPage = await _wpAdmin.JetpackPage.init(page);
-    expect(await jetpackPage.isConnected()).toBeTruthy();
-  });
-};
+() => test(...params);
 
 ```
 "
-"passed","Tue Nov 23 21:49:30 UTC 2021","Tue Nov 23 21:50:15 UTC 2021","44779","specs","","connection.test.js","","","Classic","
+"passed","Tue Nov 23 22:35:53 UTC 2021","Tue Nov 23 22:35:53 UTC 2021","156","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module should be disabled by default","
 ### Test
 ```typescript
-async () => {
-  await (0, _reporters.testStep)(""Can start classic connection"", async () => {
-    await (0, _flows.doClassicConnection)(true);
-  });
-  await (0, _reporters.testStep)(
-    ""Can assert that site is connected"",
-    async () => {
-      const jetpackPage = await _wpAdmin.JetpackPage.init(page);
-
-      expect(await jetpackPage.isConnected()).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:49:48 UTC 2021","Tue Nov 23 21:49:52 UTC 2021","3771","specs","","search.test.js","","","Can perform search with default settings","
-### Test
-```typescript
-async () => {
-  await (0, _reporters.testStep)(
-    ""Can open the overlay by entering a query"",
-    async () => {
-      await homepage.focusSearchInput();
-      await homepage.enterQuery();
-      await homepage.waitForSearchResponse();
-
-      expect(await homepage.isOverlayVisible()).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can show search controls in the overlay"",
-    async () => {
-      expect(await homepage.isSearchFormVisible()).toBeTruthy();
-      expect(await homepage.isSortingVisible()).toBeTruthy();
-      expect(await homepage.isFilteringOptionsVisible()).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can show search results in the overlay"",
-    async () => {
-      expect(await homepage.isSearchResultVisible()).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can sort results by relevance by default"",
-    async () => {
-      expect(await homepage.getFirstResultTitle()).toBe(
-        ""<mark>Test1</mark> Record 1""
-      );
-    }
-  );
-  await (0, _reporters.testStep)(""Can edit query in search form"", async () => {
-    await homepage.enterQueryToOverlay(""test2"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 1""
-    );
-  });
-  await (0, _reporters.testStep)(""Can change sort order"", async () => {
-    await homepage.chooseSortingLink(""newest"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.isSortingLinkSelected(""newest"")).toBeTruthy();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 3""
-    );
-    await homepage.chooseSortingLink(""oldest"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.isSortingLinkSelected(""oldest"")).toBeTruthy();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 2""
-    );
-  });
-  await (0, _reporters.testStep)(""Can apply filters"", async () => {
-    await homepage.clickFilterCategory2();
-    await homepage.waitForSearchResponse();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 2""
-    );
-    await homepage.clickFilterCategory2();
-    await homepage.clickFilterTag3();
-    await homepage.waitForSearchResponse();
-    expect(await homepage.getFirstResultTitle()).toBe(
-      ""<mark>Test2</mark> Record 3""
-    );
-  });
-  await (0, _reporters.testStep)(
-    ""Can close overlay by clicking the cross"",
-    async () => {
-      await homepage.clickCrossToCloseOverlay();
-      expect(await homepage.isOverlayVisible()).toBeFalsy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:52:17 UTC 2021","Tue Nov 23 21:52:23 UTC 2021","6133","specs","","free-blocks.test.js","","","Pinterest block","
-### Test
-```typescript
-async () => {
-  const pinId = _config.default.get(""blocks.pinterest.pinId"");
-
-  await (0, _reporters.testStep)(""Add a Pinterest block"", async () => {
-    const blockId = await blockEditor.insertBlock(
-      _wpAdmin.PinterestBlock.name(),
-      _wpAdmin.PinterestBlock.title()
-    );
-    const pinterestBlock = new _wpAdmin.PinterestBlock(blockId, page, pinId);
-    await pinterestBlock.addEmbed();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post with a Pinterest block"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that Pinterest block is rendered"",
-    async () => {
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.PinterestBlock, {
-          pinId,
-        })
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:51:12 UTC 2021","Tue Nov 23 21:51:23 UTC 2021","11469","specs","","pro-blocks.test.js","","","MailChimp Block","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _reporters.testStep)(""Add a MailChimp block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.MailchimpBlock.name(),
-      _wpAdmin.MailchimpBlock.title()
-    );
-  });
-  await (0, _reporters.testStep)(""Connect to MailChimp"", async () => {
-    const mcBlock = new _wpAdmin.MailchimpBlock(blockId, page);
-    await mcBlock.connect();
-  });
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that MailChimp block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.MailchimpBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:51:36 UTC 2021","Tue Nov 23 21:51:49 UTC 2021","12436","specs","","pro-blocks.test.js","","","WordAds block","
-### Test
-```typescript
-async () => {
-  await (0, _env.prerequisitesBuilder)().withActiveModules([""wordads""]).build();
-  let blockId;
-  await (0, _reporters.testStep)(""Add a WordAds block"", async () => {
-    await blockEditor.waitForAvailableBlock(_wpAdmin.WordAdsBlock.name());
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.WordAdsBlock.name(),
-      _wpAdmin.WordAdsBlock.title()
-    );
-    await blockEditor.selectPostTitle();
-  });
-  await (0, _reporters.testStep)(
-    ""Switch to Wide Skyscraper ad format"",
-    async () => {
-      const adBlock = new _wpAdmin.WordAdsBlock(blockId, page);
-      await adBlock.focus();
-      await adBlock.switchFormat(4); // switch to Wide Skyscraper ad format
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that WordAds block is rendered"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.WordAdsBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:50:37 UTC 2021","Tue Nov 23 21:50:39 UTC 2021","2479","specs","","pre-connection.test.js","","","Can find connect button on dashboard page","
-### Test
-```typescript
-async () => {
-  await (await _wpAdmin.Sidebar.init(page)).selectDashboard();
-  const dashboard = await _wpAdmin.DashboardPage.init(page);
-
-  expect(await dashboard.isConnectBannerVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Tue Nov 23 21:51:27 UTC 2021","Tue Nov 23 21:51:32 UTC 2021","5265","specs","","pro-blocks.test.js","","","Pay with PayPal","
-### Test
-```typescript
-async () => {
-  let blockId;
-  await (0, _reporters.testStep)(""Add a Pay with PayPal block"", async () => {
-    blockId = await blockEditor.insertBlock(
-      _wpAdmin.SimplePaymentBlock.name(),
-      _wpAdmin.SimplePaymentBlock.title()
-    );
-  });
-  await (0, _reporters.testStep)(
-    ""Fill details of Pay with PayPal block"",
-    async () => {
-      const spBlock = new _wpAdmin.SimplePaymentBlock(blockId, page);
-      await spBlock.fillDetails();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Publish a post and assert that Pay with PayPal block is rendered"",
-    async () => {
-      await blockEditor.setTitle(""Pay with PayPal block"");
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.SimplePaymentBlock)
-      ).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:49:54 UTC 2021","Tue Nov 23 21:49:54 UTC 2021","505","specs","","search.test.js","","","Can open and close overlay","
-### Test
-```typescript
-async () => {
-  await (0, _reporters.testStep)(
-    ""Can press enter to to open overlay"",
-    async () => {
-      await homepage.pressEnterInSearchInput();
-      await homepage.waitForSearchResponse();
-
-      expect(await homepage.isOverlayVisible()).toBeTruthy();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can click the cross to close the overlay"",
-    async () => {
-      await homepage.clickCrossToCloseOverlay();
-      expect(await homepage.isOverlayVisible()).toBeFalsy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:49:56 UTC 2021","Tue Nov 23 21:50:05 UTC 2021","9102","specs","","search.test.js","","","Can display different result formats","
-### Test
-```typescript
-async () => {
-  await (0, _reporters.testStep)(""Can use minimal format"", async () => {
-    await homepage.goto(`${siteUrl}?result_format=minimal`);
-    await homepage.waitForPage();
-    await homepage.waitForNetworkIdle();
-    await homepage.focusSearchInput();
-    await homepage.enterQuery(""random-string-1"");
-    await homepage.waitForSearchResponse();
-
-    expect(await homepage.isOverlayVisible()).toBeTruthy();
-    expect(await homepage.isResultFormat(""is-format-minimal"")).toBeTruthy();
-  });
-  await (0, _reporters.testStep)(""Can use product format"", async () => {
-    await homepage.goto(`${siteUrl}?result_format=product`);
-    await homepage.waitForPage();
-    await homepage.waitForNetworkIdle();
-    await homepage.focusSearchInput();
-    await homepage.enterQuery(""random-string-2"");
-    await homepage.waitForSearchResponse();
-    expect(await homepage.isOverlayVisible()).toBeTruthy();
-    expect(await homepage.isResultFormat(""is-format-product"")).toBeTruthy();
-    expect(await homepage.isProductImageVisible()).toBeTruthy();
-    expect(await homepage.isProductPriceVisible()).toBeTruthy();
-  });
-  await (0, _reporters.testStep)(""Can use expanded format"", async () => {
-    await homepage.goto(`${siteUrl}?result_format=expanded&s=random-string-3`);
-    await homepage.waitForPage();
-    await homepage.waitForNetworkIdle();
-    expect(await homepage.isOverlayVisible()).toBeTruthy();
-    expect(await homepage.isResultFormat(""is-format-expanded"")).toBeTruthy();
-    expect(await homepage.isExpandedImageVisible()).toBeTruthy();
-  });
-};
-
-```
-"
-"passed","Tue Nov 23 21:48:41 UTC 2021","Tue Nov 23 21:49:15 UTC 2021","34277","specs","","connection.test.js","","","Site only","
-### Test
-```typescript
-async () => {
-  await (0, _reporters.testStep)(""Can clean up WPCOM cookie"", async () => {
-    await (
-      await _wpAdmin.Sidebar.init(page)
-    ).removeCookieByName(""wordpress_logged_in"");
-  });
-  await (0, _reporters.testStep)(
-    ""Can start Site Level connection"",
-    async () => {
-      await (0, _flows.doSiteLevelConnection)();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that site is connected"",
-    async () => {
-      const jetpackPage = await _wpAdmin.JetpackPage.init(page);
-
-      expect(await jetpackPage.isConnected()).toBeTruthy();
-    }
-  );
-};
-
-```
-"
-"passed","Tue Nov 23 21:50:41 UTC 2021","Tue Nov 23 21:50:45 UTC 2021","4444","specs","","pre-connection.test.js","","","Can find connect button on Jetpack page","
-### Test
-```typescript
-async () => {
-  await (await _wpAdmin.Sidebar.init(page)).selectJetpack();
-  const jetpackPage = await _wpAdmin.JetpackPage.init(page);
-
-  expect(await jetpackPage.isConnectScreenVisible()).toBeTruthy();
-};
-
-```
-"
-"passed","Tue Nov 23 21:50:28 UTC 2021","Tue Nov 23 21:50:35 UTC 2021","6811","specs","","pre-connection.test.js","","","Can find connect button on plugins page","
-### Test
-```typescript
-async () => {
-  await (await _wpAdmin.Sidebar.init(page)).selectInstalledPlugins();
-  const pluginsPage = await _wpAdmin.PluginsPage.init(page);
-  await (0, _utilsHelper.execWpCommand)(
-    ""transient set activated_jetpack true 120""
-  );
-  await pluginsPage.reload();
-
-  expect(await pluginsPage.isFullScreenPopupShown()).toBeTruthy();
-};
-
-```
-"
-"passed","Tue Nov 23 21:52:26 UTC 2021","Tue Nov 23 21:52:35 UTC 2021","9486","specs","","free-blocks.test.js","","","Eventbrite block","
-### Test
-```typescript
-async () => {
-  const eventId = ""112691417062"";
-  await (0, _reporters.testStep)(
-    ""Can visit the block editor and add a Eventbrite block"",
-    async () => {
-      const blockId = await blockEditor.insertBlock(
-        _wpAdmin.EventbriteBlock.name(),
-        _wpAdmin.EventbriteBlock.title()
-      );
-      const eventbriteBlock = new _wpAdmin.EventbriteBlock(
-        blockId,
-        page,
-        eventId
-      );
-      await eventbriteBlock.addEmbed();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can publish a post with a Eventbrite block"",
-    async () => {
-      await blockEditor.selectPostTitle();
-      await blockEditor.publishPost();
-      await blockEditor.viewPost();
-    }
-  );
-  await (0, _reporters.testStep)(
-    ""Can assert that Eventbrite block is rendered"",
-    async () => {
-      const frontend = await _pages.PostFrontendPage.init(page);
-
-      expect(
-        await frontend.isRenderedBlockPresent(_wpAdmin.EventbriteBlock, {
-          eventId,
-        })
-      ).toBeTruthy();
-    }
-  );
-};
+() => test(...params);
 
 ```
 "
