@@ -1,47 +1,74 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Tue Nov 23 05:33:49 UTC 2021","Tue Nov 23 05:33:52 UTC 2021","3248","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module state should toggle to an inverse state","
-### Test
-```typescript
-() => test(...params);
-
-```
-"
-"broken","Tue Nov 23 05:33:57 UTC 2021","Tue Nov 23 05:36:18 UTC 2021","140796","specs","jetpack-boost","modules-common.test.js","","","The critical-css module state should revert back to original state","
-### Test
-```typescript
-() => test(...params);
-
-```
-"
-"passed","Tue Nov 23 05:37:30 UTC 2021","Tue Nov 23 05:37:31 UTC 2021","354","specs","jetpack-boost","speed-score.test.js","","","Should display a mobile and desktop speed score greater than zero","
+"passed","Tue Nov 23 05:49:20 UTC 2021","Tue Nov 23 05:49:24 UTC 2021","4220","specs","jetpack-boost","connection.test.js","","","Should connect to WP.com on a fresh install without Jetpack plugin activated","
 ### Test
 ```typescript
 async () => {
-  await expect(await jetpackBoostPage.getSpeedScore(""mobile"")).toBeGreaterThan(
-    0
-  );
-  await expect(await jetpackBoostPage.getSpeedScore(""desktop"")).toBeGreaterThan(
-    0
-  );
+  await (0, _env.prerequisitesBuilder)()
+    .withInactivePlugins([""jetpack""])
+    .build();
+  const jetpackBoostPage = await _JetpackBoostPage.default.visit(page);
+
+  expect(await jetpackBoostPage.isFreshlyConnected()).toEqual(true);
 };
 
 ```
 "
-"passed","Tue Nov 23 05:33:53 UTC 2021","Tue Nov 23 05:33:56 UTC 2021","2953","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module state should toggle to an inverse state","
+"passed","Tue Nov 23 05:48:56 UTC 2021","Tue Nov 23 05:48:56 UTC 2021","467","specs","jetpack-boost","modules-common.test.js","","","The critical-css module state should toggle to an inverse state","
 ### Test
 ```typescript
 () => test(...params);
 
 ```
 "
-"passed","Tue Nov 23 05:33:47 UTC 2021","Tue Nov 23 05:33:48 UTC 2021","1310","specs","jetpack-boost","modules-common.test.js","","","The critical-css module state should toggle to an inverse state","
+"passed","Tue Nov 23 05:49:04 UTC 2021","Tue Nov 23 05:49:04 UTC 2021","440","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module state should revert back to original state","
 ### Test
 ```typescript
 () => test(...params);
 
 ```
 "
-"passed","Tue Nov 23 05:37:21 UTC 2021","Tue Nov 23 05:37:21 UTC 2021","199","specs","","homepage.test.js","","","Should display ""HelloWord"" text on page","
+"passed","Tue Nov 23 05:49:01 UTC 2021","Tue Nov 23 05:49:02 UTC 2021","959","specs","jetpack-boost","modules-common.test.js","","","The critical-css module state should revert back to original state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"skipped","Tue Nov 23 05:50:01 UTC 2021","Tue Nov 23 05:50:01 UTC 2021","8","specs","","homepage.test.js","","","Should be ready","
+### Test
+```typescript
+async () => {
+  const metaTag = await page.$$(
+    ""//meta[@name='jetpack-boost-ready' and @content='true']""
+  );
+
+  expect(metaTag.length).toBeGreaterThan(0);
+};
+
+```
+"
+"passed","Tue Nov 23 05:48:55 UTC 2021","Tue Nov 23 05:48:55 UTC 2021","133","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module should be disabled by default","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 05:48:59 UTC 2021","Tue Nov 23 05:49:00 UTC 2021","888","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module state should toggle to an inverse state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 05:48:54 UTC 2021","Tue Nov 23 05:48:54 UTC 2021","125","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module should be enabled by default","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 05:50:00 UTC 2021","Tue Nov 23 05:50:01 UTC 2021","198","specs","","homepage.test.js","","","Should display ""HelloWord"" text on page","
 ### Test
 ```typescript
 async () => {
@@ -50,7 +77,25 @@ async () => {
 
 ```
 "
-"broken","Tue Nov 23 05:36:50 UTC 2021","Tue Nov 23 05:37:12 UTC 2021","21289","specs","jetpack-boost","connection.test.js","","","Should connect to WP.com on a fresh install with Jetpack plugin activated and Jetpack already connected","
+"passed","Tue Nov 23 05:49:02 UTC 2021","Tue Nov 23 05:49:03 UTC 2021","441","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module state should revert back to original state","
+### Test
+```typescript
+() => test(...params);
+
+```
+"
+"passed","Tue Nov 23 05:50:01 UTC 2021","Tue Nov 23 05:50:01 UTC 2021","118","specs","","homepage.test.js","","","Should include the jetpack boost meta tag(s)","
+### Test
+```typescript
+async () => {
+  const metaTag = await page.$$(""//meta[@name='jetpack-boost-ready']"");
+
+  expect(metaTag.length).toBeGreaterThan(0);
+};
+
+```
+"
+"broken","Tue Nov 23 05:49:32 UTC 2021","Tue Nov 23 05:49:51 UTC 2021","19069","specs","jetpack-boost","connection.test.js","","","Should connect to WP.com on a fresh install with Jetpack plugin activated and Jetpack already connected","
 ### Test
 ```typescript
 async () => {
@@ -68,73 +113,28 @@ async () => {
 
 ```
 "
-"passed","Tue Nov 23 05:33:45 UTC 2021","Tue Nov 23 05:33:45 UTC 2021","269","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module should be enabled by default","
-### Test
-```typescript
-() => test(...params);
-
-```
-"
-"passed","Tue Nov 23 05:36:19 UTC 2021","Tue Nov 23 05:36:19 UTC 2021","518","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module state should revert back to original state","
-### Test
-```typescript
-() => test(...params);
-
-```
-"
-"passed","Tue Nov 23 05:36:37 UTC 2021","Tue Nov 23 05:36:41 UTC 2021","4018","specs","jetpack-boost","connection.test.js","","","Should connect to WP.com on a fresh install without Jetpack plugin activated","
+"passed","Tue Nov 23 05:50:10 UTC 2021","Tue Nov 23 05:50:10 UTC 2021","430","specs","jetpack-boost","speed-score.test.js","","","Should display a mobile and desktop speed score greater than zero","
 ### Test
 ```typescript
 async () => {
-  await (0, _env.prerequisitesBuilder)()
-    .withInactivePlugins([""jetpack""])
-    .build();
-  const jetpackBoostPage = await _JetpackBoostPage.default.visit(page);
-
-  expect(await jetpackBoostPage.isFreshlyConnected()).toEqual(true);
-};
-
-```
-"
-"passed","Tue Nov 23 05:33:46 UTC 2021","Tue Nov 23 05:33:46 UTC 2021","219","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module should be disabled by default","
-### Test
-```typescript
-() => test(...params);
-
-```
-"
-"skipped","Tue Nov 23 05:37:22 UTC 2021","Tue Nov 23 05:37:22 UTC 2021","8","specs","","homepage.test.js","","","Should be ready","
-### Test
-```typescript
-async () => {
-  const metaTag = await page.$$(
-    ""//meta[@name='jetpack-boost-ready' and @content='true']""
+  await expect(await jetpackBoostPage.getSpeedScore(""mobile"")).toBeGreaterThan(
+    0
   );
-
-  expect(metaTag.length).toBeGreaterThan(0);
+  await expect(await jetpackBoostPage.getSpeedScore(""desktop"")).toBeGreaterThan(
+    0
+  );
 };
 
 ```
 "
-"passed","Tue Nov 23 05:37:22 UTC 2021","Tue Nov 23 05:37:22 UTC 2021","108","specs","","homepage.test.js","","","Should include the jetpack boost meta tag(s)","
-### Test
-```typescript
-async () => {
-  const metaTag = await page.$$(""//meta[@name='jetpack-boost-ready']"");
-
-  expect(metaTag.length).toBeGreaterThan(0);
-};
-
-```
-"
-"passed","Tue Nov 23 05:36:20 UTC 2021","Tue Nov 23 05:36:20 UTC 2021","496","specs","jetpack-boost","modules-common.test.js","","","The render-blocking-js module state should revert back to original state","
+"passed","Tue Nov 23 05:48:52 UTC 2021","Tue Nov 23 05:48:53 UTC 2021","1218","specs","jetpack-boost","modules-common.test.js","","","The critical-css module should be disabled by default","
 ### Test
 ```typescript
 () => test(...params);
 
 ```
 "
-"passed","Tue Nov 23 05:33:42 UTC 2021","Tue Nov 23 05:33:43 UTC 2021","1289","specs","jetpack-boost","modules-common.test.js","","","The critical-css module should be disabled by default","
+"passed","Tue Nov 23 05:48:57 UTC 2021","Tue Nov 23 05:48:58 UTC 2021","1225","specs","jetpack-boost","modules-common.test.js","","","The lazy-images module state should toggle to an inverse state","
 ### Test
 ```typescript
 () => test(...params);
