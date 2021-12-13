@@ -26,8 +26,8 @@ function getFilesFromDir( dirPath, fileExtension = '' ) {
 		.map( ( dirent ) => dirent.name );
 }
 
-function cleanStacktrace( message, trace ) {
-	trace = trace
+function cleanTrace( trace ) {
+	return trace
 		.split( '\n' )
 		.filter( ( line ) => ! line.includes( '=====' ) )
 		.filter( ( line ) => ! line.includes( 'Playwright logs' ) )
@@ -38,8 +38,6 @@ function cleanStacktrace( message, trace ) {
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
 		);
-
-	return `${ message }\n${ trace }`;
 }
 
 function getTestInfoFromTestCaseFile( reportName, fileName ) {
@@ -89,7 +87,7 @@ module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
-	cleanStacktrace,
+	cleanTrace,
 	writeJson,
 	sort,
 	cleanSources,

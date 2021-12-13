@@ -1,7 +1,7 @@
 const fs = require( 'fs' );
 const {
 	getReportsDirs,
-	cleanStacktrace,
+	cleanTrace,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
 	cleanSources,
@@ -10,6 +10,13 @@ const {
 
 const dataFile = 'docs/data/errors.json';
 const json = JSON.parse( fs.readFileSync( dataFile ).toString() );
+
+function cleanError( message, trace ) {
+	message = cleanTrace( message );
+	trace = cleanTrace( trace );
+
+	return trace.includes( message ) ? trace : `${ message }\n${ trace }`;
+}
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
@@ -27,7 +34,7 @@ for ( const dirName of getReportsDirs() ) {
 		const existingError = json.errors.filter(
 			( e ) =>
 				e.trace ===
-				cleanStacktrace( testInfo.statusMessage, testInfo.statusTrace )
+				cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
 		if ( existingError.length > 0 ) {
@@ -45,7 +52,7 @@ for ( const dirName of getReportsDirs() ) {
 			}
 		} else {
 			const error = {
-				trace: cleanStacktrace(
+				trace: cleanError(
 					testInfo.statusMessage,
 					testInfo.statusTrace
 				),
