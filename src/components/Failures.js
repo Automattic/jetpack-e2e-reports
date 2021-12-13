@@ -39,7 +39,7 @@ export default class Failures extends BaseComponent {
 		this.setState( {
 			isDataReady: true,
 		} );
-		this.renderDefaultDateFilterValues();
+		this.setDatePickersValues( this.state.filters.startDate, this.state.filters.endDate );
 		ReactGA.pageview( '/failures' );
 	}
 
@@ -329,11 +329,6 @@ export default class Failures extends BaseComponent {
 		return (
 			<div>
 				<ReactEcharts option={ this.chartOptions() } />
-				<div className="row">
-					<div className="col filters">
-						{ this.getFilterByDateFields() }
-					</div>
-				</div>
 				<hr />
 				<div className="row text-center">
 					<div className="col-sm">
@@ -360,6 +355,9 @@ export default class Failures extends BaseComponent {
 					</div>
 				</div>
 				<hr />
+				<div className="row">
+					{ this.getFilterByDateFields() }
+				</div>
 				<div className="row">
 					<div className="col-sm filters">
 						{ this.getMasterOnlyFilterButton() }
