@@ -22,7 +22,7 @@ export default class Tests extends BaseComponent {
 			failedRate: 0,
 		},
 		days: [],
-		isMasterOnly: false,
+		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
 		sort: { by: 'total', isAsc: false },
 		isDataReady: false,
 	};
@@ -46,7 +46,7 @@ export default class Tests extends BaseComponent {
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
-		if ( this.state.isMasterOnly !== prevState.isMasterOnly ) {
+		if ( this.state.filters !== prevState.filters ) {
 			this.setTestsData();
 		}
 
@@ -62,9 +62,17 @@ export default class Tests extends BaseComponent {
 			JSON.stringify( this.state.rawData.testsData.tests )
 		);
 
-		if ( this.state.isMasterOnly ) {
-			tests.forEach( ( e ) => {
-				e.results = e.results.filter( ( r ) =>
+		if ( this.state.filters.startDate && this.state.filters.endDate ) {
+			tests.forEach( ( t ) => {
+				t.results = t.results.filter( ( r ) =>
+					r.time >= moment( this.state.filters.startDate, 'YYYY-MM-DD' ).valueOf() && r.time <= moment( this.state.filters.endDate, 'YYYY-MM-DD' ).valueOf()
+				);
+			} );
+		}
+
+		if ( this.state.filters.isMasterOnly ) {
+			tests.forEach( ( t ) => {
+				t.results = t.results.filter( ( r ) =>
 					masterRuns.includes( r.report )
 				);
 			} );
@@ -119,20 +127,27 @@ export default class Tests extends BaseComponent {
 	setDailyStatsData() {
 		// make a copy of raw data object
 		// we don't modify the original data
-		const days = JSON.parse(
+		let days = JSON.parse(
 			JSON.stringify( this.state.rawData.dailyData )
 		);
+
+		if ( this.state.filters.startDate && this.state.filters.endDate ) {
+			days = days.filter( ( d ) =>
+				moment( d.date, 'YYYY-MM-DD' ).valueOf() >= moment( this.state.filters.startDate, 'YYYY-MM-DD' ).valueOf() && moment( d.date, 'YYYY-MM-DD' ).valueOf() <= moment( this.state.filters.endDate, 'YYYY-MM-DD' ).valueOf()
+			);
+		}
+
 		days.forEach( ( day ) => {
 			day.failedRate = ( day.failed / day.total ).toFixed( 2 );
 		} );
 
-		sortArray( days, 'time', true );
+		sortArray( days, 'date', false );
 
 		this.setState( { days } );
 	}
 
 	chartOptions() {
-		const allDates = this.state.days.map( function ( e ) {
+		const allDates = this.state.days.map( function( e ) {
 			return e.date;
 		} );
 
@@ -163,7 +178,7 @@ export default class Tests extends BaseComponent {
 			xAxis: [
 				{
 					type: 'category',
-					data: this.state.days.map( function ( e ) {
+					data: this.state.days.map( function( e ) {
 						return e.date;
 					} ),
 				},
@@ -200,7 +215,7 @@ export default class Tests extends BaseComponent {
 					color: '#e38474',
 					symbol: 'roundRect',
 					symbolSize: 7,
-					data: this.state.days.map( function ( e ) {
+					data: this.state.days.map( function( e ) {
 						return e.failedRate;
 					} ),
 				},
@@ -212,7 +227,7 @@ export default class Tests extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(115, 151, 75, 0.73)',
-					data: this.state.days.map( function ( e ) {
+					data: this.state.days.map( function( e ) {
 						return e.passed;
 					} ),
 				},
@@ -224,7 +239,7 @@ export default class Tests extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(253, 90, 62, 0.71)',
-					data: this.state.days.map( function ( e ) {
+					data: this.state.days.map( function( e ) {
 						return e.failed;
 					} ),
 				},
@@ -236,7 +251,7 @@ export default class Tests extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(170, 170, 170, 0.73)',
-					data: this.state.days.map( function ( e ) {
+					data: this.state.days.map( function( e ) {
 						return e.skipped;
 					} ),
 				},
@@ -300,7 +315,9 @@ export default class Tests extends BaseComponent {
 				<Badge
 					key={ id }
 					onClick={ () => {
-						if ( url ) window.open( url, '_blank' );
+						if ( url ) {
+							window.open( url, '_blank' );
+						}
 					} }
 					className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
 				>
@@ -335,10 +352,17 @@ export default class Tests extends BaseComponent {
 	}
 
 	render() {
-		if ( ! this.state.isDataReady ) return null;
+		if ( ! this.state.isDataReady ) {
+			return null;
+		}
 
 		return (
 			<div>
+				<div className="row">
+					<div className="col filters">
+						{ this.getFilterByDateFields() }
+					</div>
+				</div>
 				<ReactEcharts option={ this.chartOptions() } />
 				<hr />
 				<div className="row text-center">

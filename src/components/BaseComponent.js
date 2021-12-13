@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, FormControl } from 'react-bootstrap';
 import { faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from 'moment';
 
 export default class BaseComponent extends React.Component {
 	getSortButtons( sortOptions, currentSortStateBy, currentSortStateIsAsc ) {
@@ -30,7 +31,7 @@ export default class BaseComponent extends React.Component {
 	}
 
 	getMasterOnlyFilterButton() {
-		const icon = this.state.isMasterOnly ? faCheckSquare : faSquare;
+		const icon = this.state.filters.isMasterOnly ? faCheckSquare : faSquare;
 
 		return (
 			<Button
@@ -38,12 +39,47 @@ export default class BaseComponent extends React.Component {
 				className="filter-btn"
 				onClick={ () => {
 					this.setState( {
-						isMasterOnly: ! this.state.isMasterOnly,
+						filters: { isMasterOnly: ! this.state.filters.isMasterOnly },
 					} );
 				} }
 			>
 				<FontAwesomeIcon icon={ icon } /> master only
 			</Button>
+		);
+	}
+
+	getFilterByDateFields() {
+		const dateFormat = 'YYYY-MM-DD';
+		function getValidDate( controlId, fallbackValue ) {
+			const element = document.getElementById( controlId );
+			return element.value ? element.value : fallbackValue;
+		}
+
+		return (
+			<div>
+				<FormControl type="date" id="startDate"
+					value={ this.state.filters.startDate }
+					max={ moment().format( dateFormat ) }
+					onChange={ () => {
+
+					} }
+				/>
+				<FormControl type="date" id="endDate"
+					value={ this.state.filters.endDate }
+					max={ moment().format( 'YYYY-MM-DD' ) }
+					onChange={ () => {
+
+					} } />
+				<Button
+					variant="dark"
+					className="filter-btn"
+					onClick={ () => {
+						this.setState( {
+							filters: { startDate: getValidDate( 'startDate', '1970-01-01' ), endDate: getValidDate( 'endDate', moment().format( dateFormat ) ) },
+						} );
+					} }
+				>Apply</Button>
+			</div>
 		);
 	}
 }
