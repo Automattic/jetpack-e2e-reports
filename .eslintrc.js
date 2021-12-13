@@ -1,6 +1,7 @@
 module.exports = {
 	root: true,
-	extends: [ 'plugin:@wordpress/eslint-plugin/recommended' ],
+	extends: [ 'plugin:@wordpress/eslint-plugin/recommended-with-formatting' ],
+	parser: '@babel/eslint-parser',
 	env: {
 		browser: true,
 	},
