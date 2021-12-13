@@ -22,7 +22,7 @@ export default class Tests extends BaseComponent {
 			failedRate: 0,
 		},
 		days: [],
-		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
+		filters: { isMasterOnly: false, startDate: moment().subtract( 0, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
 		sort: { by: 'total', isAsc: false },
 		isDataReady: false,
 	};
@@ -42,12 +42,14 @@ export default class Tests extends BaseComponent {
 			isDataReady: true,
 		} );
 
+		this.renderDefaultDateFilterValues();
 		ReactGA.pageview( '/tests' );
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
 			this.setTestsData();
+			this.setDailyStatsData();
 		}
 
 		if ( this.state.tests.list !== prevState.tests.list ) {
@@ -65,7 +67,7 @@ export default class Tests extends BaseComponent {
 		if ( this.state.filters.startDate && this.state.filters.endDate ) {
 			tests.forEach( ( t ) => {
 				t.results = t.results.filter( ( r ) =>
-					r.time >= moment( this.state.filters.startDate, 'YYYY-MM-DD' ).valueOf() && r.time <= moment( this.state.filters.endDate, 'YYYY-MM-DD' ).valueOf()
+					moment( r.time ).isBetween( moment( this.state.filters.startDate, 'YYYY-MM-DD' ), moment( this.state.filters.endDate, 'YYYY-MM-DD' ), 'd', '[]' )
 				);
 			} );
 		}
@@ -147,10 +149,6 @@ export default class Tests extends BaseComponent {
 	}
 
 	chartOptions() {
-		const allDates = this.state.days.map( function( e ) {
-			return e.date;
-		} );
-
 		// chart options
 		return {
 			grid: {
@@ -160,8 +158,6 @@ export default class Tests extends BaseComponent {
 			dataZoom: [
 				{
 					type: 'slider',
-					startValue: allDates[ allDates.length - 14 ],
-					endValue: allDates[ allDates.length - 1 ],
 				},
 			],
 			tooltip: {
