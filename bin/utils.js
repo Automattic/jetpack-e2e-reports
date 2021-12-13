@@ -31,6 +31,7 @@ function cleanTrace( trace ) {
 		.split( '\n' )
 		.filter( ( line ) => ! line.includes( '=====' ) )
 		.filter( ( line ) => ! line.includes( 'Playwright logs' ) )
+		.filter( ( line ) => ! line.includes( '/node_modules/' ) )
 		.join( '\n' )
 		.replace( /\n+/g, '\n' )
 		.replace( /https:\/\/.+.a8c-localtunnel.cyou/g, 'SITE-URL' )
