@@ -39,7 +39,7 @@ export default class Failures extends BaseComponent {
 		this.setState( {
 			isDataReady: true,
 		} );
-
+		this.renderDefaultDateFilterValues();
 		ReactGA.pageview( '/failures' );
 	}
 
@@ -63,7 +63,7 @@ export default class Failures extends BaseComponent {
 		if ( this.state.filters.startDate && this.state.filters.endDate ) {
 			errors.forEach( ( e ) => {
 				e.results = e.results.filter( ( r ) =>
-					r.time >= moment( this.state.filters.startDate, 'YYYY-MM-DD' ).valueOf() && r.time <= moment( this.state.filters.endDate, 'YYYY-MM-DD' ).valueOf()
+					moment( r.time ).isBetween( moment( this.state.filters.startDate, 'YYYY-MM-DD' ), moment( this.state.filters.endDate, 'YYYY-MM-DD' ), 'd', '[]' )
 				);
 			} );
 		}

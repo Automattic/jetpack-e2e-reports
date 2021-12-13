@@ -58,18 +58,18 @@ export default class BaseComponent extends React.Component {
 		return (
 			<div>
 				<FormControl type="date" id="startDate"
-					value={ this.state.filters.startDate }
 					max={ moment().format( dateFormat ) }
 					onChange={ () => {
-
+						const endDateElement = document.getElementById( 'endDate' );
+						const minDate = getValidDate( 'startDate', '1970-01-01' );
+						endDateElement.setAttribute( 'min', minDate );
+						if ( moment( endDateElement.value ).format( dateFormat ) < moment( minDate ).format( dateFormat ) ) {
+							endDateElement.value = minDate;
+						}
 					} }
 				/>
 				<FormControl type="date" id="endDate"
-					value={ this.state.filters.endDate }
-					max={ moment().format( 'YYYY-MM-DD' ) }
-					onChange={ () => {
-
-					} } />
+					max={ moment().format( 'YYYY-MM-DD' ) } />
 				<Button
 					variant="dark"
 					className="filter-btn"
@@ -81,5 +81,12 @@ export default class BaseComponent extends React.Component {
 				>Apply</Button>
 			</div>
 		);
+	}
+
+	renderDefaultDateFilterValues() {
+		const startDate = document.getElementById( 'startDate' );
+		const endDate = document.getElementById( 'endDate' );
+		startDate.value = this.state.filters.startDate;
+		endDate.value = this.state.filters.endDate;
 	}
 }
