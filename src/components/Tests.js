@@ -22,7 +22,7 @@ export default class Tests extends BaseComponent {
 			failedRate: 0,
 		},
 		days: [],
-		filters: { isMasterOnly: false, startDate: moment().subtract( 0, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
+		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
 		sort: { by: 'total', isAsc: false },
 		isDataReady: false,
 	};
@@ -42,7 +42,7 @@ export default class Tests extends BaseComponent {
 			isDataReady: true,
 		} );
 
-		this.renderDefaultDateFilterValues();
+		this.setDatePickersValues( this.state.filters.startDate, this.state.filters.endDate );
 		ReactGA.pageview( '/tests' );
 	}
 
@@ -135,7 +135,7 @@ export default class Tests extends BaseComponent {
 
 		if ( this.state.filters.startDate && this.state.filters.endDate ) {
 			days = days.filter( ( d ) =>
-				moment( d.date, 'YYYY-MM-DD' ).valueOf() >= moment( this.state.filters.startDate, 'YYYY-MM-DD' ).valueOf() && moment( d.date, 'YYYY-MM-DD' ).valueOf() <= moment( this.state.filters.endDate, 'YYYY-MM-DD' ).valueOf()
+				moment( d.date ).isBetween( moment( this.state.filters.startDate, 'YYYY-MM-DD' ), moment( this.state.filters.endDate, 'YYYY-MM-DD' ), 'd', '[]' )
 			);
 		}
 
@@ -355,9 +355,7 @@ export default class Tests extends BaseComponent {
 		return (
 			<div>
 				<div className="row">
-					<div className="col filters">
-						{ this.getFilterByDateFields() }
-					</div>
+					{ this.getFilterByDateFields() }
 				</div>
 				<ReactEcharts option={ this.chartOptions() } />
 				<hr />
