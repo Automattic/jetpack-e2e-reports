@@ -20,7 +20,7 @@ export default class Failures extends BaseComponent {
 			distinctErrors: 0,
 		},
 		weeks: [],
-		isMasterOnly: false,
+		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
 		sort: { by: 'common', isAsc: false },
 		isDataReady: false,
 	};
@@ -44,7 +44,7 @@ export default class Failures extends BaseComponent {
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
-		if ( this.state.isMasterOnly !== prevState.isMasterOnly ) {
+		if ( this.state.filters !== prevState.filters ) {
 			this.setErrorsData();
 		}
 
@@ -60,7 +60,15 @@ export default class Failures extends BaseComponent {
 			JSON.stringify( this.state.rawData.errorsData.errors )
 		);
 
-		if ( this.state.isMasterOnly ) {
+		if ( this.state.filters.startDate && this.state.filters.endDate ) {
+			errors.forEach( ( e ) => {
+				e.results = e.results.filter( ( r ) =>
+					r.time >= moment( this.state.filters.startDate, 'YYYY-MM-DD' ).valueOf() && r.time <= moment( this.state.filters.endDate, 'YYYY-MM-DD' ).valueOf()
+				);
+			} );
+		}
+
+		if ( this.state.filters.isMasterOnly ) {
 			errors.forEach( ( e ) => {
 				e.results = e.results.filter( ( r ) =>
 					masterRuns.includes( r.report )
@@ -253,7 +261,7 @@ export default class Failures extends BaseComponent {
 			xAxis: [
 				{
 					type: 'category',
-					data: this.state.weeks.map( function ( e ) {
+					data: this.state.weeks.map( function( e ) {
 						return e.date;
 					} ),
 				},
@@ -290,7 +298,7 @@ export default class Failures extends BaseComponent {
 					color: '#e38474',
 					symbol: 'roundRect',
 					symbolSize: 7,
-					data: this.state.weeks.map( function ( e ) {
+					data: this.state.weeks.map( function( e ) {
 						return e.failedRate;
 					} ),
 				},
@@ -301,7 +309,7 @@ export default class Failures extends BaseComponent {
 						focus: 'series',
 					},
 					color: '#fd5a3e',
-					data: this.state.weeks.map( function ( e ) {
+					data: this.state.weeks.map( function( e ) {
 						return e.failed;
 					} ),
 				},
@@ -310,7 +318,9 @@ export default class Failures extends BaseComponent {
 	}
 
 	render() {
-		if ( ! this.state.isDataReady ) return null;
+		if ( ! this.state.isDataReady ) {
+			return null;
+		}
 
 		const lastUpdate = moment(
 			this.state.rawData.errorsData.lastUpdate
@@ -319,6 +329,11 @@ export default class Failures extends BaseComponent {
 		return (
 			<div>
 				<ReactEcharts option={ this.chartOptions() } />
+				<div className="row">
+					<div className="col filters">
+						{ this.getFilterByDateFields() }
+					</div>
+				</div>
 				<hr />
 				<div className="row text-center">
 					<div className="col-sm">
