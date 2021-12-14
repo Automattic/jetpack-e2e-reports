@@ -12,10 +12,7 @@ const dataFile = 'docs/data/errors.json';
 const json = JSON.parse( fs.readFileSync( dataFile ).toString() );
 
 function cleanError( message, trace ) {
-	message = cleanTrace( message );
-	trace = cleanTrace( trace );
-
-	return trace.includes( message ) ? trace : `${ message }\n${ trace }`;
+	return trace.includes( message ) ? cleanTrace( trace ) : cleanTrace( `${ message }\n${ trace }` );
 }
 
 for ( const dirName of getReportsDirs() ) {
