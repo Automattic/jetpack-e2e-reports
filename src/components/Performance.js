@@ -162,7 +162,7 @@ export default class Performance extends React.Component {
 							emphasis: {
 								focus: 'series',
 							},
-							color: 'rgba(229,232,229,0.73)',
+							color: 'rgb(99,150,138)',
 							data: chartData.map( function( e ) {
 								return e[ key ];
 							} ),
