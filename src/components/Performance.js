@@ -81,132 +81,107 @@ export default class Performance extends React.Component {
 	}
 
 	render() {
-		if ( ! this.state.isDataFetched ) return null;
+		if ( ! this.state.isDataFetched ) {
+			return null;
+		}
 
 		const chartData = this.prepareChartData( this.state.rawData );
 
-		const chartOptions = {
-			grid: {
-				left: 40,
-				right: 0,
-			},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'cross',
-				},
-			},
-			legend: {
-				textStyle: {
-					color: '#6b6d76',
-				},
-			},
-			xAxis: [
-				{
-					type: 'category',
-					data: chartData.map( function ( e ) {
-						return e.date;
-					} ),
-				},
-			],
-			yAxis: [
-				{
-					type: 'value',
-					splitLine: {
-						lineStyle: {
-							type: 'dotted',
-							color: '#6b6d76',
+		const chartOptions = [];
+
+		Object.keys( chartData[ 0 ] ).forEach( key => {
+			if ( key !== 'date' ) {
+				chartOptions.push( {
+					grid: {
+						left: 60,
+						right: 0,
+					},
+					title: {
+						text: key.replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toUpperCase(),
+						textStyle: {
+							color: '#cccccc',
+							fontSize: '0.9rem',
 						},
 					},
-				},
-				{
-					type: 'value',
-					splitLine: {
-						lineStyle: {
-							type: 'dashed',
-							color: 'rgba(107,109,118,0.47)',
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'cross',
 						},
 					},
-					min: 0,
-					axisLabel: {
-						formatter: '{value} %',
-					},
-				},
-			],
-			dataZoom: [
-				{
-					type: 'inside',
-					start: 70,
-					end: 100,
-				},
-				{
-					start: 70,
-					end: 100,
-				},
-			],
-			series: [
-				{
-					name: 'loaded',
-					type: 'bar',
-					emphasis: {
-						focus: 'series',
-					},
-					color: 'rgba(115, 151, 75, 0.73)',
-					data: chartData.map( function ( e ) {
-						return e.loaded;
-					} ),
-				},
-				{
-					name: 'firstContentfulPaint',
-					type: 'bar',
-					emphasis: {
-						focus: 'series',
-					},
-					color: 'rgba(0,123,255,0.73)',
-					data: chartData.map( function ( e ) {
-						return e.firstContentfulPaint;
-					} ),
-				},
-				{
-					name: 'type',
-					type: 'bar',
-					emphasis: {
-						focus: 'series',
-					},
-					color: 'rgba(253,90,62,0.71)',
-					data: chartData.map( function ( e ) {
-						return e.type;
-					} ),
-				},
-				{
-					name: 'focus',
-					type: 'bar',
-					emphasis: {
-						focus: 'series',
-					},
-					color: 'rgb(107,109,118)',
-					data: chartData.map( function ( e ) {
-						return e.focus;
-					} ),
-				},
-				{
-					name: 'inserterOpen',
-					type: 'bar',
-					emphasis: {
-						focus: 'series',
-					},
-					color: 'rgb(160,248,228)',
-					data: chartData.map( function ( e ) {
-						return e.inserterOpen;
-					} ),
-				},
-			],
-		};
+					// legend: {
+					// 	textStyle: {
+					// 		color: '#f5f5f5',
+					// 	},
+					// },
+					xAxis: [
+						{
+							type: 'category',
+							data: chartData.map( function( e ) {
+								return e.date;
+							} ),
+						},
+					],
+					yAxis: [
+						{
+							type: 'value',
+							splitLine: {
+								lineStyle: {
+									type: 'dotted',
+									color: '#6b6d76',
+								},
+							},
+						},
+						{
+							type: 'value',
+							splitLine: {
+								lineStyle: {
+									type: 'dashed',
+									color: 'rgba(107,109,118,0.47)',
+								},
+							},
+							min: 0,
+							axisLabel: {
+								formatter: '{value} %',
+							},
+						},
+					],
+					dataZoom: [
+						{
+							type: 'inside',
+						},
+						{
+							start: 50,
+							end: 100,
+						},
+					],
+					series: [
+						{
+							name: key,
+							type: 'bar',
+							emphasis: {
+								focus: 'series',
+							},
+							color: 'rgba(229,232,229,0.73)',
+							data: chartData.map( function( e ) {
+								return e[ key ];
+							} ),
+						},
+					],
+				} );
+			}
+		} );
 
 		return (
 			<div>
 				<h4>Performance metrics</h4>
-				<ReactEcharts option={ chartOptions } />
+				{ chartOptions.map( ( option, key ) =>
+					<div key={ key }>
+						<ReactEcharts option={ option } />
+						<hr />
+					</div>
+				) }
+
 			</div>
 		);
 	}
