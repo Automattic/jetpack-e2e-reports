@@ -201,6 +201,10 @@ export default class Failures extends BaseComponent {
 						);
 
 						className = '';
+					} else {
+						// don't display results with no source,
+						// because it looks bad for some common errors that have a lot of results
+						return '';
 					}
 
 					return (
