@@ -32,7 +32,7 @@ function cleanTrace( trace ) {
 		.filter( ( line ) => ! line.includes( '=====' ) )
 		.filter( ( line ) => ! line.includes( 'Playwright logs' ) )
 		.filter( ( line ) => ! line.includes( '/node_modules/' ) )
-		.filter( ( line ) => ! line.includes( 'node:internal' ) )
+		.filter( ( line ) => ! line.includes( 'node:' ) )
 		.filter( ( line ) => ! line.includes( 'runMicrotasks' ) )
 		.join( '\n' )
 		.replace( /\n+/g, '\n' )
@@ -40,7 +40,8 @@ function cleanTrace( trace ) {
 		.replace(
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
-		);
+		)
+		.replace( /at .+/gs, trace.match( /at .+/ ) ); // keep only the first "at" line
 }
 
 function getTestInfoFromTestCaseFile( reportName, fileName ) {
