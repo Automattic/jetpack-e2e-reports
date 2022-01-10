@@ -41,7 +41,8 @@ function cleanTrace( trace ) {
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
 		)
-		.replace( /at .+/gs, trace.match( /at .+/ ) ); // keep only the first "at" line
+		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
+		.replace( /ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs, 'ms exceeded.\nat SearchHomepage.waitForLoadState' ); // remove multiple possible events that can happen before timeout
 }
 
 function getTestInfoFromTestCaseFile( reportName, fileName ) {
