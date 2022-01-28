@@ -44,11 +44,15 @@ for ( const dirName of getReportsDirs() ) {
 		}
 	}
 
+	const size = execSync( `du -sh docs/${ dirName } | cut -f1` )
+		.toString()
+		.replace( /\n$/, '' );
 	const report = {
 		name: dirName,
 		lastUpdate: metadata.updated_on ? metadata.updated_on : '1970-01-01',
 		statistic,
 		metadata,
+		size,
 	};
 
 	// console.log( report );
