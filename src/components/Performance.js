@@ -223,7 +223,8 @@ export default class Performance extends React.Component {
 		const type = this.state.selected;
 		return (
 			<div>
-				<h4>Performance metrics</h4>
+				<h4>Editor Performance Metrics</h4>
+				<p>This examines block editor performance with and without Jetpack using the Gutenberg performance tests.</p>
 				{ this.renderButtons( chartData ) }
 				{ this.renderChart( type, chartData[ type ] ) }
 			</div>
