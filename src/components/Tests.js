@@ -140,7 +140,7 @@ export default class Tests extends BaseComponent {
 		}
 
 		days.forEach( ( day ) => {
-			day.failedRate = ( day.failed / day.total ).toFixed( 2 );
+			day.failedRate = ( day.failed / day.total * 100 ).toFixed( 2 );
 		} );
 
 		sortArray( days, 'date', false );
