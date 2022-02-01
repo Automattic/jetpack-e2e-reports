@@ -103,7 +103,7 @@ export default class Tests extends BaseComponent {
 			totalTestResults += t.total;
 			failedResults += t.failed;
 		} );
-		const failedRate = ( failedResults / totalTestResults ).toFixed( 2 );
+		const failedRate = ( failedResults / totalTestResults * 100 ).toFixed( 2 );
 
 		this.setState( {
 			tests: {

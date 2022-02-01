@@ -144,7 +144,7 @@ export default class Failures extends BaseComponent {
 		);
 
 		weeks.forEach( ( week ) => {
-			week.failedRate = ( week.failed / week.total ).toFixed( 2 );
+			week.failedRate = ( week.failed / week.total * 100 ).toFixed( 2 );
 		} );
 
 		sortArray( weeks, 'date' );
