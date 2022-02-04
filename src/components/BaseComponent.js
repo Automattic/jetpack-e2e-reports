@@ -60,7 +60,7 @@ export default class BaseComponent extends React.Component {
 			<div>
 				<div className="col filters">
 					<InputGroup>
-						{ [ [ 'today', 0 ], [ 'last week', 7 ], [ 'last 2 weeks', 14 ] ].map( ( e, index ) =>
+						{ [ [ 'today', 0 ], [ 'last 7 days', 7 ], [ 'last 14 days', 14 ] ].map( ( e, index ) =>
 							<Button
 								key={ index }
 								variant="dark"
