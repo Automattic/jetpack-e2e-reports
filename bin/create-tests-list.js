@@ -14,8 +14,16 @@ const json = JSON.parse( fs.readFileSync( dataFilePath ).toString() );
 
 for ( const dirName of getReportsDirs() ) {
 	const dirPath = `docs/${ dirName }/report/data/test-cases`;
+	let testFiles = [];
 
-	for ( const testFile of getFilesFromDir( dirPath, '.json' ) ) {
+	try {
+		testFiles = getFilesFromDir( dirPath, '.json' );
+	} catch ( err ) {
+		console.error( `Cannot read files from path ${ dirPath } ${ err }` );
+		continue;
+	}
+
+	for ( const testFile of testFiles ) {
 		const testInfo = getTestInfoFromTestCaseFile( dirName, testFile );
 
 		const existingTest = json.tests.filter(
