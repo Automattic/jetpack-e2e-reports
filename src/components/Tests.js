@@ -23,7 +23,7 @@ export default class Tests extends BaseComponent {
 		},
 		days: [],
 		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
-		sort: { by: 'total', isAsc: false },
+		sort: { by: 'failed', isAsc: false },
 		isDataReady: false,
 	};
 
