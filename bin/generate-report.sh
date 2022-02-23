@@ -117,3 +117,9 @@ rm -rf "$TARGET_RESULTS_PATH"
 echo "Writing metadata to file"
 echo "$CLIENT_PAYLOAD" | jq --arg updateDate "$(date +"%Y-%m-%dT%H:%M:%S%z")" '. + {"updated_on":$updateDate}' >"$TARGET_DIR/metadata.json"
 cat "$TARGET_DIR/metadata.json"
+
+echo "Minifying JSON files"
+while IFS= read -r -d '' file
+do
+  jq -c . < "$file" > "$file.min" && mv "$file.min" "$file"
+done <   <(find "$TARGET_REPORT_PATH" -name '*.json' -print0)
