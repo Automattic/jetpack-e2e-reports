@@ -23,7 +23,7 @@ export default class Tests extends BaseComponent {
 		},
 		days: [],
 		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
-		sort: { by: 'failed', isAsc: false },
+		sort: { by: 'failedRate', isAsc: false },
 		isDataReady: false,
 	};
 
@@ -91,6 +91,7 @@ export default class Tests extends BaseComponent {
 				).length;
 				test.total += test[ status ];
 			}
+			test.failedRate = ( test.failed / test.total * 100 ).toFixed( 2 );
 
 			test.results.sort( ( a, b ) => {
 				return a.time - b.time;
@@ -296,7 +297,7 @@ export default class Tests extends BaseComponent {
 	}
 
 	getResultsLine( test ) {
-		const badges = test.results.slice( -500 ).map( ( result, id ) => {
+		const badges = test.results.slice( -150 ).map( ( result, id ) => {
 			let classHasSource = 'no-source';
 			let url;
 
@@ -352,76 +353,74 @@ export default class Tests extends BaseComponent {
 			return null;
 		}
 
-		return (
-			<div>
-				<div className="row">
-					{ this.getFilterByDateFields() }
-				</div>
-				<ReactEcharts option={ this.chartOptions() } />
-				<hr />
-				<div className="row text-center">
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.tests.distinctTests }
-							</span>
-							<br />
-							<span className="stat-description">tests</span>
-						</div>
-					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.tests.totalTestResults }
-							</span>
-							<br />
-							<span className="stat-description">results</span>
-						</div>
-					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.tests.failedResults }
-							</span>
-							<br />
-							<span className="stat-description">failures</span>
-						</div>
-					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.tests.failedRate }%
-							</span>
-							<br />
-							<span className="stat-description">
-								failure rate
-							</span>
-						</div>
+		return <div>
+			<div className="row">
+				{ this.getFilterByDateFields() }
+			</div>
+			<ReactEcharts option={ this.chartOptions() } />
+			<hr />
+			<div className="row text-center">
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							{ this.state.tests.distinctTests }
+						</span>
+						<br />
+						<span className="stat-description">tests</span>
 					</div>
 				</div>
-				<hr />
-				<div className="row">
-					<div className="col-sm filters">
-						{ this.getMasterOnlyFilterButton() }
-					</div>
-					<div className="col-md sort-buttons">
-						{ this.getSortButtons(
-							{
-								total: 'most runs',
-								failed: 'most failures',
-							},
-							this.state.sort.by,
-							this.state.sort.isAsc
-						) }
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							{ this.state.tests.totalTestResults }
+						</span>
+						<br />
+						<span className="stat-description">results</span>
 					</div>
 				</div>
-				<hr />
-				<div>
-					{ this.state.tests.list.map( ( test, id ) =>
-						this.getTestContent( test, id )
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							{ this.state.tests.failedResults }
+						</span>
+						<br />
+						<span className="stat-description">failures</span>
+					</div>
+				</div>
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							{ this.state.tests.failedRate }%
+						</span>
+						<br />
+						<span className="stat-description">
+							failure rate
+						</span>
+					</div>
+				</div>
+			</div>
+			<hr />
+			<div className="row">
+				<div className="col-sm filters">
+					{ this.getMasterOnlyFilterButton() }
+				</div>
+				<div className="col-md sort-buttons">
+					{ this.getSortButtons(
+						{
+							total: 'runs',
+							failedRate: 'failure rate',
+						},
+						this.state.sort.by,
+						this.state.sort.isAsc
 					) }
 				</div>
 			</div>
-		);
+			<hr />
+			<div>
+				{ this.state.tests.list.map( ( test, id ) =>
+					this.getTestContent( test, id )
+				) }
+			</div>
+		</div>;
 	}
 }
