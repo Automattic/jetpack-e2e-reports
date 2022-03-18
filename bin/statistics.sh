@@ -10,8 +10,5 @@ echo
 echo "==> Collect tests data"
 node ./bin/create-tests-list.js
 echo
-echo "==> Collect metrics"
-node ./bin/capture-metrics.js
-echo
 cp -a ./docs/data/. ./public/data
 echo "Done!"
