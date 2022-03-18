@@ -274,17 +274,14 @@ export default class Failures extends BaseComponent {
 				{
 					type: 'value',
 					splitLine: {
-						lineStyle: {
-							type: 'dotted',
-							color: '#6b6d76',
-						},
+						show: false,
 					},
 				},
 				{
 					type: 'value',
 					splitLine: {
 						lineStyle: {
-							type: 'dashed',
+							type: 'dotted',
 							color: '#6b6d76',
 						},
 					},

@@ -13,9 +13,7 @@ const srcData = JSON.parse( fs.readFileSync( srcDataFile ).toString() );
 for ( const test of srcData.tests ) {
 	for ( const result of test.results ) {
 		const date = moment( result.time ).format( 'YYYY-MM-DD' );
-		const week = `${ moment( result.time ).isoWeekYear() }-week-${ moment(
-			result.time
-		).isoWeek() }`;
+		const week = moment( result.time ).format( 'GGGG-[week]-WW' );
 
 		pushData( dailyJson, date, result );
 		pushData( weeklyJson, week, result );
