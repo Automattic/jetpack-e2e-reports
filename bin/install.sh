@@ -18,7 +18,7 @@ wget --no-verbose -O allure.zip $ALLURE_DOWNLOAD_URL \
   && unzip allure.zip -d "$DESTINATION_PATH" \
   && rm -rf allure.zip \
 
-ALLURE_PATH=$(realpath $DESTINATION_PATH/allure-$ALLURE_VERSION/bin)
+ALLURE_PATH=$(realpath "$DESTINATION_PATH"/allure-$ALLURE_VERSION/bin)
 
 # Test Allure installation
 echo "$ALLURE_PATH"
@@ -27,3 +27,11 @@ allure --version
 
 # Add Allure in Github PATH to make it available to all subsequent actions in the current job
 echo "$ALLURE_PATH" >> "$GITHUB_PATH"
+
+# Install aws-cli
+echo "Installing aws-cli"
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+# Test aws-cli installation
+aws --version
