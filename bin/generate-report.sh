@@ -43,11 +43,13 @@ if [[ -z "$REPORT_NAME" ]]; then
       TARGET_DIR="$SITE_ROOT/$BRANCH"
       REPORT_URL="$BASE_URL/$BRANCH/report"
       REPORT_TITLE="Test report for $BRANCH branch"
+      REPORT_NAME=$BRANCH
     fi
   else
     TARGET_DIR="$SITE_ROOT/$PR_NUMBER"
     REPORT_URL="$BASE_URL/$PR_NUMBER/report"
     REPORT_TITLE="Test report for PR $PR_NUMBER"
+    REPORT_NAME=$PR_NUMBER
   fi
 else
   TARGET_DIR="$SITE_ROOT/$REPORT_NAME"
