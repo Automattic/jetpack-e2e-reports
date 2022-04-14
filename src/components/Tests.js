@@ -48,6 +48,7 @@ export default class Tests extends BaseComponent {
 
 	componentDidUpdate( prevProps, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
+			console.log( this.state.filters );
 			this.setTestsData();
 			this.setDailyStatsData();
 		}

@@ -38,9 +38,12 @@ export default class BaseComponent extends React.Component {
 				variant="dark"
 				className="filter-btn"
 				onClick={ () => {
-					this.setState( {
-						filters: { isMasterOnly: ! this.state.filters.isMasterOnly },
-					} );
+					this.setState( prevState => ( {
+						filters: {
+							...prevState.filters,
+							isMasterOnly: ! this.state.filters.isMasterOnly,
+						},
+					} ) );
 				} }
 			>
 				<FontAwesomeIcon icon={ icon } /> master only
@@ -67,12 +70,13 @@ export default class BaseComponent extends React.Component {
 								className="filter-btn"
 								onClick={ () => {
 									this.setDatePickersValues( moment().subtract( e[ 1 ], 'd' ).format( dateFormat ), moment().format( dateFormat ) );
-									this.setState( {
+									this.setState( prevState => ( {
 										filters: {
+											...prevState.filters,
 											startDate: getValidDate( 'startDate', '1970-01-01' ),
 											endDate: getValidDate( 'endDate', moment().format( dateFormat ) ),
 										},
-									} );
+									} ) );
 								} }
 							>{ e[ 0 ] }</Button>
 						) }
@@ -80,7 +84,7 @@ export default class BaseComponent extends React.Component {
 							max={ moment().format( dateFormat ) }
 							onChange={ () => {
 								const endDateElement = document.getElementById( 'endDate' );
-								const minDate = getValidDate( 'startDate', '1970-01-01' );
+								const minDate = getValidDate( 'startDate', '2021-10-01' );
 								endDateElement.setAttribute( 'min', minDate );
 								if ( moment( endDateElement.value ).format( dateFormat ) < moment( minDate ).format( dateFormat ) ) {
 									endDateElement.value = minDate;
@@ -93,12 +97,13 @@ export default class BaseComponent extends React.Component {
 							variant="dark"
 							className="filter-btn"
 							onClick={ () => {
-								this.setState( {
+								this.setState( prevState => ( {
 									filters: {
+										...prevState.filters,
 										startDate: getValidDate( 'startDate', '1970-01-01' ),
 										endDate: getValidDate( 'endDate', moment().format( dateFormat ) ),
 									},
-								} );
+								} ) );
 							} }
 						>Apply</Button>
 					</InputGroup>
