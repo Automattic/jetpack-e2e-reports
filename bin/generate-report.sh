@@ -129,4 +129,4 @@ done <   <(find "$TARGET_REPORT_PATH" -name '*.json' -print0)
 
 ## Copy to S3
 echo "Copying report to S3"
-aws s3 sync "$TARGET_DIR" "s3://jetpack-e2e-reports/reports/$REPORT_NAME"
+aws s3 sync "$TARGET_DIR" "s3://jetpack-e2e-reports/reports/$REPORT_NAME" --delete --only-show-errors
