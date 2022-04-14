@@ -72,10 +72,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Set up tools
+      - name: Install Allure
         env:
           DESTINATION_PATH: ../
-        run: ./bin/install.sh
+        run: ./bin/install-allure.sh
+
+      - name: Install aws-cli
+        env:
+          DESTINATION_PATH: ../
+        run: ./bin/install-aws-cli.sh
 
       - name: Wait for artifacts to be available
         run: ./bin/wait-for-artifacts.sh
