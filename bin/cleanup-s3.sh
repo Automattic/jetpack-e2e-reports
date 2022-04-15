@@ -62,8 +62,8 @@ is_closed() {
 }
 
 is_old() {
-  cleanup_date=$(gdate --date="-${DAYS} day" +%Y-%m-%d)
-  last_update=$(gdate --date="$(aws s3 cp --quiet "$s3_reports_path/$1/metadata.json" /dev/stdout | jq -r '.updated_on')" +%Y-%m-%d)
+  cleanup_date=$(date --date="-${DAYS} day" +%Y-%m-%d)
+  last_update=$(date --date="$(aws s3 cp --quiet "$s3_reports_path/$1/metadata.json" /dev/stdout | jq -r '.updated_on')" +%Y-%m-%d)
 
   echo "Last updated in $last_update"
   [[ $cleanup_date > $last_update ]]
