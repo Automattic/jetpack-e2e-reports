@@ -23,7 +23,7 @@ fi
 echo "Cleaning up reports for closed PRs or older than $DAYS days"
 echo
 
-s3_reports_path="s3://jetpack-e2e-reports/reports"
+s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
 working_dir="$(mktemp -d)"
 
 script_path=$(
