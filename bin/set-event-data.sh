@@ -4,18 +4,18 @@ set -eo pipefail
 
 echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
 
-if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
-  {
-    echo "RUN_ID=${{ github.event.inputs.runId }}"
-    echo "PR_NUMBER=${{ github.event.inputs.pr }}"
-    echo "BRANCH=${{ github.event.inputs.branch }}"
-    echo "REPORT_NAME=${{ github.event.inputs.report_name }}"
-    echo "REPOSITORY=${{ github.event.inputs.repository }}"
-    echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }"}
-  } >> "$GITHUB_ENV"
-else
-    echo "Received event type: '${{ github.event.action }}'"
-fi
+#if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
+#  {
+#    echo "RUN_ID=${{ github.event.inputs.runId }}"
+#    echo "PR_NUMBER=${{ github.event.inputs.pr }}"
+#    echo "BRANCH=${{ github.event.inputs.branch }}"
+#    echo "REPORT_NAME=${{ github.event.inputs.report_name }}"
+#    echo "REPOSITORY=${{ github.event.inputs.repository }}"
+#    echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }"
+#  } >> "$GITHUB_ENV"
+#else
+#    echo "Received event type: '${{ github.event.action }}'"
+#fi
 
 echo "$CLIENT_PAYLOAD"
 
