@@ -45,18 +45,23 @@ for ( const dirName of getReportsDirs() ) {
 				cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
+		const masterReports = require( '../src/config.json' ).masterRuns;
+
+		const result = {
+			time: testInfo.time.stop,
+			report: dirName,
+			isMaster: masterReports.includes( dirName ),
+			source: testInfo.source,
+			test: testInfo.fullName,
+		};
+
 		if ( existingError.length > 0 ) {
 			const existingReport = existingError[ 0 ].results.filter(
 				( t ) => t.time === testInfo.time.stop
 			);
 
 			if ( existingReport.length === 0 ) {
-				existingError[ 0 ].results.push( {
-					time: testInfo.time.stop,
-					report: dirName,
-					source: testInfo.source,
-					test: testInfo.fullName,
-				} );
+				existingError[ 0 ].results.push( result );
 			}
 		} else {
 			const error = {
@@ -67,12 +72,7 @@ for ( const dirName of getReportsDirs() ) {
 				results: [],
 			};
 
-			error.results.push( {
-				time: testInfo.time.stop,
-				report: dirName,
-				source: testInfo.source,
-				test: testInfo.fullName,
-			} );
+			error.results.push( result );
 
 			json.errors.push( error );
 		}
