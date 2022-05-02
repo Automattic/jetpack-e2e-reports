@@ -1,5 +1,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { s3client, s3Params } = require( './s3-client' );
+const { GetObjectCommand } = require( '@aws-sdk/client-s3' );
 
 function getReportsDirs() {
 	const excluded = require( '../src/config.json' ).ignore;
@@ -88,6 +90,29 @@ function cleanSources( arr ) {
 	} );
 }
 
+async function readS3Object( key ) {
+	const cmd = new GetObjectCommand( { Bucket: s3Params.Bucket, Key: key } );
+	let content;
+
+	try {
+		const data = await s3client.send( cmd );
+		content = await streamToString( data.Body );
+	} catch ( error ) {
+		console.error( error );
+	}
+
+	return content;
+}
+
+const streamToString = ( stream ) => {
+	return new Promise( ( resolve, reject ) => {
+		const chunks = [];
+		stream.on( 'data', ( chunk ) => chunks.push( chunk ) );
+		stream.on( 'error', reject );
+		stream.on( 'end', () => resolve( Buffer.concat( chunks ).toString() ) );
+	} );
+};
+
 module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
@@ -96,4 +121,5 @@ module.exports = {
 	writeJson,
 	sort,
 	cleanSources,
+	readS3Object,
 };
