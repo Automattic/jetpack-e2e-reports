@@ -1,6 +1,7 @@
 /**
  * This script will update the json file containing the list of reports: data/reports.json
  * It will take the data of a recently generated report that exists on the disk, and push this data in the existing json file
+ * It will read data from $reportID/report/widgets/summary.json, $reportID/metadata.json
  */
 
 const { readS3Object } = require( './utils' );
@@ -28,7 +29,7 @@ let json = { reports: [] };
 		statistic = JSON.parse( fs.readFileSync( path.resolve(
 			reportId,
 			'report/widgets/summary.json'
-		) ) ).statistic;
+		) ).toString() ).statistic;
 	} catch ( err ) {
 		console.error( err );
 	}
@@ -59,16 +60,26 @@ let json = { reports: [] };
 	};
 
 	console.log( report );
+	const reportIndex = json.reports.findIndex(
+		( r ) => r.name === reportId
+	);
 
-	json.reports.push( report );
+	if ( reportIndex !== -1 ) {
+		// Update the report entry in the reports list
+		json.reports[ reportIndex ] = report;
+	} else {
+		// push new report
+		json.reports.push( report );
+	}
+
 	json.reportsCount = json.reports.length;
 	json.docsSize = 'unknown';
 
 	// Write the new report list locally
-	fs.writeFileSync(
-		path.resolve( reportId, 'reports.json' ),
-		JSON.stringify( json, null, 2 )
-	);
+	// fs.writeFileSync(
+	// 	path.resolve( reportId, 'reports.json' ),
+	// 	JSON.stringify( json, null, 2 )
+	// );
 
 	// Upload the report to S3
 	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/reports.json', Body: JSON.stringify( json, null, 2 ), ContentType: 'application/json' } );
