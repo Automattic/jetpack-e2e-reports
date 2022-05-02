@@ -75,7 +75,5 @@ do
 done <   <(find "$TARGET_REPORT_PATH" -name '*.json' -print0)
 
 echo "Copying report to S3"
-#aws s3 cp "$TARGET_DIR" "$s3_reports_path/$REPORT_ID" --recursive --only-show-errors
-rm -rf "$HOME/www"
-cp -r "$TARGET_DIR/report" "$HOME/www"
+aws s3 cp "$TARGET_DIR" "$s3_reports_path/$REPORT_ID" --recursive --only-show-errors
 
