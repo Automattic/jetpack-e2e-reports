@@ -49,20 +49,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Parse event information
+      - name: Event information
         run: |
-
-        if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
-          echo "RUN_ID=${{ github.event.inputs.runId }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
-          echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
-          echo "REPORT_NAME=${{ github.event.inputs.report_name }}" >> $GITHUB_ENV
-          echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-          echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
-        fi
-        
-        echo $CLIENT_PAYLOAD
-        ./bin/set-event-data.sh
+          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+          if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
+            echo "RUN_ID=${{ github.event.inputs.runId }}" >> $GITHUB_ENV
+            echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
+            echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
+            echo "REPORT_NAME=${{ github.event.inputs.report_name }}" >> $GITHUB_ENV
+            echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
+            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
+          else
+            echo "Received event '${{ github.event.action }}'"
+            echo $CLIENT_PAYLOAD
+          fi
+          
+          ./bin/set-event-data.sh
 
       - uses: actions/cache@v2
         with:
