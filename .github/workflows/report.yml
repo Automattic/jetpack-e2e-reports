@@ -6,29 +6,10 @@ on:
 
   workflow_dispatch:
     inputs:
-      pr:
-        description: 'PR number'
+      client_payload:
+        description: 'The client payload'
         required: true
-        default: '20231'
-      pr_title:
-        description: 'PR title'
-        required: true
-        default: 'Test pr title'
-      branch:
-        description: 'Branch name'
-        required: true
-        default: 'test/test-pr'
-      report_name:
-        description: 'Report name'
-        required: false
-      runId:
-        description: 'Run ID'
-        required: true
-        default: '986899084'
-      repository:
-        description: 'Repository'
-        required: true
-        default: 'automattic/jetpack'
+        default: '{"branch": "test/test-branch","pr_number": "99999","pr_title": "This is a test PR.","report_name": "","repository": "Automattic/jetpack","run_id": "2259156708","run_number": "12345"}'
 
 jobs:
   report:
@@ -49,21 +30,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Event information
+      - name: Parse event information
         run: |
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
-          if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
-            echo "RUN_ID=${{ github.event.inputs.runId }}" >> $GITHUB_ENV
-            echo "PR_NUMBER=${{ github.event.inputs.pr }}" >> $GITHUB_ENV
-            echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
-            echo "REPORT_NAME=${{ github.event.inputs.report_name }}" >> $GITHUB_ENV
-            echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-            echo "CLIENT_PAYLOAD={ \"branch\": \"${{ github.event.inputs.branch }}\", \"pr_number\": \"${{ github.event.inputs.pr }}\", \"pr_title\": \"${{ github.event.inputs.pr_title }}\", \"report_name\": \"${{ github.event.inputs.report_name }}\", \"repository\": \"${{ github.event.inputs.repository }}\", \"run_id\": \"${{ github.event.inputs.runId }}\", \"run_number\": \"000\" }" >> $GITHUB_ENV
-          else
-            echo "Received event '${{ github.event.action }}'"
-            echo $CLIENT_PAYLOAD
-          fi
-          
           ./bin/set-event-data.sh
 
       - uses: actions/cache@v2
