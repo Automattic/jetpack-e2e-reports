@@ -36,4 +36,6 @@ if [[ -z "$REPORT_NAME" ]]; then
     echo "Setting REPORT_ID to $PR_NUMBER"
     echo "REPORT_ID=$PR_NUMBER" >> "$GITHUB_ENV"
   fi
+else
+  echo "REPORT_ID=$REPORT_NAME" >> "$GITHUB_ENV"
 fi
