@@ -53,6 +53,7 @@ async function addTestsToList( dataFile ) {
 
 			if ( existingResults.length === 0 ) {
 				// result doesn't exists, push it
+				console.log( `Adding result ${ JSON.stringify( testResult ) } for test ${ testInfo.fullName }` );
 				existingTests[ 0 ].results.push( testResult );
 			} else {
 				console.log( `Result ${ JSON.stringify( testResult ) } already exists for test ${ testInfo.fullName }` );
