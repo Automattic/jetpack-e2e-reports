@@ -22,7 +22,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Clean up
+      - name: Clean up (GitHub)
         env:
           DAYS: 30
         run: ./bin/cleanup.sh
@@ -32,7 +32,5 @@ jobs:
           MESSAGE: "Cleanup"
         run: ./bin/push-changes.sh
 
-      - name: Clean up S3
-        env:
-          DAYS: 30
-        run: ./bin/cleanup-s3.sh
+      - name: Clean up
+        run: ./bin/cleanup-s3.js

@@ -1,7 +1,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { s3client, s3Params } = require( './s3-client' );
-const { GetObjectCommand, ListObjectsCommand } = require( '@aws-sdk/client-s3' );
+const { GetObjectCommand, ListObjectsCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
 
 function getReportsDirs() {
 	const excluded = require( '../src/config.json' ).ignore;
@@ -122,9 +122,9 @@ async function readS3Object( key ) {
 	return content;
 }
 
-async function listS3Objects( key ) {
-	console.log( `Listing objects in ${ key }` );
-	const cmd = new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: key } );
+async function listS3Objects( prefix, delimiter = '' ) {
+	console.log( `Listing objects with prefix ${ prefix }` );
+	const cmd = new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix, Delimiter: delimiter } );
 	let objects = [];
 
 	try {
@@ -135,6 +135,34 @@ async function listS3Objects( key ) {
 	}
 
 	return objects;
+}
+
+async function listS3Folders( prefix ) {
+	console.log( `Listing folders with prefix ${ prefix }` );
+	const cmd = new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix, Delimiter: '/' } );
+	let objects = [];
+
+	try {
+		const data = await s3client.send( cmd );
+		objects = data.CommonPrefixes.map( ( item ) => item.Prefix );
+	} catch ( err ) {
+		console.log( 'Error', err );
+	}
+
+	return objects;
+}
+
+async function removeS3Folder( prefix ) {
+	console.log( `Removing all files with prefix ${ prefix }` );
+	const objectsInFolder = await s3client.send( new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix } ) );
+
+	for ( const { Key } of objectsInFolder.Contents ) {
+		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key } ) );
+	}
+
+	if ( objectsInFolder.IsTruncated ) {
+		await removeS3Folder( prefix );
+	}
 }
 
 const streamToString = ( stream ) => {
@@ -158,4 +186,6 @@ module.exports = {
 	cleanSources,
 	readS3Object,
 	listS3Objects,
+	listS3Folders,
+	removeS3Folder,
 };
