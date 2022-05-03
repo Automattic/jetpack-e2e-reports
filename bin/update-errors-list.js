@@ -4,7 +4,7 @@
  * It will read data from files in $reportID/report/data/test-cases
  */
 
-const { readS3Object, readJson, getFilesFromDir, cleanError } = require( './utils' );
+const { readS3Object, readJson, cleanError } = require( './utils' );
 const path = require( 'path' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
@@ -19,28 +19,14 @@ if ( ! reportId ) {
 	// Get the existing errors list
 	const json = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
 
-	// Get the report statistics from report/widgets/summary.json
-	const statistic = readJson( path.join( reportId, 'report/widgets/summary.json' ) ).statistic;
+	// Get the list of failures from  report/widgets/status-chart.json
+	const status = readJson( path.join( reportId, 'report/widgets/status-chart.json' ) );
+	const failedTests = status.filter( ( t ) => t.status === 'failed' || t.status === 'broken' );
+	console.log( `Found ${ failedTests.length } failed tests` );
 
-	if ( statistic.failed === 0 && statistic.broken === 0 ) {
-		console.log( 'No new failures found' );
-		return;
-	}
-
-	// Get the list of test files
-	const tcPath = `${ reportId }/report/data/test-cases`;
-	let testFiles = [];
-
-	try {
-		testFiles = getFilesFromDir( tcPath, '.json' );
-	} catch ( err ) {
-		console.error( `Cannot read files from path ${ tcPath } ${ err }` );
-		return;
-	}
-
-	for ( const testFile of testFiles ) {
-		console.log( `Reading ${ testFile }` );
-		const testInfo = readJson( path.join( reportId, 'report/data/test-cases', testFile ) );
+	for ( const test of failedTests ) {
+		console.log( `Reading ${ test.uid }` );
+		const testInfo = readJson( path.join( reportId, 'report/data/test-cases', `${ test.uid }.json` ) );
 
 		if (
 			( ! testInfo.statusTrace && ! testInfo.statusMessage ) ||
