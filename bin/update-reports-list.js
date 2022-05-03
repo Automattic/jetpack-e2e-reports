@@ -74,6 +74,7 @@ let json = { reports: [] };
 
 	json.reportsCount = json.reports.length;
 	json.docsSize = 'unknown';
+	json.lastUpdate = new Date().toISOString();
 
 	// Write the new report list locally
 	// fs.writeFileSync(
