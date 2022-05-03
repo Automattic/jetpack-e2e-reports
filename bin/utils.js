@@ -47,6 +47,13 @@ function cleanTrace( trace ) {
 		.replace( /ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs, 'ms exceeded.\n    at SearchHomepage.waitForLoadState' ); // remove multiple possible events that can happen before timeout
 }
 
+function cleanError( message, trace ) {
+	if ( trace ) {
+		return trace.includes( message ) ? cleanTrace( trace ) : cleanTrace( `${ message }\n${ trace }` );
+	}
+	return 'undefined';
+}
+
 function getTestInfoFromTestCaseFile( reportName, fileName ) {
 	const filePath = `./docs/${ reportName }/report/data/test-cases/${ fileName }`;
 	return JSON.parse( fs.readFileSync( filePath ).toString() );
@@ -57,6 +64,16 @@ function writeJson( jsonData, filePath, pretty = false ) {
 		path.resolve( filePath ),
 		JSON.stringify( jsonData, null, pretty ? 2 : 0 )
 	);
+}
+
+function readJson( filePath ) {
+	let data;
+	try {
+		data = JSON.parse( fs.readFileSync( path.resolve( filePath ) ).toString() );
+	} catch ( err ) {
+		console.error( err );
+	}
+	return data;
 }
 
 function sort( data, sortKey, desc = false ) {
@@ -118,7 +135,9 @@ module.exports = {
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
 	cleanTrace,
+	cleanError,
 	writeJson,
+	readJson,
 	sort,
 	cleanSources,
 	readS3Object,

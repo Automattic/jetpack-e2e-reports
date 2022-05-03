@@ -83,5 +83,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Update reports list
-        run: node ./bin/update-reports-list.js
+      - name: Update dashboard data
+        run: |
+          echo "::group::Update reports list"
+          node ./bin/update-reports-list.js
+          echo "::endgroup::"
+
+          echo "::group::Update errors list"
+          node ./bin/update-errors-list.js
+          echo "::endgroup::"

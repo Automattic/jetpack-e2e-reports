@@ -4,8 +4,7 @@
  * It will read data from $reportID/report/widgets/summary.json, $reportID/metadata.json
  */
 
-const { readS3Object } = require( './utils' );
-const fs = require( 'fs' );
+const { readS3Object, readJson } = require( './utils' );
 const path = require( 'path' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
@@ -22,17 +21,8 @@ let json = { reports: [] };
 	// Get the existing reports list
 	json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 
-	// Get the report statistics from report/widgets/reports.json
-	let statistic;
-
-	try {
-		statistic = JSON.parse( fs.readFileSync( path.resolve(
-			reportId,
-			'report/widgets/summary.json'
-		) ).toString() ).statistic;
-	} catch ( err ) {
-		console.error( err );
-	}
+	// Get the report statistics from report/widgets/summary.json
+	const statistic = readJson( path.join( reportId, 'report/widgets/summary.json' ) ).statistic;
 
 	// Get the metadata
 	let metadata = {
@@ -44,11 +34,7 @@ let json = { reports: [] };
 		updated_on: '',
 	};
 
-	try {
-		metadata = JSON.parse( fs.readFileSync( path.resolve( reportId, 'metadata.json' ), ).toString() );
-	} catch ( err ) {
-		console.error( err );
-	}
+	metadata = readJson( path.join( reportId, 'metadata.json' ) );
 
 	// Create the report entry
 	const report = {
@@ -77,10 +63,7 @@ let json = { reports: [] };
 	json.lastUpdate = new Date().toISOString();
 
 	// Write the new report list locally
-	// fs.writeFileSync(
-	// 	path.resolve( reportId, 'reports.json' ),
-	// 	JSON.stringify( json, null, 2 )
-	// );
+	// writeJson( json, path.join( reportId, 'reports.json' ), true );
 
 	// Upload the report to S3
 	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/reports.json', Body: JSON.stringify( json, null, 2 ), ContentType: 'application/json' } );
