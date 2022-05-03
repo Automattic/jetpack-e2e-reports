@@ -25,7 +25,7 @@ let json = { reports: [] };
 	const statistic = readJson( path.join( reportId, 'report/widgets/summary.json' ) ).statistic;
 
 	// Get the metadata
-	let metadata = {
+	const metadata = readJson( path.join( reportId, 'metadata.json' ) ) || {
 		branch: '',
 		pr_number: '',
 		pr_title: '',
@@ -33,8 +33,6 @@ let json = { reports: [] };
 		run_number: '',
 		updated_on: '',
 	};
-
-	metadata = readJson( path.join( reportId, 'metadata.json' ) );
 
 	// Create the report entry
 	const report = {
