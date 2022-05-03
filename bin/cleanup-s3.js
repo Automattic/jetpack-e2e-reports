@@ -91,13 +91,15 @@ const octokit = new Octokit();
 
 	// Remove reports from S3 storage
 	for ( const report of reportsToDelete ) {
-		console.log( `Removing report ${ report }` );
+		console.group( `Removing report ${ report }` );
 		await removeS3Folder( `reports/${ report }` );
+		console.groupEnd();
 	}
 
 	for ( const report of reportsToClean ) {
-		console.log( `Cleaning report ${ report }` );
+		console.group( `Cleaning report ${ report }` );
 		await cleanReport( report );
+		console.groupEnd();
 	}
 } )();
 
