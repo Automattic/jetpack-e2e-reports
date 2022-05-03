@@ -1,13 +1,20 @@
-const { sort, readS3Object } = require( './utils' );
+/**
+ * This script will create per time statistics data files: daily, weekly and monthly. It should run on a schedule, probably on a daily basis.
+ * It reads the data from the tests-YYYY-MM.json files
+ */
+
+const { sort, readS3Object, listS3Objects } = require( './utils' );
 const moment = require( 'moment' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
 
 ( async () => {
 	const srcData = { tests: [] };
-	// const resultListsFiles = await listS3Objects( 'result-lists' );
-	for ( const dataFile of [ 'tests-2022-04.json', 'tests-2022-05.json' ] ) {
-		const monthSrcData = JSON.parse( ( await readS3Object( `data/${ dataFile }` ) ).toString() );
+	const s3DataFiles = await listS3Objects( 'data' );
+	const tests = s3DataFiles.filter( ( fileName ) => fileName.startsWith( 'data/tests-' ) );
+
+	for ( const dataFile of tests ) {
+		const monthSrcData = JSON.parse( ( await readS3Object( `${ dataFile }` ) ).toString() );
 		srcData.tests = srcData.tests.concat( monthSrcData.tests );
 	}
 
