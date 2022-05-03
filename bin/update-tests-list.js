@@ -19,7 +19,6 @@ if ( ! reportId ) {
 async function addTestsToList( dataFile ) {
 	// Get the existing tests list
 	console.log();
-	console.log( `Reading tests list from ${ dataFile }` );
 	const s3Data = await readS3Object( dataFile );
 	const json = s3Data ? JSON.parse( s3Data.toString() ) : { tests: [] };
 

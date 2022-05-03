@@ -1,6 +1,6 @@
 const {
 	writeJson, readJson,
-} = require( './utils' );
+} = require( '../utils' );
 const moment = require( 'moment' );
 
 const sourceJson = readJson( 'docs/data/tests.json' );

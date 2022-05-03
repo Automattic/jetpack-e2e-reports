@@ -2,7 +2,7 @@ const fs = require( 'fs' );
 const {
 	cleanTrace,
 	writeJson,
-} = require( './utils' );
+} = require( '../utils' );
 
 const dataFile = 'docs/data/errors.json';
 const json = JSON.parse( fs.readFileSync( dataFile ).toString() );
