@@ -5,7 +5,7 @@ import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
-import { masterRuns } from '../config.json';
+import { masterRuns, dataSourceURL } from '../config.json';
 import BaseComponent from './BaseComponent';
 
 export default class Tests extends BaseComponent {
@@ -30,8 +30,8 @@ export default class Tests extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				testsData: await fetchJsonData( './data/tests.json' ),
-				dailyData: await fetchJsonData( './data/daily.json' ),
+				testsData: await fetchJsonData( `${ dataSourceURL }/data/tests.json` ),
+				dailyData: await fetchJsonData( `${ dataSourceURL }/data/daily.json` ),
 			},
 		} );
 

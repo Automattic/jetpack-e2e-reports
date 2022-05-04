@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import { Container, Row, Col } from 'react-bootstrap';
-
+import { dataSourceURL } from '../config.json';
 import ReactEcharts from 'echarts-for-react';
 
 export default class Performance extends React.Component {
@@ -61,7 +61,7 @@ export default class Performance extends React.Component {
 	}
 
 	async componentDidMount() {
-		await fetch( './data/perf-metrics.json', {
+		await fetch( `${ dataSourceURL }/data/perf-metrics.json`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',

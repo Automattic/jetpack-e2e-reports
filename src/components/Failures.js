@@ -5,7 +5,7 @@ import ReactEcharts from 'echarts-for-react';
 import { Badge } from 'react-bootstrap';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
-import { masterRuns } from '../config.json';
+import { masterRuns, dataSourceURL } from '../config.json';
 import BaseComponent from './BaseComponent';
 
 export default class Failures extends BaseComponent {
@@ -28,8 +28,8 @@ export default class Failures extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				errorsData: await fetchJsonData( './data/errors.json' ),
-				weeklyData: await fetchJsonData( './data/weekly.json' ),
+				errorsData: await fetchJsonData( `${ dataSourceURL }/data/errors.json` ),
+				weeklyData: await fetchJsonData( `${ dataSourceURL }/data/weekly.json` ),
 			},
 		} );
 

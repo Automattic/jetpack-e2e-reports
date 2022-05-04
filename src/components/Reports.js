@@ -16,7 +16,7 @@ export default class Reports extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch( './data/reports.json', {
+		fetch( `${ configData.dataSourceURL }/data/reports.json`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
@@ -48,7 +48,9 @@ export default class Reports extends React.Component {
 	}
 
 	render() {
-		if ( ! this.state.isDataFetched ) return null;
+		if ( ! this.state.isDataFetched ) {
+			return null;
+		}
 		return (
 			<div>
 				<div className={ 'reports-header' }>
