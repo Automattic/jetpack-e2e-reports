@@ -9,6 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import ReactGA from 'react-ga';
 import moment from 'moment';
+import configData from '../config.json';
 
 export default class ReportsTable extends React.Component {
 	state = {
@@ -140,7 +141,7 @@ export default class ReportsTable extends React.Component {
 	}
 
 	getReportLinkCell( report, metadata, isFailed, totalTests ) {
-		const linkUrl = `https://automattic.github.io/jetpack-e2e-reports/${ report.name }/report/`;
+		const linkUrl = `${ configData.dataSourceURL }/${ report.name }/report/index.html`;
 
 		const reportKey = report.name;
 		let reportTitle = report.name;
