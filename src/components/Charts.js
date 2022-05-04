@@ -200,8 +200,8 @@ export default class Charts extends BaseComponent {
 		options.xAxis[ 0 ].axisLabel.formatter = ( value ) => {
 			return moment( value ).format( 'MMM D, YYYY' );
 		};
-		options.xAxis[ 0 ].axisPointer.label.formatter = ( value ) => {
-			return moment( value ).format( 'MMM D, YYYY' );
+		options.xAxis[ 0 ].axisPointer.label.formatter = ( params ) => {
+			return moment( params.value ).format( 'MMM D, YYYY' );
 		};
 
 		return options;
@@ -219,8 +219,8 @@ export default class Charts extends BaseComponent {
 		options.xAxis[ 0 ].axisLabel.formatter = ( value ) => {
 			return moment( value ).format( 'MMM YYYY' );
 		};
-		options.xAxis[ 0 ].axisPointer.label.formatter = ( value ) => {
-			return moment( value ).format( 'MMM YYYY' );
+		options.xAxis[ 0 ].axisPointer.label.formatter = ( params ) => {
+			return moment( params.value ).format( 'MMM YYYY' );
 		};
 
 		return options;
