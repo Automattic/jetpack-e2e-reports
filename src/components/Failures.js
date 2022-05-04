@@ -29,7 +29,7 @@ export default class Failures extends BaseComponent {
 		this.setState( {
 			rawData: {
 				errorsData: await fetchJsonData( `${ dataSourceURL }/data/errors.json` ),
-				weeklyData: await fetchJsonData( `${ dataSourceURL }/data/weekly.json` ),
+				weeklyData: await fetchJsonData( `${ dataSourceURL }/data/_weekly.json` ),
 			},
 		} );
 

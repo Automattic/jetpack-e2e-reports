@@ -31,7 +31,7 @@ export default class Tests extends BaseComponent {
 		this.setState( {
 			rawData: {
 				testsData: await fetchJsonData( `${ dataSourceURL }/data/tests.json` ),
-				dailyData: await fetchJsonData( `${ dataSourceURL }/data/daily.json` ),
+				dailyData: await fetchJsonData( `${ dataSourceURL }/data/_daily.json` ),
 			},
 		} );
 
