@@ -2,15 +2,17 @@
  * This script will clean old reports and reports for closed PRs
  */
 
-const { readS3Object, listS3Folders, removeS3Folder, listS3Objects } = require( './utils' );
+const { readS3Object, listS3Folders, removeS3Folder, listS3Objects, writeJson } = require( './utils' );
 const { s3Params, s3client } = require( './s3-client' );
 const { Octokit } = require( '@octokit/rest' );
 const { PutObjectCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
 const config = require( '../src/config.json' );
 const octokit = new Octokit();
 
+const reportsToDelete = [ ];
+let testsToDelete = [ ];
+
 ( async () => {
-	const reportsToDelete = [];
 	const reportsToClean = [];
 
 	const closedPRs = await octokit.rest.pulls.list( {
@@ -30,6 +32,7 @@ const octokit = new Octokit();
 	const closed = closedPRs.data.map( ( pr ) => pr.number.toString() );
 	const open = openPRs.data.map( ( pr ) => pr.number.toString() );
 
+	console.group( '\n', 'Checking existing reports' );
 	let reports = await listS3Folders( 'reports/', '/' );
 	reports = reports.map( ( report ) => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
@@ -40,19 +43,19 @@ const octokit = new Octokit();
 		}
 
 		if ( closed.includes( report ) ) {
-			console.log( `PR ${ report } closed, marked for deletion` );
+			// console.log( `PR ${ report } closed, marked for deletion` );
 			reportsToDelete.push( report );
 			continue;
 		}
 
 		if ( open.includes( report ) ) {
-			console.log( `PR ${ report } is still open, will check for old results` );
+			// console.log( `PR ${ report } is still open, will check for old results` );
 			reportsToClean.push( report );
 			continue;
 		}
 
 		if ( config.permanent.includes( report ) ) {
-			console.log( `Report ${ report } is permanent, will check for old results` );
+			// console.log( `Report ${ report } is permanent, will check for old results` );
 			reportsToClean.push( report );
 			continue;
 		}
@@ -70,37 +73,53 @@ const octokit = new Octokit();
 		}
 
 		if ( pull && pull.data.state === 'closed' ) {
-			console.log( `PR ${ report } closed, marked for deletion` );
+			// console.log( `PR ${ report } closed, marked for deletion` );
 			reportsToDelete.push( report );
 		} else {
 			console.log( `I don't know what to do with ${ report }, will keep it` );
 		}
 	}
 
+	console.log( `The following reports were marked for deletion: ${ JSON.stringify( reportsToDelete ) }` );
+	console.groupEnd();
+
 	// Remove reports from reports data file
-	const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
-	const initialReportsCount = json.reports.length;
 
-	json.reports = json.reports.filter(	( report ) => ! reportsToDelete.includes( report.name ) );
-	json.reportsCount = json.reports.length;
-	json.lastUpdate = new Date().toISOString();
-	console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
+	if ( reportsToDelete.length > 0 ) {
+		console.group( '\n', 'Cleaning report.json file' );
+		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
+		const initialReportsCount = json.reports.length;
 
-	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/reports.json', Body: JSON.stringify( json ), ContentType: 'application/json' } );
-	await s3client.send( cmd );
+		json.reports = json.reports.filter(	( report ) => ! reportsToDelete.includes( report.name ) );
+		json.reportsCount = json.reports.length;
+		json.lastUpdate = new Date().toISOString();
+		console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
 
-	// Remove reports from S3 storage
-	for ( const report of reportsToDelete ) {
-		console.group( `Removing report ${ report }` );
-		await removeS3Folder( `reports/${ report }` );
+		const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/reports.json', Body: JSON.stringify( json ), ContentType: 'application/json' } );
+		await s3client.send( cmd );
+		console.groupEnd();
+
+		// Remove reports from S3 storage
+		console.group( '\n', 'Removing reports from storage' );
+		for ( const report of reportsToDelete ) {
+			console.group( '\n', `Removing report ${ report }` );
+			await removeS3Folder( `reports/${ report }` );
+			console.groupEnd();
+		}
 		console.groupEnd();
 	}
 
+	console.group( '\n', 'Cleaning old results for remaining reports' );
 	for ( const report of reportsToClean ) {
-		console.group( `Cleaning report ${ report }` );
+		console.group( '\n', `Cleaning report ${ report }` );
 		await cleanReport( report );
 		console.groupEnd();
 	}
+	console.groupEnd();
+
+	console.group( '\n', 'Cleaning sources for deleted results' );
+	await cleanTestsSourceProperty();
+	console.groupEnd();
 } )();
 
 async function cleanReport( report ) {
@@ -123,7 +142,7 @@ async function cleanReport( report ) {
 	const testFiles = await listS3Objects( `reports/${ report }/report/data/test-cases` );
 	const testIds = testFiles.map( ( testFile ) => testFile.replace( `reports/${ report }/report/data/test-cases/`, '' ).replace( '.json', '' ) );
 
-	const testsToDelete = testIds.filter( ( testId ) => ! testsToKeep.includes( testId ) );
+	testsToDelete = testIds.filter( ( testId ) => ! testsToKeep.includes( testId ) );
 
 	let attachmentsToDelete = [];
 	for ( const testId of testsToDelete ) {
@@ -133,13 +152,45 @@ async function cleanReport( report ) {
 
 	for ( const attachmentSource of attachmentsToDelete ) {
 		const key = `reports/${ report }/report/data/attachments/${ attachmentSource }`;
-		console.log( `Removing file ${ key }` );
+		console.log( `Removing attachment ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
 
 	for ( const testId of testsToDelete ) {
 		const key = `reports/${ report }/report/data/test-cases/${ testId }.json`;
-		console.log( `Removing file ${ key }` );
+		console.log( `Removing test result ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
+}
+
+/**
+ * Go through all results in data/tests.json and remove the source property for results that where deleted
+ *
+ * @return {Promise<void>}
+ */
+async function cleanTestsSourceProperty() {
+	reportsToDelete.push( '24223' );
+
+	const json = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
+
+	writeJson( json, 'data/tests-test-clean-sources-before.json' );
+
+	json.tests.map( ( t ) => t.results ).flat().forEach( ( item ) => {
+		if ( item.source ) {
+			if ( testsToDelete.includes( item.source.replace( '.json', '' ) ) ) {
+				console.log( `Removing source ${ item.source } for deleted old result` );
+				delete item.source;
+			}
+
+			if ( reportsToDelete.includes( item.report ) ) {
+				console.log( `Removing source ${ item.source } for deleted report ${ item.report }` );
+				delete item.source;
+			}
+		}
+	} );
+
+	json.lastUpdate = new Date().toISOString();
+
+	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/tests.json', Body: JSON.stringify( json ), ContentType: 'application/json' } );
+	await s3client.send( cmd );
 }
