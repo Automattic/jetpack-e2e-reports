@@ -58,9 +58,6 @@ let json = { reports: [] };
 	json.reportsCount = json.reports.length;
 	json.lastUpdate = new Date().toISOString();
 
-	// Write the new report list locally
-	// writeJson( json, path.join( reportId, 'reports.json' ), true );
-
 	// Upload the report to S3
 	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/reports.json', Body: JSON.stringify( json, null, 2 ), ContentType: 'application/json' } );
 	await s3client.send( cmd );
