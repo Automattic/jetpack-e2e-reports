@@ -7,6 +7,7 @@ import { Navbar, Container, Nav } from 'react-bootstrap';
 import Reports from './components/Reports';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import Tests from './components/Tests';
+import Charts from './components/Charts';
 import Failures from './components/Failures';
 import Performance from './components/Performance';
 
@@ -63,6 +64,7 @@ function App() {
 							path="/performance"
 							element={ <Performance /> }
 						/>
+						<Route exact path="/charts" element={ <Charts /> } />
 					</Routes>
 				</HashRouter>
 			</div>
