@@ -141,7 +141,7 @@ export default class ReportsTable extends React.Component {
 	}
 
 	getReportLinkCell( report, metadata, isFailed, totalTests ) {
-		const linkUrl = `${ configData.dataSourceURL }/${ report.name }/report/index.html`;
+		const linkUrl = `${ configData.dataSourceURL }/reports/${ report.name }/report/index.html`;
 
 		const reportKey = report.name;
 		let reportTitle = report.name;
