@@ -247,11 +247,6 @@ export default class ReportsTable extends React.Component {
 						</a>
 					</small>
 				</li>
-				<li>
-					<small>
-						size: { report.size }
-					</small>
-				</li>
 			</ul>
 		);
 	}

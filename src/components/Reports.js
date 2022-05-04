@@ -70,9 +70,6 @@ export default class Reports extends React.Component {
 						sortButtons: true,
 					} }
 				/>
-				<small className={ 'footnote' }>
-					docs size: { this.state.docsSize }
-				</small>
 			</div>
 		);
 	}
