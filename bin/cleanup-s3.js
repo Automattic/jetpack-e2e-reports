@@ -2,7 +2,7 @@
  * This script will clean old reports and reports for closed PRs
  */
 
-const { readS3Object, listS3Folders, removeS3Folder, listS3Objects, writeJson } = require( './utils' );
+const { readS3Object, listS3Folders, removeS3Folder, listS3Objects } = require( './utils' );
 const { s3Params, s3client } = require( './s3-client' );
 const { Octokit } = require( '@octokit/rest' );
 const { PutObjectCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
@@ -147,7 +147,9 @@ async function cleanReport( report ) {
 	let attachmentsToDelete = [];
 	for ( const testId of testsToDelete ) {
 		const testInfo = JSON.parse( ( await readS3Object( `reports/${ report }/report/data/test-cases/${ testId }.json` ) ).toString() );
-		attachmentsToDelete = attachmentsToDelete.concat( testInfo.testStage.attachments.map( ( attachment ) => attachment.source ) );
+		if ( testInfo.testStage && testInfo.testStage.attachments ) {
+			attachmentsToDelete = attachmentsToDelete.concat( testInfo.testStage.attachments.map( ( attachment ) => attachment.source ) );
+		}
 	}
 
 	for ( const attachmentSource of attachmentsToDelete ) {
@@ -169,11 +171,11 @@ async function cleanReport( report ) {
  * @return {Promise<void>}
  */
 async function cleanTestsSourceProperty() {
-	reportsToDelete.push( '24223' );
+	if ( testsToDelete.length === 0 && reportsToDelete.length === 0 ) {
+		return;
+	}
 
 	const json = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
-
-	writeJson( json, 'data/tests-test-clean-sources-before.json' );
 
 	json.tests.map( ( t ) => t.results ).flat().forEach( ( item ) => {
 		if ( item.source ) {
