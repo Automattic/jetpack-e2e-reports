@@ -1,18 +1,22 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import ReactEcharts from 'echarts-for-react';
-import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
 import BaseComponent from './BaseComponent';
 import config from '../config.json';
+import moment from 'moment';
 
 export default class Charts extends BaseComponent {
 	state = {
 		rawData: {
 			dailyData: [],
+			weeklyData: [],
+			monthlyData: [],
 		},
 		days: [],
+		weeks: [],
+		months: [],
 		filters: { isMasterOnly: false },
 		isDataReady: false,
 	};
@@ -20,11 +24,15 @@ export default class Charts extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/daily.json` ),
+				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/_daily.json` ),
+				weeklyData: await fetchJsonData( `${ config.dataSourceURL }/data/_weekly.json` ),
+				monthlyData: await fetchJsonData( `${ config.dataSourceURL }/data/_monthly.json` ),
 			},
 		} );
 
-		this.setDailyStatsData();
+		this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
+		this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
+		this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
 
 		this.setState( {
 			isDataReady: true,
@@ -35,45 +43,41 @@ export default class Charts extends BaseComponent {
 
 	componentDidUpdate( prevProps, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
-			this.setDailyStatsData();
+			this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
+			this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
+			this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
 		}
 	}
 
-	sortData( by, isAsc ) {
-		this.state.tests.list.sort( ( a, b ) =>
-			isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ]
-		);
-
-		this.setState( {
-			sort: { by, isAsc },
-		} );
-	}
-
-	setDailyStatsData() {
+	filterData( rawData ) {
 		// make a copy of raw data object
 		// we don't modify the original data
-		let days = JSON.parse(
-			JSON.stringify( this.state.rawData.dailyData )
+		const entries = JSON.parse(
+			JSON.stringify( rawData )
 		);
 
-		if ( this.state.filters.startDate && this.state.filters.endDate ) {
-			days = days.filter( ( d ) =>
-				moment( d.date ).isBetween( moment( this.state.filters.startDate, 'YYYY-MM-DD' ), moment( this.state.filters.endDate, 'YYYY-MM-DD' ), 'd', '[]' )
-			);
-		}
+		//todo filter by master only
 
-		days.forEach( ( day ) => {
+		entries.forEach( ( day ) => {
 			day.failedRate = ( day.failed / day.total * 100 ).toFixed( 2 );
 		} );
 
-		sortArray( days, 'date', false );
+		sortArray( entries, 'date', false );
 
-		this.setState( { days } );
+		return entries;
 	}
 
-	chartOptions() {
-		// chart options
+	chartOptions( data ) {
 		return {
+			title: {
+				text: '',
+				left: 'left',
+				top: 'top',
+				textStyle: {
+					fontSize: 20,
+					color: '#ccc',
+				},
+			},
 			grid: {
 				left: 50,
 				right: 50,
@@ -81,6 +85,8 @@ export default class Charts extends BaseComponent {
 			dataZoom: [
 				{
 					type: 'slider',
+					borderColor: '#343a40',
+					fillerColor: 'rgba(244,244,244,0.18)',
 				},
 			],
 			tooltip: {
@@ -91,15 +97,24 @@ export default class Charts extends BaseComponent {
 			},
 			legend: {
 				textStyle: {
-					color: '#6b6d76',
+					color: '#ccc',
 				},
+				left: 'right',
 			},
 			xAxis: [
 				{
 					type: 'category',
-					data: this.state.days.map( function( e ) {
+					data: data.map( function( e ) {
 						return e.date;
 					} ),
+					axisLabel: {
+						formatter: '{value}',
+					},
+					axisPointer: {
+						label: {
+							formatter: '{value}',
+						},
+					},
 				},
 			],
 			yAxis: [
@@ -133,8 +148,8 @@ export default class Charts extends BaseComponent {
 					yAxisIndex: 1,
 					color: '#e38474',
 					symbol: 'roundRect',
-					symbolSize: 7,
-					data: this.state.days.map( function( e ) {
+					symbolSize: 4,
+					data: data.map( function( e ) {
 						return e.failedRate;
 					} ),
 				},
@@ -146,7 +161,7 @@ export default class Charts extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(115, 151, 75, 0.73)',
-					data: this.state.days.map( function( e ) {
+					data: data.map( function( e ) {
 						return e.passed;
 					} ),
 				},
@@ -158,7 +173,7 @@ export default class Charts extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(253, 90, 62, 0.71)',
-					data: this.state.days.map( function( e ) {
+					data: data.map( function( e ) {
 						return e.failed;
 					} ),
 				},
@@ -170,12 +185,45 @@ export default class Charts extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(170, 170, 170, 0.73)',
-					data: this.state.days.map( function( e ) {
+					data: data.map( function( e ) {
 						return e.skipped;
 					} ),
 				},
 			],
 		};
+	}
+
+	dailyChartOptions() {
+		const options = this.chartOptions( this.state.days );
+		options.title.text = 'Daily';
+		options.dataZoom[ 0 ].startValue = moment().subtract( 6, 'weeks' ).format( 'YYYY-MM-DD' );
+		options.xAxis[ 0 ].axisLabel.formatter = ( value ) => {
+			return moment( value ).format( 'MMM D, YYYY' );
+		};
+		options.xAxis[ 0 ].axisPointer.label.formatter = ( value ) => {
+			return moment( value ).format( 'MMM D, YYYY' );
+		};
+
+		return options;
+	}
+
+	weeklyChartOptions() {
+		const options = this.chartOptions( this.state.weeks );
+		options.title.text = 'Weekly';
+		return options;
+	}
+
+	monthlyChartOptions() {
+		const options = this.chartOptions( this.state.months );
+		options.title.text = 'Monthly';
+		options.xAxis[ 0 ].axisLabel.formatter = ( value ) => {
+			return moment( value ).format( 'MMM YYYY' );
+		};
+		options.xAxis[ 0 ].axisPointer.label.formatter = ( value ) => {
+			return moment( value ).format( 'MMM YYYY' );
+		};
+
+		return options;
 	}
 
 	render() {
@@ -184,7 +232,11 @@ export default class Charts extends BaseComponent {
 		}
 
 		return <div>
-			<ReactEcharts option={ this.chartOptions() } />
+			<ReactEcharts option={ this.dailyChartOptions() } />
+			<hr />
+			<ReactEcharts option={ this.weeklyChartOptions() } />
+			<hr />
+			<ReactEcharts option={ this.monthlyChartOptions() } />
 			<hr />
 		</div>;
 	}
