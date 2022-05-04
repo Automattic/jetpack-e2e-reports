@@ -23,7 +23,7 @@ SCRIPT_PATH=$(
   pwd -P
 )
 TARGET_DIR=$REPORT_ID
-REPORTS_BASE_URL=http://a8c-jetpack-e2e-reports.s3-website-us-east-1.amazonaws.com/reports
+REPORTS_BASE_URL=https://jetpack-e2e-reports.s3.amazonaws.com/reports
 TARGET_RESULTS_PATH="$TARGET_DIR/results"
 TARGET_REPORT_PATH="$TARGET_DIR/report"
 s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
