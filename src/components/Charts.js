@@ -5,6 +5,7 @@ import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
 import BaseComponent from './BaseComponent';
+import config from '../config.json';
 
 export default class Charts extends BaseComponent {
 	state = {
@@ -19,7 +20,7 @@ export default class Charts extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				dailyData: await fetchJsonData( 'http://a8c-jetpack-e2e-reports.s3-website-us-east-1.amazonaws.com/data/daily.json' ),
+				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/daily.json` ),
 			},
 		} );
 
