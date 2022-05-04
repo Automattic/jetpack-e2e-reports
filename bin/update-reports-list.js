@@ -40,7 +40,6 @@ let json = { reports: [] };
 		lastUpdate: metadata.updated_on ? metadata.updated_on : '1970-01-01',
 		statistic,
 		metadata,
-		size: 'unknown',
 	};
 
 	console.log( report );
@@ -57,7 +56,6 @@ let json = { reports: [] };
 	}
 
 	json.reportsCount = json.reports.length;
-	json.docsSize = 'unknown';
 	json.lastUpdate = new Date().toISOString();
 
 	// Write the new report list locally
