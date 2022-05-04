@@ -232,6 +232,36 @@ export default class Charts extends BaseComponent {
 		}
 
 		return <div>
+			<div className="row text-center">
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							0.00 %
+						</span>
+						<br />
+						<span className="stat-description">24h failure rate</span>
+					</div>
+				</div>
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							0.00 %
+						</span>
+						<br />
+						<span className="stat-description">7d failure rate</span>
+					</div>
+				</div>
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							0.00 %
+						</span>
+						<br />
+						<span className="stat-description">30d failure rate</span>
+					</div>
+				</div>
+			</div>
+			<hr />
 			<ReactEcharts option={ this.dailyChartOptions() } />
 			<hr />
 			<ReactEcharts option={ this.weeklyChartOptions() } />
