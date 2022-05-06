@@ -1,11 +1,10 @@
 const path = require( 'path' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
-const { readJson } = require( './utils' );
+const { readJson, readS3Object } = require( './utils' );
 const resultsDir = `${ process.env.RESULTS_PATH }/test-output-block-perf`;
 const baseReport = path.resolve( resultsDir, 'base.test.results.json' );
 const jetpackReport = path.resolve( resultsDir, 'jetpack.test.results.json' );
-const perfMetricsFile = 'docs/data/perf-metrics.json';
 
 /**
  * Loops through the performance report, and calculates an average per key
@@ -24,7 +23,7 @@ function calculateAverageFor( file ) {
 }
 
 ( async () => {
-	const metricsObj = readJson( perfMetricsFile );
+	const metricsObj = JSON.parse( ( await readS3Object( 'data/perf-metrics.json' ) ).toString() );
 	const baseAvg = calculateAverageFor( baseReport );
 	const jetpackAvg = calculateAverageFor( jetpackReport );
 
@@ -33,11 +32,6 @@ function calculateAverageFor( file ) {
 		jetpackAvg,
 		date: Date.now(),
 	} );
-
-	// fs.writeFileSync(
-	// 	path.resolve( perfMetricsFile ),
-	// 	JSON.stringify( metricsObj, null, 2 )
-	// );
 
 	// Upload the report to S3
 	console.log( 'Updating file data/perf-metrics.json' );
