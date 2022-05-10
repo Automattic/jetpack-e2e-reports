@@ -80,8 +80,8 @@ function pushData( data, date, result ) {
 	if ( isMaster ) {
 		entry[ 0 ].master[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry[ 0 ].master.total++;
-	} else {
-		entry[ 0 ].total[ result.status === 'broken' ? 'failed' : result.status ]++;
-		entry[ 0 ].total.total++;
 	}
+
+	entry[ 0 ].total[ result.status === 'broken' ? 'failed' : result.status ]++;
+	entry[ 0 ].total.total++;
 }

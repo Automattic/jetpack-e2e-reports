@@ -276,9 +276,15 @@ export default class Charts extends BaseComponent {
 				top: 'top',
 				inRange: {
 					color: [
-						'rgba(115, 151, 75, 0.73)',
+						'rgba(115, 151, 75, 0.75)',
+						'rgba(148,151,75,0.75)',
 						'#ffd050',
-						'rgba(253, 90, 62, 0.71)',
+						'rgba(250,150,40,0.75)',
+						'rgba(240,90,0,0.75)',
+						'rgba(200,70,0,0.75)',
+						'rgba(160,50,0,0.75)',
+						'rgba(120,30,0,0.75)',
+						'rgba(90,10,0,0.75)',
 					],
 				},
 			},
@@ -324,6 +330,12 @@ export default class Charts extends BaseComponent {
 		}
 
 		return <div>
+			<div className="row">
+				<div className="col-sm filters">
+					{ this.getMasterOnlyFilterButton() }
+				</div>
+			</div>
+			<hr />
 			<div className="row text-center">
 				<div className="col-sm">
 					<div className="stat-box">
