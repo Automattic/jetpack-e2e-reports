@@ -52,25 +52,36 @@ async function uploadData( dataFile, jsonData ) {
 }
 
 function pushData( data, date, result ) {
-	const existingKey = data.filter( ( k ) => k.date === date );
+	let entry = data.filter( ( k ) => k.date === date );
 
-	if ( existingKey.length > 0 ) {
-		existingKey[ 0 ][
-			result.status === 'broken' ? 'failed' : result.status
-		]++;
-		existingKey[ 0 ].total++;
-	} else {
-		const entry = {
+	if ( entry.length === 0 ) {
+		data.push( {
 			date,
-			passed: 0,
-			failed: 0,
-			skipped: 0,
-			total: 0,
-		};
+			master: {
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+				total: 0,
+			},
+			total: {
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+				total: 0,
+			},
+		} );
 
-		entry[ result.status === 'broken' ? 'failed' : result.status ]++;
-		entry.total++;
+		entry = data.filter( ( k ) => k.date === date );
+	}
 
-		data.push( entry );
+	const masterReports = require( '../src/config.json' ).masterRuns;
+	const isMaster = masterReports.includes( result.report );
+
+	if ( isMaster ) {
+		entry[ 0 ].master[ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry[ 0 ].master.total++;
+	} else {
+		entry[ 0 ].total[ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry[ 0 ].total.total++;
 	}
 }

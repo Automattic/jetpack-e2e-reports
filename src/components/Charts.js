@@ -17,7 +17,7 @@ export default class Charts extends BaseComponent {
 		days: [],
 		weeks: [],
 		months: [],
-		filters: { isMasterOnly: false },
+		filters: { isMasterOnly: true },
 		isDataReady: false,
 	};
 
@@ -52,11 +52,23 @@ export default class Charts extends BaseComponent {
 	filterData( rawData ) {
 		// make a copy of raw data object
 		// we don't modify the original data
-		const entries = JSON.parse(
+		let entries = JSON.parse(
 			JSON.stringify( rawData )
 		);
 
-		//todo filter by master only
+		if ( this.state.filters.isMasterOnly ) {
+			entries = entries.map( ( entry ) => {
+				const newObj = entry.master;
+				newObj.date = entry.date;
+				return newObj;
+			} );
+		} else {
+			entries = entries.map( ( entry ) => {
+				const newObj = entry.total;
+				newObj.date = entry.date;
+				return newObj;
+			} );
+		}
 
 		entries.forEach( ( day ) => {
 			day.failedRate = ( day.failed / day.total * 100 ).toFixed( 2 );
@@ -258,7 +270,6 @@ export default class Charts extends BaseComponent {
 				orient: 'horizontal',
 				left: 'right',
 				top: 'top',
-				padding: 0,
 				inRange: {
 					color: [
 						'rgba(115, 151, 75, 0.73)',
@@ -275,7 +286,7 @@ export default class Charts extends BaseComponent {
 				itemStyle: {
 					color: '#343a40',
 					borderColor: '#454c54',
-					borderWidth: 0.5,
+					borderWidth: 0.3,
 				},
 				splitLine: {
 					show: true,
