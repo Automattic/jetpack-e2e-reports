@@ -121,6 +121,7 @@ export default class Charts extends BaseComponent {
 					} ),
 					axisLabel: {
 						formatter: '{value}',
+						color: '#ccc',
 					},
 					axisPointer: {
 						label: {
@@ -134,6 +135,7 @@ export default class Charts extends BaseComponent {
 					type: 'value',
 					splitLine: {
 						lineStyle: {
+							width: 0,
 							type: 'dotted',
 							color: '#6b6d76',
 						},
@@ -143,13 +145,15 @@ export default class Charts extends BaseComponent {
 					type: 'value',
 					splitLine: {
 						lineStyle: {
+							width: 0.5,
 							type: 'dashed',
-							color: 'rgba(107,109,118,0.47)',
+							color: '#6b6d76',
 						},
 					},
 					min: 0,
 					axisLabel: {
 						formatter: '{value} %',
+						color: '#ccc',
 					},
 				},
 			],
@@ -281,6 +285,8 @@ export default class Charts extends BaseComponent {
 			calendar: {
 				bottom: 10,
 				top: 100,
+				left: 50,
+				right: 50,
 				cellSize: [ 'auto', 15 ],
 				range: [ moment().subtract( 1, 'year' ).format( 'YYYY-MM-DD' ), moment().format( 'YYYY-MM-DD' ) ],
 				itemStyle: {
@@ -297,6 +303,8 @@ export default class Charts extends BaseComponent {
 				yearLabel: { show: true },
 				dayLabel: {
 					color: '#ccc',
+					firstDay: 1,
+					position: 'end',
 				},
 				monthLabel: {
 					color: '#ccc',
