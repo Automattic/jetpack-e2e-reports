@@ -1,5 +1,5 @@
 /**
- * This script will create per time statistics data files: daily, weekly and monthly. It should run on a schedule, probably on a daily basis.
+ * This script will create per time unit statistics data files: daily, weekly and monthly. It should run on a schedule, probably on a daily basis.
  * It reads the data from the tests-YYYY-MM.json files
  */
 
@@ -11,9 +11,9 @@ const { s3Params, s3client } = require( './s3-client' );
 ( async () => {
 	const srcData = { tests: [] };
 	const s3DataFiles = await listS3Objects( 'data' );
-	const tests = s3DataFiles.filter( ( fileName ) => fileName.startsWith( 'data/tests-' ) );
+	const testsDataFiles = s3DataFiles.filter( ( fileName ) => fileName.startsWith( 'data/tests-' ) );
 
-	for ( const dataFile of tests ) {
+	for ( const dataFile of testsDataFiles ) {
 		const monthSrcData = JSON.parse( ( await readS3Object( `${ dataFile }` ) ).toString() );
 		srcData.tests = srcData.tests.concat( monthSrcData.tests );
 	}
@@ -24,9 +24,9 @@ const { s3Params, s3client } = require( './s3-client' );
 
 	for ( const test of srcData.tests ) {
 		for ( const result of test.results ) {
-			const date = moment( result.time ).format( 'YYYY-MM-DD' );
-			const week = moment( result.time ).format( 'GGGG-[week]-WW' );
-			const month = moment( result.time ).format( 'YYYY-MM' );
+			const date = moment.utc( result.time ).format( 'YYYY-MM-DD' );
+			const week = moment.utc( result.time ).format( 'GGGG-[week]-WW' );
+			const month = moment.utc( result.time ).format( 'YYYY-MM' );
 
 			pushData( dailyJson, date, result );
 			pushData( weeklyJson, week, result );
@@ -40,9 +40,9 @@ const { s3Params, s3client } = require( './s3-client' );
 
 	sort( weeklyJson, 'date', true );
 
-	await uploadData( 'data/_daily.json', dailyJson );
-	await uploadData( 'data/_weekly.json', weeklyJson );
-	await uploadData( 'data/_monthly.json', monthlyJson );
+	await uploadData( 'data/results-daily.json', dailyJson );
+	await uploadData( 'data/results-weekly.json', weeklyJson );
+	await uploadData( 'data/results-monthly.json', monthlyJson );
 } )();
 
 async function uploadData( dataFile, jsonData ) {
