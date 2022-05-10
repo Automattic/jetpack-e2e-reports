@@ -268,6 +268,8 @@ export default class Charts extends BaseComponent {
 				},
 			},
 			calendar: {
+				bottom: 10,
+				top: 100,
 				cellSize: [ 'auto', 15 ],
 				range: [ moment().subtract( 1, 'year' ).format( 'YYYY-MM-DD' ), moment().format( 'YYYY-MM-DD' ) ],
 				itemStyle: {
