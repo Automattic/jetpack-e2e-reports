@@ -24,9 +24,9 @@ export default class Charts extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/_daily.json` ),
-				weeklyData: await fetchJsonData( `${ config.dataSourceURL }/data/_weekly.json` ),
-				monthlyData: await fetchJsonData( `${ config.dataSourceURL }/data/_monthly.json` ),
+				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
+				weeklyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-weekly.json` ),
+				monthlyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-monthly.json` ),
 			},
 		} );
 
@@ -226,6 +226,77 @@ export default class Charts extends BaseComponent {
 		return options;
 	}
 
+	dailyHeatMapOptions() {
+		const data = this.state.days.map( function( e ) {
+			return [ e.date, e.failedRate ];
+		} );
+		return {
+			title: {
+				text: 'Daily failure rate',
+				left: 'left',
+				top: 'top',
+				textStyle: {
+					fontSize: 20,
+					color: '#ccc',
+				},
+			},
+			tooltip: {
+				formatter: ( params ) => {
+					const values = params.value.toString().split( ',' );
+					return '<b>' + moment( values[ 0 ] ).format( 'MMM D, YYYY' ) + '</b><br/>' + values[ 1 ] + '%';
+				},
+			},
+			visualMap: {
+				type: 'continuous',
+				min: 0,
+				max: 5,
+				precision: 1,
+				textStyle: {
+					color: '#ccc',
+				},
+				calculable: true,
+				orient: 'horizontal',
+				left: 'right',
+				top: 'top',
+				padding: 0,
+				inRange: {
+					color: [
+						'rgba(115, 151, 75, 0.73)',
+						'#ffd050',
+						'rgba(253, 90, 62, 0.71)',
+					],
+				},
+			},
+			calendar: {
+				cellSize: [ 'auto', 15 ],
+				range: [ moment().subtract( 1, 'year' ).format( 'YYYY-MM-DD' ), moment().format( 'YYYY-MM-DD' ) ],
+				itemStyle: {
+					color: '#343a40',
+					borderColor: '#454c54',
+					borderWidth: 0.5,
+				},
+				splitLine: {
+					show: true,
+					lineStyle: {
+						width: 0.3,
+					},
+				},
+				yearLabel: { show: true },
+				dayLabel: {
+					color: '#ccc',
+				},
+				monthLabel: {
+					color: '#ccc',
+				},
+			},
+			series: {
+				type: 'heatmap',
+				coordinateSystem: 'calendar',
+				data,
+			},
+		};
+	}
+
 	render() {
 		if ( ! this.state.isDataReady ) {
 			return null;
@@ -261,8 +332,11 @@ export default class Charts extends BaseComponent {
 					</div>
 				</div>
 			</div>
+
 			<hr />
 			<ReactEcharts option={ this.dailyChartOptions() } />
+			<hr />
+			<ReactEcharts option={ this.dailyHeatMapOptions() } />
 			<hr />
 			<ReactEcharts option={ this.weeklyChartOptions() } />
 			<hr />
