@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import ReactEcharts from 'echarts-for-react';
 import { Badge } from 'react-bootstrap';
 import { fetchJsonData } from '../utils/fetch';
-import { sortArray } from '../utils/sort';
 import { masterRuns, dataSourceURL } from '../config.json';
 import BaseComponent from './BaseComponent';
 
@@ -12,14 +10,12 @@ export default class Failures extends BaseComponent {
 	state = {
 		rawData: {
 			errorsData: {},
-			weeklyData: [],
 		},
 		errors: {
 			list: [],
 			totalErrors: 0,
 			distinctErrors: 0,
 		},
-		weeks: [],
 		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
 		sort: { by: 'common', isAsc: false },
 		isDataReady: false,
@@ -29,12 +25,10 @@ export default class Failures extends BaseComponent {
 		this.setState( {
 			rawData: {
 				errorsData: await fetchJsonData( `${ dataSourceURL }/data/errors.json` ),
-				weeklyData: await fetchJsonData( `${ dataSourceURL }/data/_weekly.json` ),
 			},
 		} );
 
 		this.setErrorsData();
-		this.setWeeklyStatsData();
 
 		this.setState( {
 			isDataReady: true,
@@ -136,22 +130,6 @@ export default class Failures extends BaseComponent {
 		} );
 	}
 
-	setWeeklyStatsData() {
-		// make a copy of raw data object
-		// we don't modify the original data
-		const weeks = JSON.parse(
-			JSON.stringify( this.state.rawData.weeklyData )
-		);
-
-		weeks.forEach( ( week ) => {
-			week.failedRate = ( week.failed / week.total * 100 ).toFixed( 2 );
-		} );
-
-		sortArray( weeks, 'date' );
-
-		this.setState( { weeks } );
-	}
-
 	getListOfTests( tests ) {
 		return (
 			<div>
@@ -245,79 +223,6 @@ export default class Failures extends BaseComponent {
 		);
 	}
 
-	chartOptions() {
-		return {
-			grid: {
-				left: 50,
-				right: 50,
-			},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'cross',
-				},
-			},
-			legend: {
-				textStyle: {
-					color: '#6b6d76',
-				},
-			},
-			xAxis: [
-				{
-					type: 'category',
-					data: this.state.weeks.map( function( e ) {
-						return e.date;
-					} ),
-				},
-			],
-			yAxis: [
-				{
-					type: 'value',
-					splitLine: {
-						show: false,
-					},
-				},
-				{
-					type: 'value',
-					splitLine: {
-						lineStyle: {
-							type: 'dotted',
-							color: '#6b6d76',
-						},
-					},
-					min: 0,
-					axisLabel: {
-						formatter: '{value} %',
-					},
-				},
-			],
-			series: [
-				{
-					name: 'failure rate',
-					type: 'line',
-					yAxisIndex: 1,
-					color: '#e38474',
-					symbol: 'roundRect',
-					symbolSize: 7,
-					data: this.state.weeks.map( function( e ) {
-						return e.failedRate;
-					} ),
-				},
-				{
-					name: 'failed tests',
-					type: 'bar',
-					emphasis: {
-						focus: 'series',
-					},
-					color: '#fd5a3e',
-					data: this.state.weeks.map( function( e ) {
-						return e.failed;
-					} ),
-				},
-			],
-		};
-	}
-
 	render() {
 		if ( ! this.state.isDataReady ) {
 			return null;
@@ -329,7 +234,6 @@ export default class Failures extends BaseComponent {
 
 		return (
 			<div>
-				<ReactEcharts option={ this.chartOptions() } />
 				<hr />
 				<div className="row text-center">
 					<div className="col-sm">
