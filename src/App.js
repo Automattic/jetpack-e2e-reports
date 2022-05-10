@@ -34,6 +34,9 @@ function App() {
 								<Nav.Link href={ `${ basename }/#/reports` }>
 									Reports
 								</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/charts` }>
+									Stats
+								</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/tests` }>
 									Tests
 								</Nav.Link>
