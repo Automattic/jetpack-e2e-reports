@@ -13,10 +13,12 @@ export default class Charts extends BaseComponent {
 			dailyData: [],
 			weeklyData: [],
 			monthlyData: [],
+			summaryData: {},
 		},
 		days: [],
 		weeks: [],
 		months: [],
+		summary: {},
 		filters: { isMasterOnly: true },
 		isDataReady: false,
 	};
@@ -27,12 +29,14 @@ export default class Charts extends BaseComponent {
 				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
 				weeklyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-weekly.json` ),
 				monthlyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-monthly.json` ),
+				summaryData: await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` ),
 			},
 		} );
 
 		this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
 		this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
 		this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
+		this.setState( { summary: this.filterSummaryData() } );
 
 		this.setState( {
 			isDataReady: true,
@@ -46,6 +50,7 @@ export default class Charts extends BaseComponent {
 			this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
 			this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
 			this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
+			this.setState( { summary: this.filterSummaryData() } );
 		}
 	}
 
@@ -77,6 +82,28 @@ export default class Charts extends BaseComponent {
 		sortArray( entries, 'date', false );
 
 		return entries;
+	}
+
+	filterSummaryData() {
+		// make a copy of raw data object
+		// we don't modify the original data
+		const summaryData = {};
+
+		if ( this.state.filters.isMasterOnly ) {
+			Object.keys( this.state.rawData.summaryData.stats ).forEach( ( key ) => {
+				summaryData[ key ] = this.state.rawData.summaryData.stats[ key ].master;
+			} );
+		} else {
+			Object.keys( this.state.rawData.summaryData.stats ).forEach( ( key ) => {
+				summaryData[ key ] = this.state.rawData.summaryData.stats[ key ].total;
+			} );
+		}
+
+		Object.keys( summaryData ).forEach( ( key ) => {
+			summaryData[ key ].failureRate = ( summaryData[ key ].failed / summaryData[ key ].total * 100 ).toFixed( 2 );
+		} );
+
+		return summaryData;
 	}
 
 	chartOptions( data ) {
@@ -336,36 +363,54 @@ export default class Charts extends BaseComponent {
 				</div>
 			</div>
 			<hr />
+			<div className="row">
+				<div className="col-sm">
+					<span className="inner-title">Failure rate</span>
+				</div>
+			</div>
 			<div className="row text-center">
 				<div className="col-sm">
 					<div className="stat-box">
 						<span className="stat-number">
-							0.00 %
+							{ this.state.summary[ '24h' ].failureRate }<small>%</small>
 						</span>
 						<br />
-						<span className="stat-description">24h failure rate</span>
+						<span className="stat-description">24h</span>
 					</div>
 				</div>
 				<div className="col-sm">
 					<div className="stat-box">
 						<span className="stat-number">
-							0.00 %
+							{ this.state.summary[ '7d' ].failureRate }<small>%</small>
 						</span>
 						<br />
-						<span className="stat-description">7d failure rate</span>
+						<span className="stat-description">7d</span>
 					</div>
 				</div>
 				<div className="col-sm">
 					<div className="stat-box">
 						<span className="stat-number">
-							0.00 %
+							{ this.state.summary[ '14d' ].failureRate }<small>%</small>
 						</span>
 						<br />
-						<span className="stat-description">30d failure rate</span>
+						<span className="stat-description">14d</span>
+					</div>
+				</div>
+				<div className="col-sm">
+					<div className="stat-box">
+						<span className="stat-number">
+							{ this.state.summary[ '30d' ].failureRate }<small>%</small>
+						</span>
+						<br />
+						<span className="stat-description">30d</span>
 					</div>
 				</div>
 			</div>
-
+			<div className="row">
+				<div className="col-sm text-right">
+					<small>updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }</small>
+				</div>
+			</div>
 			<hr />
 			<ReactEcharts option={ this.dailyChartOptions() } />
 			<hr />

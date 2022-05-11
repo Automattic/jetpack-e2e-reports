@@ -23,7 +23,12 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 	const dailyJson = [];
 	const weeklyJson = [];
 	const monthlyJson = [];
-	const summaryData = { '24h': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) }, '7d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) }, '30d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) }, lastUpdate: '' };
+	const summaryData = { stats: {
+		'24h': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+		'7d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+		'14d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+		'30d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+	}, lastUpdate: '' };
 
 	for ( const test of srcData.tests ) {
 		for ( const result of test.results ) {
@@ -40,15 +45,19 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 			// console.log( `${ result.time } => ${ moment.utc( result.time ).format( 'YYYY-MM-DD hh:mm:ss' ) } => ${ duration } days ago` );
 
 			if ( duration <= 1 ) {
-				updateSummaryEntry( summaryData[ '24h' ], result );
+				updateSummaryEntry( summaryData.stats[ '24h' ], result );
 			}
 
 			if ( duration <= 7 ) {
-				updateSummaryEntry( summaryData[ '7d' ], result );
+				updateSummaryEntry( summaryData.stats[ '7d' ], result );
+			}
+
+			if ( duration <= 14 ) {
+				updateSummaryEntry( summaryData.stats[ '14d' ], result );
 			}
 
 			if ( duration <= 30 ) {
-				updateSummaryEntry( summaryData[ '30d' ], result );
+				updateSummaryEntry( summaryData.stats[ '30d' ], result );
 			}
 
 			summaryData.lastUpdate = new Date().toISOString();
