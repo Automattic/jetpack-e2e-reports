@@ -12,6 +12,7 @@ export default class BaseComponent extends React.Component {
 			return (
 				<Button
 					variant="dark"
+					className="filter-btn"
 					key={ index }
 					onClick={ () => {
 						this.sortData( key, ! currentSortStateIsAsc );

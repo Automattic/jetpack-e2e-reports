@@ -83,6 +83,7 @@ export default class ReportsTable extends React.Component {
 				return (
 					<Button
 						variant="dark"
+						className="filter-btn"
 						key={ index }
 						onClick={ () => {
 							this.sortTable( key, ! this.state.sort.isAsc );
