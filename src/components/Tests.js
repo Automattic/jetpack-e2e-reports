@@ -3,7 +3,7 @@ import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
-import { masterRuns, dataSourceURL } from '../config.json';
+import config from '../config.json';
 import BaseComponent from './BaseComponent';
 
 export default class Tests extends BaseComponent {
@@ -26,7 +26,7 @@ export default class Tests extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				testsData: await fetchJsonData( `${ dataSourceURL }/data/tests.json` ),
+				testsData: await fetchJsonData( `${ config.dataSourceURL }/data/tests.json` ),
 			},
 		} );
 
@@ -69,7 +69,7 @@ export default class Tests extends BaseComponent {
 		if ( this.state.filters.isMasterOnly ) {
 			tests.forEach( ( t ) => {
 				t.results = t.results.filter( ( r ) =>
-					masterRuns.includes( r.report )
+					config.masterRuns.includes( r.report )
 				);
 			} );
 		}
