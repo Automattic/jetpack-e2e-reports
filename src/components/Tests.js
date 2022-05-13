@@ -1,5 +1,4 @@
 import React from 'react';
-import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
@@ -174,7 +173,7 @@ export default class Tests extends BaseComponent {
 			}
 
 			return (
-				<Badge
+				<span
 					key={ id }
 					onClick={ () => {
 						if ( url ) {
@@ -182,6 +181,7 @@ export default class Tests extends BaseComponent {
 						}
 					} }
 					className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
+					aria-hidden="true"
 				>
 					&nbsp;
 					<span className="tooltip-content">
@@ -189,7 +189,7 @@ export default class Tests extends BaseComponent {
 						<br />
 						{ result.source }
 					</span>
-				</Badge>
+				</span>
 			);
 		} );
 		return <div>{ badges }</div>;
