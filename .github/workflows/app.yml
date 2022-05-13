@@ -22,14 +22,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Build dashboard
+      - name: Build and deploy app
         run: |
           npm install --production
-          PUBLIC_URL=https://automattic.github.io/jetpack-e2e-reports npm run build
-          rm -rf docs/static/
-          cp -a ./build/. docs/
-
-      - name: Push changes
-        env:
-          MESSAGE: "Deployed dashboard app"
-        run: ./bin/push-changes.sh
+          PUBLIC_URL=https://automattic.github.io/jetpack-e2e-reports npm run deploy
