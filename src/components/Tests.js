@@ -144,15 +144,15 @@ export default class Tests extends BaseComponent {
 
 				return (
 					<li key={ id }>
-						<Badge
+						<span
 							key={ id }
 							className={ `label label-fill label-status-${ label } ${ classHide }` }
 						>
 							{ count } { label }
-							<Badge className={ `badge-pill stat-pill` }>
+							<span className={ `badge-pill stat-pill` }>
 								{ rate }
-							</Badge>
-						</Badge>
+							</span>
+						</span>
 					</li>
 				);
 			}

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import { Badge } from 'react-bootstrap';
 import { fetchJsonData } from '../utils/fetch';
 import config from '../config.json';
 import BaseComponent from './BaseComponent';
@@ -135,15 +134,15 @@ export default class Failures extends BaseComponent {
 			<div>
 				{ tests.map( ( test, id ) => {
 					return (
-						<Badge
+						<span
 							key={ id }
 							className="label label-status-skipped"
 						>
 							{ test.name }{ ' ' }
-							<Badge className={ `badge-pill stat-pill` }>
+							<span className={ `badge-pill stat-pill` }>
 								{ test.times.length }
-							</Badge>
-						</Badge>
+							</span>
+						</span>
 					);
 				} ) }
 			</div>
