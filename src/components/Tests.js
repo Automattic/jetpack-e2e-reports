@@ -219,7 +219,7 @@ export default class Tests extends BaseComponent {
 		}
 
 		return <div>
-			<div className="row">
+			<div className="row align-items-center">
 				{ this.getFilterByDateFields() }
 			</div>
 			<hr />

@@ -61,43 +61,15 @@ export default class BaseComponent extends React.Component {
 		}
 
 		return (
-			<div>
-				<div className="col filters">
-					<InputGroup>
-						{ [ [ 'today', 0 ], [ 'last 7 days', 7 ], [ 'last 14 days', 14 ] ].map( ( e, index ) =>
-							<Button
-								key={ index }
-								variant="dark"
-								className="filter-btn"
-								onClick={ () => {
-									this.setDatePickersValues( moment().subtract( e[ 1 ], 'd' ).format( dateFormat ), moment().format( dateFormat ) );
-									this.setState( prevState => ( {
-										filters: {
-											...prevState.filters,
-											startDate: getValidDate( 'startDate', '1970-01-01' ),
-											endDate: getValidDate( 'endDate', moment().format( dateFormat ) ),
-										},
-									} ) );
-								} }
-							>{ e[ 0 ] }</Button>
-						) }
-						<FormControl type="date" id="startDate"
-							max={ moment().format( dateFormat ) }
-							onChange={ () => {
-								const endDateElement = document.getElementById( 'endDate' );
-								const minDate = getValidDate( 'startDate', '2021-10-01' );
-								endDateElement.setAttribute( 'min', minDate );
-								if ( moment( endDateElement.value ).format( dateFormat ) < moment( minDate ).format( dateFormat ) ) {
-									endDateElement.value = minDate;
-								}
-							} }
-						/>
-						<FormControl type="date" id="endDate"
-							max={ moment().format( 'YYYY-MM-DD' ) } />
+			<div className="col filters">
+				<InputGroup>
+					{ [ [ 'today', 0 ], [ 'last 7 days', 7 ], [ 'last 14 days', 14 ] ].map( ( e, index ) =>
 						<Button
+							key={ index }
 							variant="dark"
 							className="filter-btn"
 							onClick={ () => {
+								this.setDatePickersValues( moment().subtract( e[ 1 ], 'd' ).format( dateFormat ), moment().format( dateFormat ) );
 								this.setState( prevState => ( {
 									filters: {
 										...prevState.filters,
@@ -106,10 +78,35 @@ export default class BaseComponent extends React.Component {
 									},
 								} ) );
 							} }
-						>Apply</Button>
-					</InputGroup>
-
-				</div>
+						>{ e[ 0 ] }</Button>
+					) }
+					<FormControl type="date" id="startDate"
+						max={ moment().format( dateFormat ) }
+						onChange={ () => {
+							const endDateElement = document.getElementById( 'endDate' );
+							const minDate = getValidDate( 'startDate', '2021-10-01' );
+							endDateElement.setAttribute( 'min', minDate );
+							if ( moment( endDateElement.value ).format( dateFormat ) < moment( minDate ).format( dateFormat ) ) {
+								endDateElement.value = minDate;
+							}
+						} }
+					/>
+					<FormControl className="" type="date" id="endDate"
+						max={ moment().format( 'YYYY-MM-DD' ) } />
+					<Button
+						variant="dark"
+						className="filter-btn"
+						onClick={ () => {
+							this.setState( prevState => ( {
+								filters: {
+									...prevState.filters,
+									startDate: getValidDate( 'startDate', '1970-01-01' ),
+									endDate: getValidDate( 'endDate', moment().format( dateFormat ) ),
+								},
+							} ) );
+						} }
+					>Apply</Button>
+				</InputGroup>
 			</div>
 		);
 	}
