@@ -406,8 +406,8 @@ export default class Charts extends BaseComponent {
 					</div>
 				</div>
 			</div>
-			<div className="row">
-				<div className="col-sm text-right">
+			<div className="row justify-content-end">
+				<div className="col-sm text-end">
 					<small>updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }</small>
 				</div>
 			</div>

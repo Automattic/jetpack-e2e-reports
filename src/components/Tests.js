@@ -1,9 +1,8 @@
 import React from 'react';
-import { Badge } from 'react-bootstrap';
 import ReactGA from 'react-ga';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
-import { masterRuns, dataSourceURL } from '../config.json';
+import config from '../config.json';
 import BaseComponent from './BaseComponent';
 
 export default class Tests extends BaseComponent {
@@ -26,7 +25,7 @@ export default class Tests extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				testsData: await fetchJsonData( `${ dataSourceURL }/data/tests.json` ),
+				testsData: await fetchJsonData( `${ config.dataSourceURL }/data/tests.json` ),
 			},
 		} );
 
@@ -69,7 +68,7 @@ export default class Tests extends BaseComponent {
 		if ( this.state.filters.isMasterOnly ) {
 			tests.forEach( ( t ) => {
 				t.results = t.results.filter( ( r ) =>
-					masterRuns.includes( r.report )
+					config.masterRuns.includes( r.report )
 				);
 			} );
 		}
@@ -144,15 +143,15 @@ export default class Tests extends BaseComponent {
 
 				return (
 					<li key={ id }>
-						<Badge
+						<span
 							key={ id }
 							className={ `label label-fill label-status-${ label } ${ classHide }` }
 						>
 							{ count } { label }
-							<Badge className={ `badge-pill stat-pill` }>
+							<span className={ `badge-pill stat-pill` }>
 								{ rate }
-							</Badge>
-						</Badge>
+							</span>
+						</span>
 					</li>
 				);
 			}
@@ -174,7 +173,7 @@ export default class Tests extends BaseComponent {
 			}
 
 			return (
-				<Badge
+				<span
 					key={ id }
 					onClick={ () => {
 						if ( url ) {
@@ -182,6 +181,7 @@ export default class Tests extends BaseComponent {
 						}
 					} }
 					className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
+					aria-hidden="true"
 				>
 					&nbsp;
 					<span className="tooltip-content">
@@ -189,7 +189,7 @@ export default class Tests extends BaseComponent {
 						<br />
 						{ result.source }
 					</span>
-				</Badge>
+				</span>
 			);
 		} );
 		return <div>{ badges }</div>;
@@ -219,7 +219,7 @@ export default class Tests extends BaseComponent {
 		}
 
 		return <div>
-			<div className="row">
+			<div className="row align-items-center">
 				{ this.getFilterByDateFields() }
 			</div>
 			<hr />

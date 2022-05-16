@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import { Badge } from 'react-bootstrap';
 import { fetchJsonData } from '../utils/fetch';
-import { masterRuns, dataSourceURL } from '../config.json';
+import config from '../config.json';
 import BaseComponent from './BaseComponent';
 
 export default class Failures extends BaseComponent {
@@ -24,7 +23,7 @@ export default class Failures extends BaseComponent {
 	async componentDidMount() {
 		this.setState( {
 			rawData: {
-				errorsData: await fetchJsonData( `${ dataSourceURL }/data/errors.json` ),
+				errorsData: await fetchJsonData( `${ config.dataSourceURL }/data/errors.json` ),
 			},
 		} );
 
@@ -65,7 +64,7 @@ export default class Failures extends BaseComponent {
 		if ( this.state.filters.isMasterOnly ) {
 			errors.forEach( ( e ) => {
 				e.results = e.results.filter( ( r ) =>
-					masterRuns.includes( r.report )
+					config.masterRuns.includes( r.report )
 				);
 			} );
 		}
@@ -135,15 +134,15 @@ export default class Failures extends BaseComponent {
 			<div>
 				{ tests.map( ( test, id ) => {
 					return (
-						<Badge
+						<span
 							key={ id }
 							className="label label-status-skipped"
 						>
 							{ test.name }{ ' ' }
-							<Badge className={ `badge-pill stat-pill` }>
+							<span className={ `badge-pill stat-pill` }>
 								{ test.times.length }
-							</Badge>
-						</Badge>
+							</span>
+						</span>
 					);
 				} ) }
 			</div>

@@ -23,10 +23,10 @@ function App() {
 				<Navbar variant="dark" expand="md" className="app-nav-bar">
 					<Container fluid className="app-nav-bar-inner-container">
 						<Navbar.Brand href={ `${ basename }/#/` }>
-							Jetpack test dashboard
+							Jetpack test reports
 						</Navbar.Brand>
 						<Navbar.Toggle aria-controls="basic-navbar-nav" />
-						<Navbar.Collapse id="basic-navbar-nav">
+						<Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
 							<Nav
 								activeKey={ location.pathname }
 								className="ml-auto"

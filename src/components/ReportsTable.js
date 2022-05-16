@@ -1,4 +1,4 @@
-import { Table, Badge, Button } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -83,6 +83,7 @@ export default class ReportsTable extends React.Component {
 				return (
 					<Button
 						variant="dark"
+						className="filter-btn"
 						key={ index }
 						onClick={ () => {
 							this.sortTable( key, ! this.state.sort.isAsc );
@@ -216,9 +217,9 @@ export default class ReportsTable extends React.Component {
 					? statistic[ label ] + statistic.broken
 					: statistic[ label ];
 			return (
-				<Badge key={ id } className={ `label label-status-${ label }` }>
+				<span key={ id } className={ `label label-status-${ label }` }>
 					{ label } { count }
-				</Badge>
+				</span>
 			);
 		} );
 
@@ -254,10 +255,9 @@ export default class ReportsTable extends React.Component {
 	render() {
 		return (
 			<Table
-				hover
-				responsive="sm"
 				size="sm"
-				variant="dark"
+				responsive="sm"
+				borderless
 				className="reportsTable"
 			>
 				{ this.getTableHeader() }
