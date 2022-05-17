@@ -167,7 +167,7 @@ export default class Tests extends BaseComponent {
 
 			if ( result.source ) {
 				classHasSource = '';
-				url = `${
+				url = `${ config.reportDeepUrl }/${
 					result.report
 				}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
 			}
