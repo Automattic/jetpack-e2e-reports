@@ -127,7 +127,12 @@ let testsToDelete = [ ];
 	console.groupEnd();
 
 	console.group( '\n', 'Cleaning sources for deleted results' );
-	await cleanTestsSourceProperty();
+	console.group( '\n', 'Cleaning up tests data file' );
+	await cleanTestsSourceProperty( 'data/tests.json', 'tests' );
+	console.groupEnd();
+	console.group( '\n', 'Cleaning up errors data file' );
+	await cleanTestsSourceProperty( 'data/errors.json', 'errors' );
+	console.groupEnd();
 	console.groupEnd();
 } )();
 
@@ -179,17 +184,19 @@ async function cleanReport( report ) {
 /**
  * Go through all results in data/tests.json and remove the source property for results that where deleted
  *
+ * @param  dataFile
+ * @param  objectKey
  * @return {Promise<void>}
  */
-async function cleanTestsSourceProperty() {
+async function cleanTestsSourceProperty( dataFile, objectKey ) {
 	if ( testsToDelete.length === 0 && reportsToDelete.length === 0 ) {
 		return;
 	}
 
-	const json = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
+	const json = JSON.parse( ( await readS3Object( dataFile ) ).toString() );
 
 	let removed = 0;
-	json.tests.map( ( t ) => t.results ).flat().forEach( ( item ) => {
+	json[ objectKey ].map( ( t ) => t.results ).flat().forEach( ( item ) => {
 		if ( item.source ) {
 			if ( testsToDelete.includes( item.source.replace( '.json', '' ) ) ) {
 				// console.log( `Removing source ${ item.source } for deleted old result` );
@@ -209,6 +216,6 @@ async function cleanTestsSourceProperty() {
 
 	json.lastUpdate = new Date().toISOString();
 
-	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/tests.json', Body: JSON.stringify( json ), ContentType: 'application/json' } );
+	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: dataFile, Body: JSON.stringify( json ), ContentType: 'application/json' } );
 	await s3client.send( cmd );
 }

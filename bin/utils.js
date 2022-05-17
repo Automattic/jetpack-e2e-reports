@@ -119,7 +119,9 @@ async function readS3Object( key, silent = false ) {
 		const data = await s3client.send( cmd );
 		content = await streamToString( data.Body );
 	} catch ( error ) {
-		console.error( error );
+		if ( ! silent ) {
+			console.error( error.message );
+		}
 	}
 
 	return content;
@@ -177,6 +179,12 @@ const streamToString = ( stream ) => {
 	} );
 };
 
+function printProgress( progress ) {
+	process.stdout.clearLine();
+	process.stdout.cursorTo( 0 );
+	process.stdout.write( progress );
+}
+
 module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
@@ -191,4 +199,5 @@ module.exports = {
 	listS3Objects,
 	listS3Folders,
 	removeS3Folder,
+	printProgress,
 };
