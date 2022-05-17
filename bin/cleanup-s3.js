@@ -182,10 +182,11 @@ async function cleanReport( report ) {
 }
 
 /**
- * Go through all results in data/tests.json and remove the source property for results that where deleted
+ * Go through all results in given data file and remove the source property for results that where deleted
+ *	Expected data file structure {objectKey: [results:[{source: 'source'}]]}
  *
- * @param  dataFile
- * @param  objectKey
+ * @param {string}  dataFile s3 key of data file
+ * @param  {string} objectKey
  * @return {Promise<void>}
  */
 async function cleanTestsSourceProperty( dataFile, objectKey ) {
