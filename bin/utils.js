@@ -107,8 +107,11 @@ function cleanSources( arr ) {
 	} );
 }
 
-async function readS3Object( key ) {
-	console.log( `Reading file ${ key } from S3` );
+async function readS3Object( key, silent = false ) {
+	if ( ! silent ) {
+		console.log( `Reading file ${ key } from S3` );
+	}
+
 	const cmd = new GetObjectCommand( { Bucket: s3Params.Bucket, Key: key } );
 	let content;
 

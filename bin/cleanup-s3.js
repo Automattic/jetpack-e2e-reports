@@ -7,6 +7,7 @@ const { s3Params, s3client } = require( './s3-client' );
 const { Octokit } = require( '@octokit/rest' );
 const { PutObjectCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
 const config = require( '../src/config.json' );
+const moment = require( 'moment' );
 const octokit = new Octokit();
 
 const reportsToDelete = [ ];
@@ -43,12 +44,21 @@ let testsToDelete = [ ];
 		}
 
 		if ( closed.includes( report ) ) {
-			// console.log( `PR ${ report } closed, marked for deletion` );
+			console.log( `PR ${ report } is closed, marking report for deletion` );
 			reportsToDelete.push( report );
 			continue;
 		}
 
 		if ( open.includes( report ) ) {
+			const metadata = JSON.parse( ( await readS3Object( `reports/${ report }/metadata.json`, true ) ).toString() );
+			const duration = moment.duration( moment.utc().diff( moment.utc( metadata.updated_on ) ) ).as( 'days' );
+
+			if ( duration > 30 ) {
+				console.log( `Report ${ report } is older than 30 days (${ duration }), marking for deletion` );
+				reportsToDelete.push( report );
+				continue;
+			}
+
 			// console.log( `PR ${ report } is still open, will check for old results` );
 			reportsToClean.push( report );
 			continue;
@@ -83,9 +93,8 @@ let testsToDelete = [ ];
 	console.log( `The following reports were marked for deletion: ${ JSON.stringify( reportsToDelete ) }` );
 	console.groupEnd();
 
-	// Remove reports from reports data file
-
 	if ( reportsToDelete.length > 0 ) {
+		// Remove reports from reports data file
 		console.group( '\n', 'Cleaning report.json file' );
 		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 		const initialReportsCount = json.reports.length;
@@ -123,7 +132,7 @@ let testsToDelete = [ ];
 } )();
 
 async function cleanReport( report ) {
-	const historyData = await readS3Object( `reports/${ report }/report/history/history.json` );
+	const historyData = await readS3Object( `reports/${ report }/report/history/history.json`, true );
 
 	if ( ! historyData ) {
 		console.warn( `There was an error reading history data found for report ${ report }` );
@@ -146,7 +155,7 @@ async function cleanReport( report ) {
 
 	let attachmentsToDelete = [];
 	for ( const testId of testsToDelete ) {
-		const testInfo = JSON.parse( ( await readS3Object( `reports/${ report }/report/data/test-cases/${ testId }.json` ) ).toString() );
+		const testInfo = JSON.parse( ( await readS3Object( `reports/${ report }/report/data/test-cases/${ testId }.json`, true ) ).toString() );
 		if ( testInfo.testStage && testInfo.testStage.attachments ) {
 			attachmentsToDelete = attachmentsToDelete.concat( testInfo.testStage.attachments.map( ( attachment ) => attachment.source ) );
 		}
@@ -154,15 +163,17 @@ async function cleanReport( report ) {
 
 	for ( const attachmentSource of attachmentsToDelete ) {
 		const key = `reports/${ report }/report/data/attachments/${ attachmentSource }`;
-		console.log( `Removing attachment ${ key }` );
+		// console.log( `Removing attachment ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
 
 	for ( const testId of testsToDelete ) {
 		const key = `reports/${ report }/report/data/test-cases/${ testId }.json`;
-		console.log( `Removing test result ${ key }` );
+		// console.log( `Removing test result ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
+
+	console.log( `Deleted ${ attachmentsToDelete.length } attachments and ${ testsToDelete.length } test result files` );
 }
 
 /**
@@ -177,19 +188,24 @@ async function cleanTestsSourceProperty() {
 
 	const json = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
 
+	let removed = 0;
 	json.tests.map( ( t ) => t.results ).flat().forEach( ( item ) => {
 		if ( item.source ) {
 			if ( testsToDelete.includes( item.source.replace( '.json', '' ) ) ) {
-				console.log( `Removing source ${ item.source } for deleted old result` );
+				// console.log( `Removing source ${ item.source } for deleted old result` );
 				delete item.source;
+				removed++;
 			}
 
 			if ( reportsToDelete.includes( item.report ) ) {
-				console.log( `Removing source ${ item.source } for deleted report ${ item.report }` );
+				// console.log( `Removing source ${ item.source } for deleted report ${ item.report }` );
 				delete item.source;
+				removed++;
 			}
 		}
 	} );
+
+	console.log( `Removed source property for ${ removed } results` );
 
 	json.lastUpdate = new Date().toISOString();
 
