@@ -13,7 +13,9 @@ const json = JSON.parse( fs.readFileSync( dataFile ).toString() );
 
 function cleanError( message, trace ) {
 	if ( trace ) {
-		return trace.includes( message ) ? cleanTrace( trace ) : cleanTrace( `${ message }\n${ trace }` );
+		return trace.includes( message )
+			? cleanTrace( trace )
+			: cleanTrace( `${ message }\n${ trace }` );
 	}
 	return 'undefined';
 }
@@ -32,17 +34,12 @@ for ( const dirName of getReportsDirs() ) {
 	for ( const testFile of testFiles ) {
 		const testInfo = getTestInfoFromTestCaseFile( dirName, testFile );
 
-		if (
-			( ! testInfo.statusTrace && ! testInfo.statusMessage ) ||
-			testInfo.status === 'skipped'
-		) {
+		if ( ( ! testInfo.statusTrace && ! testInfo.statusMessage ) || testInfo.status === 'skipped' ) {
 			continue;
 		}
 
 		const existingError = json.errors.filter(
-			( e ) =>
-				e.trace ===
-				cleanError( testInfo.statusMessage, testInfo.statusTrace )
+			e => e.trace === cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
 		const masterReports = require( '../src/config.json' ).masterRuns;
@@ -57,7 +54,7 @@ for ( const dirName of getReportsDirs() ) {
 
 		if ( existingError.length > 0 ) {
 			const existingReport = existingError[ 0 ].results.filter(
-				( t ) => t.time === testInfo.time.stop
+				t => t.time === testInfo.time.stop
 			);
 
 			if ( existingReport.length === 0 ) {
@@ -65,10 +62,7 @@ for ( const dirName of getReportsDirs() ) {
 			}
 		} else {
 			const error = {
-				trace: cleanError(
-					testInfo.statusMessage,
-					testInfo.statusTrace
-				),
+				trace: cleanError( testInfo.statusMessage, testInfo.statusTrace ),
 				results: [],
 			};
 
@@ -80,7 +74,7 @@ for ( const dirName of getReportsDirs() ) {
 }
 
 // clean missing sources
-cleanSources( json.errors.map( ( e ) => e.results ).flat() );
+cleanSources( json.errors.map( e => e.results ).flat() );
 
 json.lastUpdate = new Date();
 

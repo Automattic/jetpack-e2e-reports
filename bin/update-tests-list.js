@@ -33,33 +33,34 @@ async function addTestsToList( dataFile ) {
 		const testResult = {
 			time: testInfo.time.stop,
 			report: reportId,
-			status:
-				testInfo.status === 'broken'
-					? 'failed'
-					: testInfo.status,
+			status: testInfo.status === 'broken' ? 'failed' : testInfo.status,
 			source: testInfo.source,
 		};
 
-		const existingTests = json.tests.filter(
-			( t ) => t.name === testInfo.fullName
-		);
+		const existingTests = json.tests.filter( t => t.name === testInfo.fullName );
 
 		if ( existingTests.length > 0 ) {
 			// test already exists
 			const existingResults = existingTests[ 0 ].results.filter(
-				( t ) => t.time === testInfo.time.stop
+				t => t.time === testInfo.time.stop
 			);
 
 			if ( existingResults.length === 0 ) {
 				// result doesn't exists, push it
-				console.log( `Adding result ${ JSON.stringify( testResult ) } for test ${ testInfo.fullName }` );
+				console.log(
+					`Adding result ${ JSON.stringify( testResult ) } for test ${ testInfo.fullName }`
+				);
 				existingTests[ 0 ].results.push( testResult );
 			} else {
-				console.log( `Result ${ JSON.stringify( testResult ) } already exists for test ${ testInfo.fullName }` );
+				console.log(
+					`Result ${ JSON.stringify( testResult ) } already exists for test ${ testInfo.fullName }`
+				);
 			}
 		} else {
 			// test doesn't exist, add it and this result
-			console.log( `Adding test ${ testInfo.fullName } with result ${ JSON.stringify( testResult ) }` );
+			console.log(
+				`Adding test ${ testInfo.fullName } with result ${ JSON.stringify( testResult ) }`
+			);
 			const test = {
 				name: testInfo.name,
 				results: [ testResult ],
@@ -73,7 +74,12 @@ async function addTestsToList( dataFile ) {
 
 	// Upload the report to S3
 	console.log( `Uploading updated tests list to ${ dataFile }` );
-	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: dataFile, Body: JSON.stringify( json ), ContentType: 'application/json' } );
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: dataFile,
+		Body: JSON.stringify( json ),
+		ContentType: 'application/json',
+	} );
 	await s3client.send( cmd );
 }
 

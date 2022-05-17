@@ -1,12 +1,7 @@
 import { Table, Button } from 'react-bootstrap';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-	faCheck,
-	faCodeBranch,
-	faQuestion,
-	faTimes,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ReactGA from 'react-ga';
 import moment from 'moment';
 import configData from '../config.json';
@@ -37,9 +32,7 @@ export default class ReportsTable extends React.Component {
 	sortByDate( isSortAsc ) {
 		return this.state.reports.sort( ( r1, r2 ) => {
 			if ( isSortAsc ) {
-				return (
-					Date.parse( r1.lastUpdate ) - Date.parse( r2.lastUpdate )
-				);
+				return Date.parse( r1.lastUpdate ) - Date.parse( r2.lastUpdate );
 			}
 			return Date.parse( r2.lastUpdate ) - Date.parse( r1.lastUpdate );
 		} );
@@ -55,15 +48,11 @@ export default class ReportsTable extends React.Component {
 		return this.state.reports.sort( ( r1, r2 ) => {
 			if ( isSortAsc ) {
 				return (
-					r1.statistic.failed +
-					r1.statistic.broken -
-					( r2.statistic.failed + r2.statistic.broken )
+					r1.statistic.failed + r1.statistic.broken - ( r2.statistic.failed + r2.statistic.broken )
 				);
 			}
 			return (
-				r2.statistic.failed +
-				r2.statistic.broken -
-				( r1.statistic.failed + r1.statistic.broken )
+				r2.statistic.failed + r2.statistic.broken - ( r1.statistic.failed + r1.statistic.broken )
 			);
 		} );
 	}
@@ -90,13 +79,7 @@ export default class ReportsTable extends React.Component {
 						} }
 					>
 						{ head[ key ].toUpperCase() }
-						{
-							<span
-								className={
-									this.state.sort.by === key ? klass : ''
-								}
-							/>
-						}
+						{ <span className={ this.state.sort.by === key ? klass : '' } /> }
 					</Button>
 				);
 			} );
@@ -123,17 +106,11 @@ export default class ReportsTable extends React.Component {
 
 	getReportRow( report, id ) {
 		const { statistic, metadata } = report; //destructuring
-		const isFailed =
-			statistic.total !== statistic.passed + statistic.skipped;
+		const isFailed = statistic.total !== statistic.passed + statistic.skipped;
 		return (
 			<tr key={ id }>
 				<td className={ 'reportNameCell' }>
-					{ this.getReportLinkCell(
-						report,
-						metadata,
-						isFailed,
-						statistic.total
-					) }
+					{ this.getReportLinkCell( report, metadata, isFailed, statistic.total ) }
 				</td>
 				<td>{ this.getTestResultsCell( statistic ) }</td>
 				<td>{ this.getMetadataCell( report ) }</td>
@@ -165,10 +142,7 @@ export default class ReportsTable extends React.Component {
 		return (
 			<ul className={ 'list-unstyled' }>
 				<li>
-					<FontAwesomeIcon
-						className={ statusClassName }
-						icon={ statusIcon }
-					/>
+					<FontAwesomeIcon className={ statusClassName } icon={ statusIcon } />
 					&nbsp;
 					<a
 						href={ linkUrl }
@@ -185,12 +159,7 @@ export default class ReportsTable extends React.Component {
 					<small>
 						#{ reportKey } { ' • ' }
 						<FontAwesomeIcon icon={ faCodeBranch } />{ ' ' }
-						<a
-							href={ branchUrl }
-							target={ '_blank' }
-							className={ 'report-link' }
-							rel="noreferrer"
-						>
+						<a href={ branchUrl } target={ '_blank' } className={ 'report-link' } rel="noreferrer">
 							{ metadata.branch }
 						</a>
 						{ metadata.pr_number ? ' • ' : '' }
@@ -212,10 +181,7 @@ export default class ReportsTable extends React.Component {
 
 	getTestResultsCell( statistic ) {
 		const counts = [ 'failed', 'passed', 'total' ].map( ( label, id ) => {
-			const count =
-				label === 'failed'
-					? statistic[ label ] + statistic.broken
-					: statistic[ label ];
+			const count = label === 'failed' ? statistic[ label ] + statistic.broken : statistic[ label ];
 			return (
 				<span key={ id } className={ `label label-status-${ label }` }>
 					{ label } { count }
@@ -231,19 +197,12 @@ export default class ReportsTable extends React.Component {
 		return (
 			<ul className={ 'list-unstyled' }>
 				<li>
-					<small>
-						last update: { moment( report.lastUpdate ).fromNow() }
-					</small>
+					<small>last update: { moment( report.lastUpdate ).fromNow() }</small>
 				</li>
 				<li>
 					<small>
 						last run id:{ ' ' }
-						<a
-							href={ runUrl }
-							target={ '_blank' }
-							className={ 'report-link' }
-							rel="noreferrer"
-						>
+						<a href={ runUrl } target={ '_blank' } className={ 'report-link' } rel="noreferrer">
 							{ report.metadata.run_id }
 						</a>
 					</small>
@@ -254,17 +213,10 @@ export default class ReportsTable extends React.Component {
 
 	render() {
 		return (
-			<Table
-				size="sm"
-				responsive="sm"
-				borderless
-				className="reportsTable"
-			>
+			<Table size="sm" responsive="sm" borderless className="reportsTable">
 				{ this.getTableHeader() }
 				<tbody>
-					{ this.state.reports.map( ( report, id ) =>
-						this.getReportRow( report, id )
-					) }
+					{ this.state.reports.map( ( report, id ) => this.getReportRow( report, id ) ) }
 				</tbody>
 				<tfoot>
 					<tr>

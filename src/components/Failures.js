@@ -15,7 +15,11 @@ export default class Failures extends BaseComponent {
 			totalErrors: 0,
 			distinctErrors: 0,
 		},
-		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
+		filters: {
+			isMasterOnly: false,
+			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
+			endDate: moment().format( 'YYYY-MM-DD' ),
+		},
 		sort: { by: 'common', isAsc: false },
 		isDataReady: false,
 	};
@@ -49,55 +53,52 @@ export default class Failures extends BaseComponent {
 	setErrorsData() {
 		// make a copy of raw data errors object to process
 		// wwe don't modify the original data
-		let errors = JSON.parse(
-			JSON.stringify( this.state.rawData.errorsData.errors )
-		);
+		let errors = JSON.parse( JSON.stringify( this.state.rawData.errorsData.errors ) );
 
 		if ( this.state.filters.startDate && this.state.filters.endDate ) {
-			errors.forEach( ( e ) => {
-				e.results = e.results.filter( ( r ) =>
-					moment( r.time ).isBetween( moment( this.state.filters.startDate, 'YYYY-MM-DD' ), moment( this.state.filters.endDate, 'YYYY-MM-DD' ), 'd', '[]' )
+			errors.forEach( e => {
+				e.results = e.results.filter( r =>
+					moment( r.time ).isBetween(
+						moment( this.state.filters.startDate, 'YYYY-MM-DD' ),
+						moment( this.state.filters.endDate, 'YYYY-MM-DD' ),
+						'd',
+						'[]'
+					)
 				);
 			} );
 		}
 
 		if ( this.state.filters.isMasterOnly ) {
-			errors.forEach( ( e ) => {
-				e.results = e.results.filter( ( r ) =>
-					config.masterRuns.includes( r.report )
-				);
+			errors.forEach( e => {
+				e.results = e.results.filter( r => config.masterRuns.includes( r.report ) );
 			} );
 		}
 
 		// filter out errors with 0 occurrences
-		errors = errors.filter( ( e ) => e.results.length > 0 );
+		errors = errors.filter( e => e.results.length > 0 );
 
 		// calculate some stats for each error
 		for ( const error of errors ) {
 			error.total = error.results.length;
-			const times = error.results.map( ( r ) => r.time );
+			const times = error.results.map( r => r.time );
 			error.newest = Math.max( ...times );
 			error.oldest = Math.min( ...times );
 
-			const testsNames = [
-				...new Set( error.results.map( ( r ) => r.test ) ),
-			];
+			const testsNames = [ ...new Set( error.results.map( r => r.test ) ) ];
 
 			error.tests = [];
 
 			for ( const testName of testsNames ) {
-				const resultsForTest = error.results.filter(
-					( r ) => r.test === testName
-				);
+				const resultsForTest = error.results.filter( r => r.test === testName );
 
 				error.tests.push( {
 					name: testName,
-					times: resultsForTest.map( ( r ) => r.time ),
+					times: resultsForTest.map( r => r.time ),
 				} );
 			}
 		}
 
-		const allErrors = errors.map( ( e ) => e.results ).flat();
+		const allErrors = errors.map( e => e.results ).flat();
 
 		this.setState( {
 			errors: {
@@ -117,9 +118,7 @@ export default class Failures extends BaseComponent {
 				break;
 			case 'common':
 				this.state.errors.list.sort( ( a, b ) =>
-					isAsc
-						? a.results.length - b.results.length
-						: b.results.length - a.results.length
+					isAsc ? a.results.length - b.results.length : b.results.length - a.results.length
 				);
 				break;
 		}
@@ -134,14 +133,8 @@ export default class Failures extends BaseComponent {
 			<div>
 				{ tests.map( ( test, id ) => {
 					return (
-						<span
-							key={ id }
-							className="label label-status-skipped"
-						>
-							{ test.name }{ ' ' }
-							<span className={ `badge-pill stat-pill` }>
-								{ test.times.length }
-							</span>
+						<span key={ id } className="label label-status-skipped">
+							{ test.name } <span className={ `badge-pill stat-pill` }>{ test.times.length }</span>
 						</span>
 					);
 				} ) }
@@ -153,26 +146,16 @@ export default class Failures extends BaseComponent {
 		return (
 			<div>
 				{ results.map( ( result, id ) => {
-					let badge = moment( result.time ).format(
-						'MMM Do, h:mm a'
-					);
+					let badge = moment( result.time ).format( 'MMM Do, h:mm a' );
 
 					let className = 'no-source';
 
 					if ( result.source ) {
 						const url = `${ config.reportDeepUrl }/${
 							result.report
-						}/report/#testresult/${ result.source.replace(
-							/.json/,
-							''
-						) }`;
+						}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
 						badge = (
-							<a
-								href={ url }
-								target="_blank"
-								rel="noreferrer"
-								className="report-link"
-							>
+							<a href={ url } target="_blank" rel="noreferrer" className="report-link">
 								{ badge }
 							</a>
 						);
@@ -185,10 +168,7 @@ export default class Failures extends BaseComponent {
 					}
 
 					return (
-						<span
-							key={ id }
-							className={ `failure-link ${ className }` }
-						>
+						<span key={ id } className={ `failure-link ${ className }` }>
 							{ badge }
 						</span>
 					);
@@ -212,12 +192,8 @@ export default class Failures extends BaseComponent {
 					<pre className="error-container-trace">{ error.trace }</pre>
 					<div>{ details }</div>
 				</div>
-				<div className="row">
-					{ this.getListOfTests( error.tests ) }
-				</div>
-				<div className="row">
-					{ this.getListOfFailures( error.results ) }
-				</div>
+				<div className="row">{ this.getListOfTests( error.tests ) }</div>
+				<div className="row">{ this.getListOfFailures( error.results ) }</div>
 			</div>
 		);
 	}
@@ -227,9 +203,7 @@ export default class Failures extends BaseComponent {
 			return null;
 		}
 
-		const lastUpdate = moment(
-			this.state.rawData.errorsData.lastUpdate
-		).fromNow();
+		const lastUpdate = moment( this.state.rawData.errorsData.lastUpdate ).fromNow();
 
 		return (
 			<div>
@@ -237,35 +211,23 @@ export default class Failures extends BaseComponent {
 				<div className="row text-center">
 					<div className="col-sm">
 						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.errors.totalErrors }
-							</span>
+							<span className="stat-number">{ this.state.errors.totalErrors }</span>
 							<br />
-							<span className="stat-description">
-								total errors
-							</span>
+							<span className="stat-description">total errors</span>
 						</div>
 					</div>
 					<div className="col-sm">
 						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.errors.distinctErrors }
-							</span>
+							<span className="stat-number">{ this.state.errors.distinctErrors }</span>
 							<br />
-							<span className="stat-description">
-								distinct errors
-							</span>
+							<span className="stat-description">distinct errors</span>
 						</div>
 					</div>
 				</div>
 				<hr />
+				<div className="row">{ this.getFilterByDateFields() }</div>
 				<div className="row">
-					{ this.getFilterByDateFields() }
-				</div>
-				<div className="row">
-					<div className="col-sm filters">
-						{ this.getMasterOnlyFilterButton() }
-					</div>
+					<div className="col-sm filters">{ this.getMasterOnlyFilterButton() }</div>
 					<div className="col-md sort-buttons">
 						{ this.getSortButtons(
 							{
@@ -279,14 +241,10 @@ export default class Failures extends BaseComponent {
 				</div>
 				<hr />
 				<div>
-					{ this.state.errors.list.map( ( error, id ) =>
-						this.getErrorContent( error, id )
-					) }
+					{ this.state.errors.list.map( ( error, id ) => this.getErrorContent( error, id ) ) }
 				</div>
 				<div className="row">
-					<div className="text-right col small">
-						updated { lastUpdate }
-					</div>
+					<div className="text-right col small">updated { lastUpdate }</div>
 				</div>
 			</div>
 		);

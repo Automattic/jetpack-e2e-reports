@@ -21,24 +21,21 @@ if ( ! reportId ) {
 
 	// Get the list of failures from  report/widgets/status-chart.json
 	const status = readJson( path.join( reportId, 'report/widgets/status-chart.json' ) );
-	const failedTests = status.filter( ( t ) => t.status === 'failed' || t.status === 'broken' );
+	const failedTests = status.filter( t => t.status === 'failed' || t.status === 'broken' );
 	console.log( `Found ${ failedTests.length } failed tests` );
 
 	for ( const test of failedTests ) {
 		console.log( `Reading ${ test.uid }` );
-		const testInfo = readJson( path.join( reportId, 'report/data/test-cases', `${ test.uid }.json` ) );
+		const testInfo = readJson(
+			path.join( reportId, 'report/data/test-cases', `${ test.uid }.json` )
+		);
 
-		if (
-			( ! testInfo.statusTrace && ! testInfo.statusMessage ) ||
-			testInfo.status === 'skipped'
-		) {
+		if ( ( ! testInfo.statusTrace && ! testInfo.statusMessage ) || testInfo.status === 'skipped' ) {
 			continue;
 		}
 
 		const existingError = json.errors.filter(
-			( e ) =>
-				e.trace ===
-				cleanError( testInfo.statusMessage, testInfo.statusTrace )
+			e => e.trace === cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
 		const masterReports = require( '../src/config.json' ).masterRuns;
@@ -55,7 +52,7 @@ if ( ! reportId ) {
 			// The error already exists, we just need to update the result
 			console.log( `Updating error ${ existingError[ 0 ].trace }` );
 			const existingReport = existingError[ 0 ].results.filter(
-				( t ) => t.time === testInfo.time.stop
+				t => t.time === testInfo.time.stop
 			);
 
 			if ( existingReport.length === 0 ) {
@@ -68,10 +65,7 @@ if ( ! reportId ) {
 		} else {
 			// Create a new entry for this error
 			const error = {
-				trace: cleanError(
-					testInfo.statusMessage,
-					testInfo.statusTrace
-				),
+				trace: cleanError( testInfo.statusMessage, testInfo.statusTrace ),
 				results: [],
 			};
 
@@ -88,6 +82,11 @@ if ( ! reportId ) {
 	// writeJson( json, path.join( reportId, 'errors.json' ) );
 
 	// Upload the report to S3
-	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/errors.json', Body: JSON.stringify( json ), ContentType: 'application/json' } );
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: 'data/errors.json',
+		Body: JSON.stringify( json ),
+		ContentType: 'application/json',
+	} );
 	await s3client.send( cmd );
 } )();

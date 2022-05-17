@@ -22,32 +22,15 @@ function App() {
 			<div className="App-content">
 				<Navbar variant="dark" expand="md" className="app-nav-bar">
 					<Container fluid className="app-nav-bar-inner-container">
-						<Navbar.Brand href={ `${ basename }/#/` }>
-							Jetpack test reports
-						</Navbar.Brand>
+						<Navbar.Brand href={ `${ basename }/#/` }>Jetpack test reports</Navbar.Brand>
 						<Navbar.Toggle aria-controls="basic-navbar-nav" />
 						<Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-							<Nav
-								activeKey={ location.pathname }
-								className="ml-auto"
-							>
-								<Nav.Link href={ `${ basename }/#/reports` }>
-									Reports
-								</Nav.Link>
-								<Nav.Link href={ `${ basename }/#/charts` }>
-									Stats
-								</Nav.Link>
-								<Nav.Link href={ `${ basename }/#/tests` }>
-									Tests
-								</Nav.Link>
-								<Nav.Link href={ `${ basename }/#/failures` }>
-									Failures
-								</Nav.Link>
-								<Nav.Link
-									href={ `${ basename }/#/performance` }
-								>
-									Performance
-								</Nav.Link>
+							<Nav activeKey={ location.pathname } className="ml-auto">
+								<Nav.Link href={ `${ basename }/#/reports` }>Reports</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/charts` }>Stats</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/tests` }>Tests</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/failures` }>Failures</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/performance` }>Performance</Nav.Link>
 							</Nav>
 						</Navbar.Collapse>
 					</Container>
@@ -57,16 +40,8 @@ function App() {
 						<Route exact path="/" element={ <Reports /> } />
 						<Route exact path="/reports" element={ <Reports /> } />
 						<Route exact path="/tests" element={ <Tests /> } />
-						<Route
-							exact
-							path="/failures"
-							element={ <Failures /> }
-						/>
-						<Route
-							exact
-							path="/performance"
-							element={ <Performance /> }
-						/>
+						<Route exact path="/failures" element={ <Failures /> } />
+						<Route exact path="/performance" element={ <Performance /> } />
 						<Route exact path="/charts" element={ <Charts /> } />
 					</Routes>
 				</HashRouter>

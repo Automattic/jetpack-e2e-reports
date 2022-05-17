@@ -17,7 +17,11 @@ export default class Tests extends BaseComponent {
 			failedResults: 0,
 			failedRate: 0,
 		},
-		filters: { isMasterOnly: false, startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ), endDate: moment().format( 'YYYY-MM-DD' ) },
+		filters: {
+			isMasterOnly: false,
+			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
+			endDate: moment().format( 'YYYY-MM-DD' ),
+		},
 		sort: { by: 'failedRate', isAsc: false },
 		isDataReady: false,
 	};
@@ -53,38 +57,37 @@ export default class Tests extends BaseComponent {
 	setTestsData() {
 		// make a copy of raw data object to process
 		// wwe don't modify the original data
-		let tests = JSON.parse(
-			JSON.stringify( this.state.rawData.testsData.tests )
-		);
+		let tests = JSON.parse( JSON.stringify( this.state.rawData.testsData.tests ) );
 
 		if ( this.state.filters.startDate && this.state.filters.endDate ) {
-			tests.forEach( ( t ) => {
-				t.results = t.results.filter( ( r ) =>
-					moment( r.time ).isBetween( moment( this.state.filters.startDate, 'YYYY-MM-DD' ), moment( this.state.filters.endDate, 'YYYY-MM-DD' ), 'd', '[]' )
+			tests.forEach( t => {
+				t.results = t.results.filter( r =>
+					moment( r.time ).isBetween(
+						moment( this.state.filters.startDate, 'YYYY-MM-DD' ),
+						moment( this.state.filters.endDate, 'YYYY-MM-DD' ),
+						'd',
+						'[]'
+					)
 				);
 			} );
 		}
 
 		if ( this.state.filters.isMasterOnly ) {
-			tests.forEach( ( t ) => {
-				t.results = t.results.filter( ( r ) =>
-					config.masterRuns.includes( r.report )
-				);
+			tests.forEach( t => {
+				t.results = t.results.filter( r => config.masterRuns.includes( r.report ) );
 			} );
 		}
 
 		// filter out tests with 0 results
-		tests = tests.filter( ( e ) => e.results.length > 0 );
+		tests = tests.filter( e => e.results.length > 0 );
 
 		for ( const test of tests ) {
 			test.total = 0;
 			for ( const status of [ 'passed', 'failed', 'skipped' ] ) {
-				test[ status ] = test.results.filter(
-					( t ) => t.status === status
-				).length;
+				test[ status ] = test.results.filter( t => t.status === status ).length;
 				test.total += test[ status ];
 			}
-			test.failedRate = ( test.failed / test.total * 100 ).toFixed( 2 );
+			test.failedRate = ( ( test.failed / test.total ) * 100 ).toFixed( 2 );
 
 			test.results.sort( ( a, b ) => {
 				return a.time - b.time;
@@ -93,11 +96,11 @@ export default class Tests extends BaseComponent {
 
 		let totalTestResults = 0;
 		let failedResults = 0;
-		tests.forEach( ( t ) => {
+		tests.forEach( t => {
 			totalTestResults += t.total;
 			failedResults += t.failed;
 		} );
-		const failedRate = ( failedResults / totalTestResults * 100 ).toFixed( 2 );
+		const failedRate = ( ( failedResults / totalTestResults ) * 100 ).toFixed( 2 );
 
 		this.setState( {
 			tests: {
@@ -111,9 +114,7 @@ export default class Tests extends BaseComponent {
 	}
 
 	sortData( by, isAsc ) {
-		this.state.tests.list.sort( ( a, b ) =>
-			isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ]
-		);
+		this.state.tests.list.sort( ( a, b ) => ( isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ] ) );
 
 		this.setState( {
 			sort: { by, isAsc },
@@ -121,41 +122,32 @@ export default class Tests extends BaseComponent {
 	}
 
 	getTotalsBadges( test ) {
-		const badges = [ 'failed', 'passed', 'skipped', 'total' ].map(
-			( label, id ) => {
-				const count = test[ label ];
+		const badges = [ 'failed', 'passed', 'skipped', 'total' ].map( ( label, id ) => {
+			const count = test[ label ];
 
-				// hide statuses with no results
-				const classHide = count === 0 ? 'hide' : '';
+			// hide statuses with no results
+			const classHide = count === 0 ? 'hide' : '';
 
-				let rate = (
-					( count /
-						( test.total -
-							( label === 'skipped' ? 0 : test.skipped ) ) ) *
-					100
-				).toFixed( 1 );
+			let rate = (
+				( count / ( test.total - ( label === 'skipped' ? 0 : test.skipped ) ) ) *
+				100
+			).toFixed( 1 );
 
-				if ( label === 'total' ) {
-					rate = '';
-				} else {
-					rate = isNaN( rate ) ? '' : `${ rate }%`;
-				}
-
-				return (
-					<li key={ id }>
-						<span
-							key={ id }
-							className={ `label label-fill label-status-${ label } ${ classHide }` }
-						>
-							{ count } { label }
-							<span className={ `badge-pill stat-pill` }>
-								{ rate }
-							</span>
-						</span>
-					</li>
-				);
+			if ( label === 'total' ) {
+				rate = '';
+			} else {
+				rate = isNaN( rate ) ? '' : `${ rate }%`;
 			}
-		);
+
+			return (
+				<li key={ id }>
+					<span key={ id } className={ `label label-fill label-status-${ label } ${ classHide }` }>
+						{ count } { label }
+						<span className={ `badge-pill stat-pill` }>{ rate }</span>
+					</span>
+				</li>
+			);
+		} );
 
 		return <ul className="list-unstyled">{ badges }</ul>;
 	}
@@ -204,9 +196,7 @@ export default class Tests extends BaseComponent {
 					</div>
 				</div>
 				<div className="row">
-					<div className="col-sm-auto">
-						{ this.getTotalsBadges( test ) }
-					</div>
+					<div className="col-sm-auto">{ this.getTotalsBadges( test ) }</div>
 					<div className="col">{ this.getResultsLine( test ) }</div>
 				</div>
 			</div>
@@ -218,73 +208,57 @@ export default class Tests extends BaseComponent {
 			return null;
 		}
 
-		return <div>
-			<div className="row align-items-center">
-				{ this.getFilterByDateFields() }
-			</div>
-			<hr />
-			<div className="row text-center">
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.tests.distinctTests }
-						</span>
-						<br />
-						<span className="stat-description">tests</span>
-					</div>
-				</div>
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.tests.totalTestResults }
-						</span>
-						<br />
-						<span className="stat-description">results</span>
-					</div>
-				</div>
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.tests.failedResults }
-						</span>
-						<br />
-						<span className="stat-description">failures</span>
-					</div>
-				</div>
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.tests.failedRate }%
-						</span>
-						<br />
-						<span className="stat-description">
-							failure rate
-						</span>
-					</div>
-				</div>
-			</div>
-			<hr />
-			<div className="row">
-				<div className="col-sm filters">
-					{ this.getMasterOnlyFilterButton() }
-				</div>
-				<div className="col-md sort-buttons">
-					{ this.getSortButtons(
-						{
-							total: 'runs',
-							failedRate: 'failure rate',
-						},
-						this.state.sort.by,
-						this.state.sort.isAsc
-					) }
-				</div>
-			</div>
-			<hr />
+		return (
 			<div>
-				{ this.state.tests.list.map( ( test, id ) =>
-					this.getTestContent( test, id )
-				) }
+				<div className="row align-items-center">{ this.getFilterByDateFields() }</div>
+				<hr />
+				<div className="row text-center">
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">{ this.state.tests.distinctTests }</span>
+							<br />
+							<span className="stat-description">tests</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">{ this.state.tests.totalTestResults }</span>
+							<br />
+							<span className="stat-description">results</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">{ this.state.tests.failedResults }</span>
+							<br />
+							<span className="stat-description">failures</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">{ this.state.tests.failedRate }%</span>
+							<br />
+							<span className="stat-description">failure rate</span>
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div className="row">
+					<div className="col-sm filters">{ this.getMasterOnlyFilterButton() }</div>
+					<div className="col-md sort-buttons">
+						{ this.getSortButtons(
+							{
+								total: 'runs',
+								failedRate: 'failure rate',
+							},
+							this.state.sort.by,
+							this.state.sort.isAsc
+						) }
+					</div>
+				</div>
+				<hr />
+				<div>{ this.state.tests.list.map( ( test, id ) => this.getTestContent( test, id ) ) }</div>
 			</div>
-		</div>;
+		);
 	}
 }

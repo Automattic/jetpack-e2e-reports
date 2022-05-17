@@ -22,8 +22,8 @@ export default class Reports extends React.Component {
 				Accept: 'application/json',
 			},
 		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
+			.then( response => response.json() )
+			.then( jsonData => {
 				const prReports = { reports: [] };
 				const pinnedReports = { reports: [] };
 
@@ -53,9 +53,7 @@ export default class Reports extends React.Component {
 		}
 		return (
 			<div>
-				<div className={ 'reports-header' }>
-					{ this.state.reportsCount } reports
-				</div>
+				<div className={ 'reports-header' }>{ this.state.reportsCount } reports</div>
 				<ReportsTable
 					reports={ this.state.pinnedReports }
 					options={ {

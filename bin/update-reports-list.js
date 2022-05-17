@@ -43,9 +43,7 @@ let json = { reports: [] };
 	};
 
 	console.log( report );
-	const reportIndex = json.reports.findIndex(
-		( r ) => r.name === reportId
-	);
+	const reportIndex = json.reports.findIndex( r => r.name === reportId );
 
 	if ( reportIndex !== -1 ) {
 		// Update the report entry in the reports list
@@ -59,6 +57,11 @@ let json = { reports: [] };
 	json.lastUpdate = new Date().toISOString();
 
 	// Upload the report to S3
-	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: 'data/reports.json', Body: JSON.stringify( json, null, 2 ), ContentType: 'application/json' } );
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: 'data/reports.json',
+		Body: JSON.stringify( json, null, 2 ),
+		ContentType: 'application/json',
+	} );
 	await s3client.send( cmd );
 } )();

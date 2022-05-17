@@ -26,25 +26,18 @@ for ( const dirName of getReportsDirs() ) {
 	for ( const testFile of testFiles ) {
 		const testInfo = getTestInfoFromTestCaseFile( dirName, testFile );
 
-		const existingTest = json.tests.filter(
-			( t ) => t.name === testInfo.fullName
-		);
+		const existingTest = json.tests.filter( t => t.name === testInfo.fullName );
 
 		if ( existingTest.length > 0 ) {
 			// test already exists
-			const existingResult = existingTest[ 0 ].results.filter(
-				( t ) => t.time === testInfo.time.stop
-			);
+			const existingResult = existingTest[ 0 ].results.filter( t => t.time === testInfo.time.stop );
 
 			if ( existingResult.length === 0 ) {
 				// result doesn't exists, push it
 				existingTest[ 0 ].results.push( {
 					time: testInfo.time.stop,
 					report: dirName,
-					status:
-						testInfo.status === 'broken'
-							? 'failed'
-							: testInfo.status,
+					status: testInfo.status === 'broken' ? 'failed' : testInfo.status,
 					source: testInfo.source,
 				} );
 			}
@@ -58,8 +51,7 @@ for ( const dirName of getReportsDirs() ) {
 			test.results.push( {
 				time: testInfo.time.stop,
 				report: dirName,
-				status:
-					testInfo.status === 'broken' ? 'failed' : testInfo.status,
+				status: testInfo.status === 'broken' ? 'failed' : testInfo.status,
 				source: testInfo.source,
 			} );
 
@@ -69,7 +61,7 @@ for ( const dirName of getReportsDirs() ) {
 }
 
 // clean missing sources
-cleanSources( json.tests.map( ( t ) => t.results ).flat() );
+cleanSources( json.tests.map( t => t.results ).flat() );
 
 json.lastUpdate = new Date();
 

@@ -57,26 +57,24 @@ export default class Charts extends BaseComponent {
 	filterData( rawData ) {
 		// make a copy of raw data object
 		// we don't modify the original data
-		let entries = JSON.parse(
-			JSON.stringify( rawData )
-		);
+		let entries = JSON.parse( JSON.stringify( rawData ) );
 
 		if ( this.state.filters.isMasterOnly ) {
-			entries = entries.map( ( entry ) => {
+			entries = entries.map( entry => {
 				const newObj = entry.master;
 				newObj.date = entry.date;
 				return newObj;
 			} );
 		} else {
-			entries = entries.map( ( entry ) => {
+			entries = entries.map( entry => {
 				const newObj = entry.total;
 				newObj.date = entry.date;
 				return newObj;
 			} );
 		}
 
-		entries.forEach( ( day ) => {
-			day.failedRate = ( day.failed / day.total * 100 ).toFixed( 2 );
+		entries.forEach( day => {
+			day.failedRate = ( ( day.failed / day.total ) * 100 ).toFixed( 2 );
 		} );
 
 		sortArray( entries, 'date', false );
@@ -90,17 +88,20 @@ export default class Charts extends BaseComponent {
 		const summaryData = {};
 
 		if ( this.state.filters.isMasterOnly ) {
-			Object.keys( this.state.rawData.summaryData.stats ).forEach( ( key ) => {
+			Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
 				summaryData[ key ] = this.state.rawData.summaryData.stats[ key ].master;
 			} );
 		} else {
-			Object.keys( this.state.rawData.summaryData.stats ).forEach( ( key ) => {
+			Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
 				summaryData[ key ] = this.state.rawData.summaryData.stats[ key ].total;
 			} );
 		}
 
-		Object.keys( summaryData ).forEach( ( key ) => {
-			summaryData[ key ].failureRate = ( summaryData[ key ].failed / summaryData[ key ].total * 100 ).toFixed( 2 );
+		Object.keys( summaryData ).forEach( key => {
+			summaryData[ key ].failureRate = (
+				( summaryData[ key ].failed / summaryData[ key ].total ) *
+				100
+			).toFixed( 2 );
 		} );
 
 		return summaryData;
@@ -143,7 +144,7 @@ export default class Charts extends BaseComponent {
 			xAxis: [
 				{
 					type: 'category',
-					data: data.map( function( e ) {
+					data: data.map( function ( e ) {
 						return e.date;
 					} ),
 					axisLabel: {
@@ -192,7 +193,7 @@ export default class Charts extends BaseComponent {
 					color: '#e38474',
 					symbol: 'roundRect',
 					symbolSize: 4,
-					data: data.map( function( e ) {
+					data: data.map( function ( e ) {
 						return e.failedRate;
 					} ),
 				},
@@ -204,7 +205,7 @@ export default class Charts extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(115, 151, 75, 0.73)',
-					data: data.map( function( e ) {
+					data: data.map( function ( e ) {
 						return e.passed;
 					} ),
 				},
@@ -216,7 +217,7 @@ export default class Charts extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(253, 90, 62, 0.71)',
-					data: data.map( function( e ) {
+					data: data.map( function ( e ) {
 						return e.failed;
 					} ),
 				},
@@ -228,7 +229,7 @@ export default class Charts extends BaseComponent {
 						focus: 'series',
 					},
 					color: 'rgba(170, 170, 170, 0.73)',
-					data: data.map( function( e ) {
+					data: data.map( function ( e ) {
 						return e.skipped;
 					} ),
 				},
@@ -240,10 +241,10 @@ export default class Charts extends BaseComponent {
 		const options = this.chartOptions( this.state.days );
 		options.title.text = 'Daily';
 		options.dataZoom[ 0 ].startValue = moment().subtract( 6, 'weeks' ).format( 'YYYY-MM-DD' );
-		options.xAxis[ 0 ].axisLabel.formatter = ( value ) => {
+		options.xAxis[ 0 ].axisLabel.formatter = value => {
 			return moment( value ).format( 'MMM D, YYYY' );
 		};
-		options.xAxis[ 0 ].axisPointer.label.formatter = ( params ) => {
+		options.xAxis[ 0 ].axisPointer.label.formatter = params => {
 			return moment( params.value ).format( 'MMM D, YYYY' );
 		};
 
@@ -259,10 +260,10 @@ export default class Charts extends BaseComponent {
 	monthlyChartOptions() {
 		const options = this.chartOptions( this.state.months );
 		options.title.text = 'Monthly';
-		options.xAxis[ 0 ].axisLabel.formatter = ( value ) => {
+		options.xAxis[ 0 ].axisLabel.formatter = value => {
 			return moment( value ).format( 'MMM YYYY' );
 		};
-		options.xAxis[ 0 ].axisPointer.label.formatter = ( params ) => {
+		options.xAxis[ 0 ].axisPointer.label.formatter = params => {
 			return moment( params.value ).format( 'MMM YYYY' );
 		};
 
@@ -270,7 +271,7 @@ export default class Charts extends BaseComponent {
 	}
 
 	dailyHeatMapOptions() {
-		const data = this.state.days.map( function( e ) {
+		const data = this.state.days.map( function ( e ) {
 			return [ e.date, e.failedRate ];
 		} );
 		return {
@@ -284,9 +285,11 @@ export default class Charts extends BaseComponent {
 				},
 			},
 			tooltip: {
-				formatter: ( params ) => {
+				formatter: params => {
 					const values = params.value.toString().split( ',' );
-					return '<b>' + moment( values[ 0 ] ).format( 'MMM D, YYYY' ) + '</b><br/>' + values[ 1 ] + '%';
+					return (
+						'<b>' + moment( values[ 0 ] ).format( 'MMM D, YYYY' ) + '</b><br/>' + values[ 1 ] + '%'
+					);
 				},
 			},
 			visualMap: {
@@ -321,7 +324,10 @@ export default class Charts extends BaseComponent {
 				left: 50,
 				right: 50,
 				cellSize: [ 'auto', 15 ],
-				range: [ moment().subtract( 1, 'year' ).format( 'YYYY-MM-DD' ), moment().format( 'YYYY-MM-DD' ) ],
+				range: [
+					moment().subtract( 1, 'year' ).format( 'YYYY-MM-DD' ),
+					moment().format( 'YYYY-MM-DD' ),
+				],
 				itemStyle: {
 					color: '#343a40',
 					borderColor: '#454c54',
@@ -356,70 +362,74 @@ export default class Charts extends BaseComponent {
 			return null;
 		}
 
-		return <div>
-			<div className="row">
-				<div className="col-sm filters">
-					{ this.getMasterOnlyFilterButton() }
+		return (
+			<div>
+				<div className="row">
+					<div className="col-sm filters">{ this.getMasterOnlyFilterButton() }</div>
 				</div>
-			</div>
-			<hr />
-			<div className="row">
-				<div className="col-sm">
-					<span className="inner-title">Failure rate</span>
-				</div>
-			</div>
-			<div className="row text-center">
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.summary[ '24h' ].failureRate }<small>%</small>
-						</span>
-						<br />
-						<span className="stat-description">24h</span>
+				<hr />
+				<div className="row">
+					<div className="col-sm">
+						<span className="inner-title">Failure rate</span>
 					</div>
 				</div>
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.summary[ '7d' ].failureRate }<small>%</small>
-						</span>
-						<br />
-						<span className="stat-description">7d</span>
+				<div className="row text-center">
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ this.state.summary[ '24h' ].failureRate }
+								<small>%</small>
+							</span>
+							<br />
+							<span className="stat-description">24h</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ this.state.summary[ '7d' ].failureRate }
+								<small>%</small>
+							</span>
+							<br />
+							<span className="stat-description">7d</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ this.state.summary[ '14d' ].failureRate }
+								<small>%</small>
+							</span>
+							<br />
+							<span className="stat-description">14d</span>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="stat-box">
+							<span className="stat-number">
+								{ this.state.summary[ '30d' ].failureRate }
+								<small>%</small>
+							</span>
+							<br />
+							<span className="stat-description">30d</span>
+						</div>
 					</div>
 				</div>
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.summary[ '14d' ].failureRate }<small>%</small>
-						</span>
-						<br />
-						<span className="stat-description">14d</span>
+				<div className="row justify-content-end">
+					<div className="col-sm text-end">
+						<small>updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }</small>
 					</div>
 				</div>
-				<div className="col-sm">
-					<div className="stat-box">
-						<span className="stat-number">
-							{ this.state.summary[ '30d' ].failureRate }<small>%</small>
-						</span>
-						<br />
-						<span className="stat-description">30d</span>
-					</div>
-				</div>
+				<hr />
+				<ReactEcharts option={ this.dailyChartOptions() } />
+				<hr />
+				<ReactEcharts option={ this.dailyHeatMapOptions() } />
+				<hr />
+				<ReactEcharts option={ this.weeklyChartOptions() } />
+				<hr />
+				<ReactEcharts option={ this.monthlyChartOptions() } />
+				<hr />
 			</div>
-			<div className="row justify-content-end">
-				<div className="col-sm text-end">
-					<small>updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }</small>
-				</div>
-			</div>
-			<hr />
-			<ReactEcharts option={ this.dailyChartOptions() } />
-			<hr />
-			<ReactEcharts option={ this.dailyHeatMapOptions() } />
-			<hr />
-			<ReactEcharts option={ this.weeklyChartOptions() } />
-			<hr />
-			<ReactEcharts option={ this.monthlyChartOptions() } />
-			<hr />
-		</div>;
+		);
 	}
 }

@@ -11,12 +11,25 @@ export default class Performance extends React.Component {
 			selected: 'type',
 			rawData: [],
 			isDataFetched: false,
-			metrics: [ 'serverResponse', 'firstPaint', 'domContentLoaded', 'loaded', 'firstContentfulPaint', 'firstBlock', 'type', 'focus', 'listViewOpen', 'inserterOpen', 'inserterHover', 'inserterSearch' ],
+			metrics: [
+				'serverResponse',
+				'firstPaint',
+				'domContentLoaded',
+				'loaded',
+				'firstContentfulPaint',
+				'firstBlock',
+				'type',
+				'focus',
+				'listViewOpen',
+				'inserterOpen',
+				'inserterHover',
+				'inserterSearch',
+			],
 		};
 	}
 
 	calcPercent( base, comp ) {
-		return Math.round( ( ( ( comp / base ) - 1 ) * 100 ) * 100 ) / 100;
+		return Math.round( ( comp / base - 1 ) * 100 * 100 ) / 100;
 	}
 
 	prettyTitle( title ) {
@@ -34,7 +47,11 @@ export default class Performance extends React.Component {
 				}
 				let date = new Date( obj.date );
 				date = date.toISOString().split( 'T' )[ 0 ];
-				result[ metric ].push( { base: obj.baseAvg[ metric ], jetpack: obj.jetpackAvg[ metric ], date } );
+				result[ metric ].push( {
+					base: obj.baseAvg[ metric ],
+					jetpack: obj.jetpackAvg[ metric ],
+					date,
+				} );
 			} );
 		} );
 
@@ -46,8 +63,8 @@ export default class Performance extends React.Component {
 				const byDate = result[ metric ].filter( e => e.date === date );
 
 				acc.push( {
-					base: Math.round( byDate.reduce( ( acc, e ) => acc += e.base, 0 ) / byDate.length ),
-					jetpack: Math.round( byDate.reduce( ( acc, e ) => acc += e.jetpack, 0 ) / byDate.length ),
+					base: Math.round( byDate.reduce( ( a, e ) => ( a += e.base ), 0 ) / byDate.length ),
+					jetpack: Math.round( byDate.reduce( ( a, e ) => ( a += e.jetpack ), 0 ) / byDate.length ),
 					date,
 				} );
 
@@ -67,8 +84,8 @@ export default class Performance extends React.Component {
 				Accept: 'application/json',
 			},
 		} )
-			.then( ( response ) => response.json() )
-			.then( ( jsonData ) => {
+			.then( response => response.json() )
+			.then( jsonData => {
 				this.setState( {
 					rawData: jsonData,
 					isDataFetched: true,
@@ -101,7 +118,7 @@ export default class Performance extends React.Component {
 			xAxis: [
 				{
 					type: 'category',
-					data: chartData.map( function( e ) {
+					data: chartData.map( function ( e ) {
 						return e.date;
 					} ),
 				},
@@ -147,7 +164,7 @@ export default class Performance extends React.Component {
 						focus: 'series',
 					},
 					color: 'rgb(99,100,138)',
-					data: chartData.map( function( e ) {
+					data: chartData.map( function ( e ) {
 						return e.base;
 					} ),
 				},
@@ -158,16 +175,14 @@ export default class Performance extends React.Component {
 						focus: 'series',
 					},
 					color: 'rgb(99,150,138)',
-					data: chartData.map( function( e ) {
+					data: chartData.map( function ( e ) {
 						return e.jetpack;
 					} ),
 				},
 			],
 		};
 
-		return <ReactEcharts option={ chartOptions }
-			style={ { height: '400px', width: '100%' } }
-		/>;
+		return <ReactEcharts option={ chartOptions } style={ { height: '400px', width: '100%' } } />;
 	}
 
 	onSelect( type ) {
@@ -179,7 +194,12 @@ export default class Performance extends React.Component {
 
 		return (
 			<Row style={ { justifyContent: 'space-between' } }>
-				<div style={ { display: 'flex' } }><h5>{ type }: { last } ms.</h5>&nbsp;from: { prev }ms.</div>
+				<div style={ { display: 'flex' } }>
+					<h5>
+						{ type }: { last } ms.
+					</h5>
+					&nbsp;from: { prev }ms.
+				</div>
 				<span>&nbsp;VS previous: { diffPercent }ms.</span>
 			</Row>
 		);
@@ -189,28 +209,39 @@ export default class Performance extends React.Component {
 		const last = data.at( -1 );
 		const prev = data.at( -2 );
 
-		return <Container className="perf-button" onClick={ () => this.onSelect( type ) }>
-			<Row><h4>{ this.state.selected === type ? <u>{ this.prettyTitle( type ) }</u> : this.prettyTitle( type ) }</h4></Row>
-			<Row>&nbsp;</Row>
-			{ this.renderTypeInfo( 'Base', last.base, prev.base ) }
-			{ this.renderTypeInfo( 'Jetpack', last.jetpack, prev.jetpack ) }
-		</Container>;
+		return (
+			<Container className="perf-button" onClick={ () => this.onSelect( type ) }>
+				<Row>
+					<h4>
+						{ this.state.selected === type ? (
+							<u>{ this.prettyTitle( type ) }</u>
+						) : (
+							this.prettyTitle( type )
+						) }
+					</h4>
+				</Row>
+				<Row>&nbsp;</Row>
+				{ this.renderTypeInfo( 'Base', last.base, prev.base ) }
+				{ this.renderTypeInfo( 'Jetpack', last.jetpack, prev.jetpack ) }
+			</Container>
+		);
 	}
 
 	renderButtons( chartData ) {
-		return <Container fluid>
-			<Row>
-				<Col sm>{ this.renderContainer( 'type', chartData.type ) }</Col>
-				<Col sm>{ this.renderContainer( 'loaded', chartData.loaded ) }</Col>
-				<Col sm>{ this.renderContainer( 'focus', chartData.focus ) }</Col>
-			</Row>
-			<Row>
-				<Col sm>{ this.renderContainer( 'inserterOpen', chartData.inserterOpen ) }</Col>
-				<Col sm>{ this.renderContainer( 'inserterHover', chartData.inserterHover ) }</Col>
-				<Col sm>{ this.renderContainer( 'inserterSearch', chartData.inserterSearch ) }</Col>
-
-			</Row>
-		</Container>;
+		return (
+			<Container fluid>
+				<Row>
+					<Col sm>{ this.renderContainer( 'type', chartData.type ) }</Col>
+					<Col sm>{ this.renderContainer( 'loaded', chartData.loaded ) }</Col>
+					<Col sm>{ this.renderContainer( 'focus', chartData.focus ) }</Col>
+				</Row>
+				<Row>
+					<Col sm>{ this.renderContainer( 'inserterOpen', chartData.inserterOpen ) }</Col>
+					<Col sm>{ this.renderContainer( 'inserterHover', chartData.inserterHover ) }</Col>
+					<Col sm>{ this.renderContainer( 'inserterSearch', chartData.inserterSearch ) }</Col>
+				</Row>
+			</Container>
+		);
 	}
 
 	render() {
@@ -224,7 +255,10 @@ export default class Performance extends React.Component {
 		return (
 			<div>
 				<h4>Editor Performance Metrics</h4>
-				<p>This examines block editor performance with and without Jetpack using the Gutenberg performance tests.</p>
+				<p>
+					This examines block editor performance with and without Jetpack using the Gutenberg
+					performance tests.
+				</p>
 				{ this.renderButtons( chartData ) }
 				{ this.renderChart( type, chartData[ type ] ) }
 			</div>

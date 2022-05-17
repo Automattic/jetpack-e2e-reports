@@ -7,11 +7,7 @@ const json = { reports: [] };
 
 for ( const dirName of getReportsDirs() ) {
 	// get the statistics from report/widgets/reports.json
-	const filePath = path.resolve(
-		'docs',
-		dirName,
-		'report/widgets/summary.json'
-	);
+	const filePath = path.resolve( 'docs', dirName, 'report/widgets/summary.json' );
 
 	let summaryData;
 	try {
@@ -44,9 +40,7 @@ for ( const dirName of getReportsDirs() ) {
 		}
 	}
 
-	const size = execSync( `du -sh docs/${ dirName } | cut -f1` )
-		.toString()
-		.replace( /\n$/, '' );
+	const size = execSync( `du -sh docs/${ dirName } | cut -f1` ).toString().replace( /\n$/, '' );
 	const report = {
 		name: dirName,
 		lastUpdate: metadata.updated_on ? metadata.updated_on : '1970-01-01',
@@ -63,12 +57,7 @@ for ( const dirName of getReportsDirs() ) {
 json.reportsCount = json.reports.length;
 
 // get the size of the docs folder
-const docsSize = execSync( 'du -sh docs | cut -f1' )
-	.toString()
-	.replace( /\n$/, '' );
+const docsSize = execSync( 'du -sh docs | cut -f1' ).toString().replace( /\n$/, '' );
 json.docsSize = docsSize;
 
-fs.writeFileSync(
-	path.resolve( 'docs/data/reports.json' ),
-	JSON.stringify( json, null, 2 )
-);
+fs.writeFileSync( path.resolve( 'docs/data/reports.json' ), JSON.stringify( json, null, 2 ) );

@@ -13,7 +13,7 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 ( async () => {
 	const srcData = { tests: [] };
 	const s3DataFiles = await listS3Objects( 'data' );
-	const testsDataFiles = s3DataFiles.filter( ( fileName ) => fileName.startsWith( 'data/tests-' ) );
+	const testsDataFiles = s3DataFiles.filter( fileName => fileName.startsWith( 'data/tests-' ) );
 
 	for ( const dataFile of testsDataFiles ) {
 		const monthSrcData = JSON.parse( ( await readS3Object( `${ dataFile }` ) ).toString() );
@@ -23,12 +23,15 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 	const dailyJson = [];
 	const weeklyJson = [];
 	const monthlyJson = [];
-	const summaryData = { stats: {
-		'24h': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-		'7d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-		'14d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-		'30d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-	}, lastUpdate: '' };
+	const summaryData = {
+		stats: {
+			'24h': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'7d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'14d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'30d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+		},
+		lastUpdate: '',
+	};
 
 	for ( const test of srcData.tests ) {
 		for ( const result of test.results ) {
@@ -40,7 +43,9 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 			pushData( weeklyJson, week, result );
 			pushData( monthlyJson, month, result );
 
-			const duration = moment.duration( moment.utc().diff( moment.utc( result.time ) ) ).as( 'days' );
+			const duration = moment
+				.duration( moment.utc().diff( moment.utc( result.time ) ) )
+				.as( 'days' );
 
 			// console.log( `${ result.time } => ${ moment.utc( result.time ).format( 'YYYY-MM-DD hh:mm:ss' ) } => ${ duration } days ago` );
 
@@ -78,7 +83,12 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 
 async function uploadData( dataFile, jsonData ) {
 	console.log( `Updating file ${ dataFile }` );
-	const cmd = new PutObjectCommand( { Bucket: s3Params.Bucket, Key: dataFile, Body: JSON.stringify( jsonData ), ContentType: 'application/json' } );
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: dataFile,
+		Body: JSON.stringify( jsonData ),
+		ContentType: 'application/json',
+	} );
 	await s3client.send( cmd );
 }
 
@@ -95,7 +105,7 @@ function updateSummaryEntry( entry, result ) {
 }
 
 function pushData( data, date, result ) {
-	let entry = data.filter( ( k ) => k.date === date );
+	let entry = data.filter( k => k.date === date );
 
 	if ( entry.length === 0 ) {
 		data.push( {
@@ -104,7 +114,7 @@ function pushData( data, date, result ) {
 			total: JSON.parse( resultsTemplate ),
 		} );
 
-		entry = data.filter( ( k ) => k.date === date );
+		entry = data.filter( k => k.date === date );
 	}
 
 	const isMaster = masterReports.includes( result.report );

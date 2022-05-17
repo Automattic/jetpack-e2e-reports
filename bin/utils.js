@@ -1,7 +1,11 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { s3client, s3Params } = require( './s3-client' );
-const { GetObjectCommand, ListObjectsCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
+const {
+	GetObjectCommand,
+	ListObjectsCommand,
+	DeleteObjectCommand,
+} = require( '@aws-sdk/client-s3' );
 
 function getReportsDirs() {
 	const excluded = require( '../src/config.json' ).ignore;
@@ -9,11 +13,8 @@ function getReportsDirs() {
 
 	return fs
 		.readdirSync( 'docs', { withFileTypes: true } )
-		.filter(
-			( dirent ) =>
-				dirent.isDirectory() && ! excluded.includes( dirent.name )
-		)
-		.map( ( dirent ) => dirent.name );
+		.filter( dirent => dirent.isDirectory() && ! excluded.includes( dirent.name ) )
+		.map( dirent => dirent.name );
 }
 
 function getFilesFromDir( dirPath, fileExtension = '' ) {
@@ -21,21 +22,18 @@ function getFilesFromDir( dirPath, fileExtension = '' ) {
 		.readdirSync( dirPath, {
 			withFileTypes: true,
 		} )
-		.filter(
-			( dirent ) =>
-				dirent.isFile() && dirent.name.endsWith( fileExtension )
-		)
-		.map( ( dirent ) => dirent.name );
+		.filter( dirent => dirent.isFile() && dirent.name.endsWith( fileExtension ) )
+		.map( dirent => dirent.name );
 }
 
 function cleanTrace( trace ) {
 	return trace
 		.split( '\n' )
-		.filter( ( line ) => ! line.includes( '=====' ) )
-		.filter( ( line ) => ! line.includes( 'Playwright logs' ) )
-		.filter( ( line ) => ! line.includes( '/node_modules/' ) )
-		.filter( ( line ) => ! line.includes( 'node:' ) )
-		.filter( ( line ) => ! line.includes( 'runMicrotasks' ) )
+		.filter( line => ! line.includes( '=====' ) )
+		.filter( line => ! line.includes( 'Playwright logs' ) )
+		.filter( line => ! line.includes( '/node_modules/' ) )
+		.filter( line => ! line.includes( 'node:' ) )
+		.filter( line => ! line.includes( 'runMicrotasks' ) )
 		.join( '\n' )
 		.replace( /\n+/g, '\n' )
 		.replace( /https:\/\/.+.a8c-localtunnel.cyou/g, 'SITE-URL' )
@@ -44,12 +42,17 @@ function cleanTrace( trace ) {
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
 		)
 		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
-		.replace( /ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs, 'ms exceeded.\n    at SearchHomepage.waitForLoadState' ); // remove multiple possible events that can happen before timeout
+		.replace(
+			/ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs,
+			'ms exceeded.\n    at SearchHomepage.waitForLoadState'
+		); // remove multiple possible events that can happen before timeout
 }
 
 function cleanError( message, trace ) {
 	if ( trace ) {
-		return trace.includes( message ) ? cleanTrace( trace ) : cleanTrace( `${ message }\n${ trace }` );
+		return trace.includes( message )
+			? cleanTrace( trace )
+			: cleanTrace( `${ message }\n${ trace }` );
 	}
 	return 'undefined';
 }
@@ -60,10 +63,7 @@ function getTestInfoFromTestCaseFile( reportName, fileName ) {
 }
 
 function writeJson( jsonData, filePath, pretty = false ) {
-	fs.writeFileSync(
-		path.resolve( filePath ),
-		JSON.stringify( jsonData, null, pretty ? 2 : 0 )
-	);
+	fs.writeFileSync( path.resolve( filePath ), JSON.stringify( jsonData, null, pretty ? 2 : 0 ) );
 }
 
 function readJson( filePath ) {
@@ -96,7 +96,7 @@ function sort( data, sortKey, desc = false ) {
  * @param {Array} arr
  */
 function cleanSources( arr ) {
-	arr.forEach( ( item ) => {
+	arr.forEach( item => {
 		if ( item.source ) {
 			const sourcePath = `docs/${ item.report }/report/data/test-cases/${ item.source }`;
 			if ( ! fs.existsSync( sourcePath ) ) {
@@ -129,12 +129,16 @@ async function readS3Object( key, silent = false ) {
 
 async function listS3Objects( prefix, delimiter = '' ) {
 	console.log( `Listing objects with prefix ${ prefix }` );
-	const cmd = new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix, Delimiter: delimiter } );
+	const cmd = new ListObjectsCommand( {
+		Bucket: s3Params.Bucket,
+		Prefix: prefix,
+		Delimiter: delimiter,
+	} );
 	let objects = [];
 
 	try {
 		const data = await s3client.send( cmd );
-		objects = data.Contents.map( ( item ) => item.Key );
+		objects = data.Contents.map( item => item.Key );
 	} catch ( err ) {
 		console.log( 'Error', err );
 	}
@@ -149,7 +153,7 @@ async function listS3Folders( prefix ) {
 
 	try {
 		const data = await s3client.send( cmd );
-		objects = data.CommonPrefixes.map( ( item ) => item.Prefix );
+		objects = data.CommonPrefixes.map( item => item.Prefix );
 	} catch ( err ) {
 		console.log( 'Error', err );
 	}
@@ -159,7 +163,9 @@ async function listS3Folders( prefix ) {
 
 async function removeS3Folder( prefix ) {
 	console.log( `Removing all files with prefix ${ prefix }` );
-	const objectsInFolder = await s3client.send( new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix } ) );
+	const objectsInFolder = await s3client.send(
+		new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix } )
+	);
 
 	for ( const { Key } of objectsInFolder.Contents ) {
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key } ) );
@@ -170,10 +176,10 @@ async function removeS3Folder( prefix ) {
 	}
 }
 
-const streamToString = ( stream ) => {
+const streamToString = stream => {
 	return new Promise( ( resolve, reject ) => {
 		const chunks = [];
-		stream.on( 'data', ( chunk ) => chunks.push( chunk ) );
+		stream.on( 'data', chunk => chunks.push( chunk ) );
 		stream.on( 'error', reject );
 		stream.on( 'end', () => resolve( Buffer.concat( chunks ).toString() ) );
 	} );
