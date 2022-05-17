@@ -160,7 +160,7 @@ export default class Failures extends BaseComponent {
 					let className = 'no-source';
 
 					if ( result.source ) {
-						const url = `${
+						const url = `${ config.reportDeepUrl }/${
 							result.report
 						}/report/#testresult/${ result.source.replace(
 							/.json/,
