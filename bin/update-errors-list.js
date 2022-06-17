@@ -38,12 +38,12 @@ if ( ! reportId ) {
 			e => e.trace === cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
-		const masterReports = require( '../src/config.json' ).masterRuns;
+		const trunkReports = require( '../src/config.json' ).trunkRuns;
 
 		const result = {
 			time: testInfo.time.stop,
 			report: reportId,
-			isMaster: masterReports.includes( reportId ),
+			isTrunk: trunkReports.includes( reportId ),
 			source: testInfo.source,
 			test: testInfo.fullName,
 		};

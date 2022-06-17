@@ -25,8 +25,8 @@ export default class BaseComponent extends React.Component {
 		} );
 	}
 
-	getMasterOnlyFilterButton() {
-		const icon = this.state.filters.isMasterOnly ? faCheckSquare : faSquare;
+	getTrunkOnlyFilterButton() {
+		const icon = this.state.filters.isTrunkOnly ? faCheckSquare : faSquare;
 
 		return (
 			<Button
@@ -36,12 +36,12 @@ export default class BaseComponent extends React.Component {
 					this.setState( prevState => ( {
 						filters: {
 							...prevState.filters,
-							isMasterOnly: ! this.state.filters.isMasterOnly,
+							isTrunkOnly: ! this.state.filters.isTrunkOnly,
 						},
 					} ) );
 				} }
 			>
-				<FontAwesomeIcon icon={ icon } /> master only
+				<FontAwesomeIcon icon={ icon } /> trunk only
 			</Button>
 		);
 	}
