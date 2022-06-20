@@ -42,12 +42,12 @@ for ( const dirName of getReportsDirs() ) {
 			e => e.trace === cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
-		const masterReports = require( '../src/config.json' ).masterRuns;
+		const trunkReports = require( '../src/config.json' ).trunkRuns;
 
 		const result = {
 			time: testInfo.time.stop,
 			report: dirName,
-			isMaster: masterReports.includes( dirName ),
+			isTrunk: trunkReports.includes( dirName ),
 			source: testInfo.source,
 			test: testInfo.fullName,
 		};

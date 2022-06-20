@@ -6,7 +6,7 @@ This repo contains a dashboard with information for Jetpack e2e tests and code t
 
 ## Accessing reports
 
-All reports are stored in an Amazon S3 bucket. Each PR gets its own report, the report ID being the number of the PR. A report is also created for all master merges. 
+All reports are stored in an Amazon S3 bucket. Each PR gets its own report, the report ID being the number of the PR. A report is also created for all trunk merges. 
 You can find all the available reports by checking the [reports list](https://automattic.github.io/jetpack-e2e-reports/).
 
 ## How it works

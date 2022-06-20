@@ -16,7 +16,7 @@ export default class Failures extends BaseComponent {
 			distinctErrors: 0,
 		},
 		filters: {
-			isMasterOnly: false,
+			isTrunkOnly: false,
 			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
@@ -68,9 +68,9 @@ export default class Failures extends BaseComponent {
 			} );
 		}
 
-		if ( this.state.filters.isMasterOnly ) {
+		if ( this.state.filters.isTrunkOnly ) {
 			errors.forEach( e => {
-				e.results = e.results.filter( r => config.masterRuns.includes( r.report ) );
+				e.results = e.results.filter( r => config.trunkRuns.includes( r.report ) );
 			} );
 		}
 
@@ -227,7 +227,7 @@ export default class Failures extends BaseComponent {
 				<hr />
 				<div className="row">{ this.getFilterByDateFields() }</div>
 				<div className="row">
-					<div className="col-sm filters">{ this.getMasterOnlyFilterButton() }</div>
+					<div className="col-sm filters">{ this.getTrunkOnlyFilterButton() }</div>
 					<div className="col-md sort-buttons">
 						{ this.getSortButtons(
 							{

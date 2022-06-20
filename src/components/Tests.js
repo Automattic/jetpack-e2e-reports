@@ -18,7 +18,7 @@ export default class Tests extends BaseComponent {
 			failedRate: 0,
 		},
 		filters: {
-			isMasterOnly: false,
+			isTrunkOnly: false,
 			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
@@ -72,9 +72,9 @@ export default class Tests extends BaseComponent {
 			} );
 		}
 
-		if ( this.state.filters.isMasterOnly ) {
+		if ( this.state.filters.isTrunkOnly ) {
 			tests.forEach( t => {
-				t.results = t.results.filter( r => config.masterRuns.includes( r.report ) );
+				t.results = t.results.filter( r => config.trunkRuns.includes( r.report ) );
 			} );
 		}
 
@@ -244,7 +244,7 @@ export default class Tests extends BaseComponent {
 				</div>
 				<hr />
 				<div className="row">
-					<div className="col-sm filters">{ this.getMasterOnlyFilterButton() }</div>
+					<div className="col-sm filters">{ this.getTrunkOnlyFilterButton() }</div>
 					<div className="col-md sort-buttons">
 						{ this.getSortButtons(
 							{

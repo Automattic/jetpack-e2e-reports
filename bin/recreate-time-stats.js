@@ -7,7 +7,7 @@ const { sort, readS3Object, listS3Objects } = require( './utils' );
 const moment = require( 'moment' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
-const masterReports = require( '../src/config.json' ).masterRuns;
+const trunkReports = require( '../src/config.json' ).trunkRuns;
 const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }';
 
 ( async () => {
@@ -25,10 +25,10 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 	const monthlyJson = [];
 	const summaryData = {
 		stats: {
-			'24h': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-			'7d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-			'14d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
-			'30d': { master: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'24h': { trunk: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'7d': { trunk: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'14d': { trunk: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
+			'30d': { trunk: JSON.parse( resultsTemplate ), total: JSON.parse( resultsTemplate ) },
 		},
 		lastUpdate: '',
 	};
@@ -93,13 +93,13 @@ async function uploadData( dataFile, jsonData ) {
 }
 
 function updateSummaryEntry( entry, result ) {
-	const isMaster = masterReports.includes( result.report );
+	const isTrunk = trunkReports.includes( result.report );
 
-	if ( isMaster ) {
-		entry.master[ result.status === 'broken' ? 'failed' : result.status ]++;
-		entry.master.total++;
+	if ( isTrunk ) {
+		entry.trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry.trunk.total++;
 	} else {
-		entry.total[ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry.trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry.total.total++;
 	}
 }
@@ -110,18 +110,18 @@ function pushData( data, date, result ) {
 	if ( entry.length === 0 ) {
 		data.push( {
 			date,
-			master: JSON.parse( resultsTemplate ),
+			trunk: JSON.parse( resultsTemplate ),
 			total: JSON.parse( resultsTemplate ),
 		} );
 
 		entry = data.filter( k => k.date === date );
 	}
 
-	const isMaster = masterReports.includes( result.report );
+	const isTrunk = trunkReports.includes( result.report );
 
-	if ( isMaster ) {
-		entry[ 0 ].master[ result.status === 'broken' ? 'failed' : result.status ]++;
-		entry[ 0 ].master.total++;
+	if ( isTrunk ) {
+		entry[ 0 ].trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry[ 0 ].trunk.total++;
 	}
 
 	entry[ 0 ].total[ result.status === 'broken' ? 'failed' : result.status ]++;

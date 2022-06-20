@@ -19,7 +19,7 @@ export default class Charts extends BaseComponent {
 		weeks: [],
 		months: [],
 		summary: {},
-		filters: { isMasterOnly: true },
+		filters: { isTrunkOnly: true },
 		isDataReady: false,
 	};
 
@@ -59,9 +59,9 @@ export default class Charts extends BaseComponent {
 		// we don't modify the original data
 		let entries = JSON.parse( JSON.stringify( rawData ) );
 
-		if ( this.state.filters.isMasterOnly ) {
+		if ( this.state.filters.isTrunkOnly ) {
 			entries = entries.map( entry => {
-				const newObj = entry.master;
+				const newObj = entry.trunk;
 				newObj.date = entry.date;
 				return newObj;
 			} );
@@ -87,9 +87,9 @@ export default class Charts extends BaseComponent {
 		// we don't modify the original data
 		const summaryData = {};
 
-		if ( this.state.filters.isMasterOnly ) {
+		if ( this.state.filters.isTrunkOnly ) {
 			Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
-				summaryData[ key ] = this.state.rawData.summaryData.stats[ key ].master;
+				summaryData[ key ] = this.state.rawData.summaryData.stats[ key ].trunk;
 			} );
 		} else {
 			Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
@@ -365,7 +365,7 @@ export default class Charts extends BaseComponent {
 		return (
 			<div>
 				<div className="row">
-					<div className="col-sm filters">{ this.getMasterOnlyFilterButton() }</div>
+					<div className="col-sm filters">{ this.getTrunkOnlyFilterButton() }</div>
 				</div>
 				<hr />
 				<div className="row">
