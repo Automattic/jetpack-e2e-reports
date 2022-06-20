@@ -6,7 +6,7 @@ This repo contains a dashboard with information for Jetpack e2e tests and code t
 
 ## Accessing reports
 
-All reports are stored in an Amazon S3 bucket. Each PR gets its own report, the report ID being the number of the PR. A report is also created for all trunk merges. 
+All reports are stored in an Amazon S3 bucket. Each PR gets its own report, the report ID being the number of the PR. A report is also created for all trunk merges.
 You can find all the available reports by checking the [reports list](https://automattic.github.io/jetpack-e2e-reports/).
 
 ## How it works
@@ -23,6 +23,7 @@ Once a day, a GitHub action runs and (re)generated some stats based on the store
 ## Cleanup
 
 A cleanup job runs daily, deleting:
+
 - full reports for pull requests that are closed
 - full reports that were not updated in the last 30 days
 - test files and attachments referencing tests that are not included in the history list (for each test we keep the last 20 results)
@@ -31,5 +32,4 @@ Only report data is deleted.
 
 ## Dashboard app
 
- The dashboard app is deployed automatically to GitHub Pages when code is pushed to the repo.
-
+The dashboard app is deployed automatically to GitHub Pages when code is pushed to the repo.
