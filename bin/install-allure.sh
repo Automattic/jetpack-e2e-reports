@@ -10,7 +10,7 @@ if [[ -z "$DESTINATION_PATH" ]]; then
 	exit 1
 fi
 
-ALLURE_VERSION=2.17.3
+ALLURE_VERSION=2.18.1
 ALLURE_DOWNLOAD_URL=https://github.com/allure-framework/allure2/releases/download/$ALLURE_VERSION/allure-$ALLURE_VERSION.zip
 
 echo "Installing Allure $ALLURE_VERSION in $DESTINATION_PATH"
