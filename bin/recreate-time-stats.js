@@ -1,5 +1,5 @@
 /**
- * This script will create per time unit statistics data files: daily, weekly and monthly. It should run on a schedule, probably on a daily basis.
+ * This script will re-create per time unit statistics data files: daily, weekly and monthly. It should run on a schedule, probably on a daily basis.
  * It reads the data from the tests-YYYY-MM.json files
  */
 
@@ -99,7 +99,7 @@ function updateSummaryEntry( entry, result ) {
 		entry.trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry.trunk.total++;
 	} else {
-		entry.trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry.total[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry.total.total++;
 	}
 }
