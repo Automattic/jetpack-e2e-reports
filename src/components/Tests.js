@@ -188,11 +188,12 @@ export default class Tests extends BaseComponent {
 	}
 
 	getTestContent( test, id ) {
+		const slug = test.name.replace( /\s/g, '-' ).toLowerCase();
 		return (
 			<div key={ id } className="test-container">
 				<div className="row">
 					<div className="col-sm-auto">
-						<h1>{ test.name }</h1>
+						<h1><a href={ "#/test/" + slug }>{ test.name }</a></h1>
 					</div>
 				</div>
 				<div className="row">

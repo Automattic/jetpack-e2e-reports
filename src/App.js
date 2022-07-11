@@ -10,6 +10,7 @@ import Tests from './components/Tests';
 import Charts from './components/Charts';
 import Failures from './components/Failures';
 import Performance from './components/Performance';
+import Test from "./components/Test";
 
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
@@ -38,11 +39,12 @@ function App() {
 				<HashRouter>
 					<Routes>
 						<Route exact path="/" element={ <Reports /> } />
-						<Route exact path="/reports" element={ <Reports /> } />
-						<Route exact path="/tests" element={ <Tests /> } />
-						<Route exact path="/failures" element={ <Failures /> } />
-						<Route exact path="/performance" element={ <Performance /> } />
-						<Route exact path="/charts" element={ <Charts /> } />
+						<Route exact path="reports" element={ <Reports /> } />
+						<Route exact path="tests" element={ <Tests /> } />
+						<Route exact path="test/:slug" element={ <Test /> } />
+						<Route exact path="failures" element={ <Failures /> } />
+						<Route exact path="performance" element={ <Performance /> } />
+						<Route exact path="charts" element={ <Charts /> } />
 					</Routes>
 				</HashRouter>
 			</div>
