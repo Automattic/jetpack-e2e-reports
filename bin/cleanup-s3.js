@@ -79,17 +79,18 @@ let testsToDelete = [];
 		// If we're here, we should call GitHub to check if the PR is still open
 		let pull;
 		try {
+			console.log( `Report ${ report } state not found in opened or closed PRs list, checking with GitHub (assuming PR)` );
 			pull = await octokit.rest.pulls.get( {
 				owner: 'Automattic',
 				repo: 'jetpack',
 				pull_number: report,
 			} );
 		} catch ( e ) {
-			console.error( `Checking state for pull request ${ report } failed: ${ e.message }` );
+			console.error( `Checking state for pull request '${ report }' failed: ${ e.message }` );
 		}
 
 		if ( pull && pull.data.state === 'closed' ) {
-			// console.log( `PR ${ report } closed, marked for deletion` );
+			console.log( `PR ${ report } closed, marked for deletion` );
 			reportsToDelete.push( report );
 		} else {
 			console.log( `I don't know what to do with ${ report }, will keep it` );
@@ -101,13 +102,18 @@ let testsToDelete = [];
 	);
 	console.groupEnd();
 
-	if ( reportsToDelete.length > 0 ) {
-		// Remove reports from reports data file
+		// Clean-up reports data file
 		console.group( '\n', 'Cleaning report.json file' );
+
+		// Getting a new list of stored reports after they were cleaned-up
+		let storedReports = await listS3Folders( 'reports/', '/' );
+		storedReports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
+
 		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 		const initialReportsCount = json.reports.length;
 
-		json.reports = json.reports.filter( report => ! reportsToDelete.includes( report.name ) );
+		// Only keep reports that are found in S3 storage
+		json.reports = json.reports.filter( report => storedReports.includes( report.name ) );
 		json.reportsCount = json.reports.length;
 		json.lastUpdate = new Date().toISOString();
 		console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
@@ -129,7 +135,6 @@ let testsToDelete = [];
 			console.groupEnd();
 		}
 		console.groupEnd();
-	}
 
 	console.group( '\n', 'Cleaning old results for remaining reports' );
 	for ( const report of reportsToClean ) {
