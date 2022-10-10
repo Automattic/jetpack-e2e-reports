@@ -23,15 +23,15 @@ const { testRule, consecutiveFailures } = require( './rules' );
 	}
 	//endregion
 
-	//region check rules
+	//region rules
 	const rules = [
 		{
 			name: 'test_rule',
-			message: testRule(),
+			impl: testRule(),
 		},
 		{
 			name: 'trunk_consecutive_failures',
-			message: consecutiveFailures( 'trunk', 3 ),
+			impl: consecutiveFailures( 'trunk', 3 ),
 		},
 	];
 	//endregion
@@ -43,12 +43,13 @@ const { testRule, consecutiveFailures } = require( './rules' );
 		return;
 	}
 
-	const message = await rule.message();
+	const { name, impl } = rule;
+	const message = await impl();
 
 	if ( message ) {
-		console.log( `Sending alert for rule '${ ruleName }'` );
+		console.log( `Sending alert for rule '${ name }'` );
 		await postMessage( slackToken, channel, message );
 	} else {
-		console.log( `No alert to send for rule '${ ruleName }'` );
+		console.log( `No alert to send for rule '${ name }'` );
 	}
 } )();
