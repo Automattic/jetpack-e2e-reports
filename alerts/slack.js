@@ -1,4 +1,7 @@
-async function postMessage( client, channel, blocks ) {
+const { WebClient } = require( '@slack/web-api' );
+
+async function postMessage( token, channel, blocks ) {
+    const client = new WebClient( token );
     let response;
             try {
                 response = await client.chat.postMessage( {
