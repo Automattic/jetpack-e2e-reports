@@ -37,29 +37,55 @@ function testRule() {
 
 async function consecutiveFailures( reportName, threshold ) {
 	console.log( `Checking for consecutive ${ threshold } failures in ${ reportName }` );
+	let message;
 
-	return [
-		{
-			type: 'section',
-			text: {
-				type: 'mrkdwn',
-				text: `*Tests in ${ reportName } failed in the last ${ threshold } runs!*`,
-			},
+	fetch( `${ dataSourceURL }/data/reports.json`, {
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
 		},
-		{
-			type: 'actions',
-			elements: [
-				{
-					type: 'button',
-					text: {
-						type: 'plain_text',
-						text: 'View reports',
-					},
-					url: `${ dataSourceURL }/reports/trunk/report/index.html`,
-				},
-			],
-		},
-	];
+	} )
+		.then( response => response.json() )
+		.then( data => {
+			const report = data.reports.find( r => r.name === reportName );
+
+			if ( report ) {
+				const history = report.history;
+				if (
+					history &&
+					history.length >= threshold &&
+					[...new Set(history.substring( history.length - threshold ))].join("").toUpperCase() === 'F'
+				) {
+					message = [
+						{
+							type: 'section',
+							text: {
+								type: 'mrkdwn',
+								text: `*Tests in ${ reportName } failed in the last ${ threshold } runs!*`,
+							},
+						},
+						{
+							type: 'actions',
+							elements: [
+								{
+									type: 'button',
+									text: {
+										type: 'plain_text',
+										text: 'View reports',
+									},
+									url: `${ dataSourceURL }/reports/trunk/report/index.html`,
+								},
+							],
+						},
+					];
+				}
+			} else {
+				console.warn( `Report ${ reportName } not found` );
+			}
+		} )
+		.catch( console.log );
+
+	return message;
 }
 
 module.exports = {
