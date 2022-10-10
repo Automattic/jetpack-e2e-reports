@@ -35,11 +35,13 @@ let json = { reports: [] };
 	};
 
 	// Create the report entry
+	const isFailed = statistic.total !== statistic.passed + statistic.skipped;
 	const report = {
 		name: reportId,
 		lastUpdate: metadata.updated_on ? metadata.updated_on : '1970-01-01',
 		statistic,
 		metadata,
+		history: isFailed ? 'F' : 'P',
 	};
 
 	console.log( report );
@@ -47,6 +49,9 @@ let json = { reports: [] };
 
 	if ( reportIndex !== -1 ) {
 		// Update the report entry in the reports list
+		if ( json.reports[ reportIndex ].history ) {
+			report.history = json.reports[ reportIndex ].history + report.history;
+		}
 		json.reports[ reportIndex ] = report;
 	} else {
 		// push new report
