@@ -1,4 +1,5 @@
 const { dataSourceURL } = require( '../src/config.json' );
+const fetch = require( 'node-fetch' );
 
 function testRule() {
 	return [
