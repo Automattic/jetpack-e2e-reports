@@ -1,6 +1,6 @@
 const { setFailed, getInput } = require( '@actions/core' );
 const { postMessage } = require( './slack' );
-const { testRule } = require( './rules' );
+const { testRule, consecutiveFailures } = require( './rules' );
 
 ( async function main() {
 	//region validate input
@@ -28,6 +28,10 @@ const { testRule } = require( './rules' );
 		{
 			name: 'test_rule',
 			message: testRule(),
+		},
+		{
+			name: 'trunk_consecutive_failures',
+			message: consecutiveFailures( 'trunk', 3 ),
 		},
 	];
 	//endregion
