@@ -24,13 +24,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies
-        run: npm install
+      - name: Build Alerts action
+        run: |
+          npm install
+        working-directory: ./alerts
 
       - name: Alerts
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
           rule_name: "test_rule"
-        run: |
-          node ./bin/index.js
+        uses: ./alerts
