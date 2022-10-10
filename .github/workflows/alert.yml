@@ -10,9 +10,6 @@ jobs:
   alert:
     name: "Send Slack alerts"
     runs-on: ubuntu-latest
-    with:
-      slack_token: ${{ secrets.SLACK_TOKEN }}
-      slack_channel: ${{ secrets.SLACK_TEST_CHANNEL_ID }}
 
     steps:
       - name: Setup Node
@@ -33,5 +30,7 @@ jobs:
 
       - name: Alert for trunk consecutive failures
         with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          slack_channel: ${{ secrets.SLACK_TEST_CHANNEL_ID }}
           rule_name: "trunk_consecutive_failures"
         uses: ./alerts
