@@ -52,6 +52,7 @@ async function consecutiveFailures( reportName, threshold ) {
 
 			if ( report ) {
 				const history = report.history;
+				console.log(`History for ${ reportName }: ${history}`);
 				if (
 					history &&
 					history.length >= threshold &&
