@@ -85,3 +85,10 @@ jobs:
           echo "::group::Update tests list"
           node ./bin/update-tests-list.js
           echo "::endgroup::"
+
+      - name: Alert for trunk consecutive failures
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
+          rule_name: "trunk_consecutive_failures"
+        uses: ./alerts

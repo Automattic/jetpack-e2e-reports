@@ -1,6 +1,6 @@
 const { setFailed, getInput } = require( '@actions/core' );
 const { postMessage } = require( './slack' );
-const { testRule } = require( './rules' );
+const { testRule, consecutiveFailures } = require( './rules' );
 
 ( async function main() {
 	//region validate input
@@ -23,11 +23,15 @@ const { testRule } = require( './rules' );
 	}
 	//endregion
 
-	//region check rules
+	//region rules
 	const rules = [
 		{
 			name: 'test_rule',
-			message: testRule(),
+			impl: testRule(),
+		},
+		{
+			name: 'trunk_consecutive_failures',
+			impl: consecutiveFailures( 'trunk', 3 ),
 		},
 	];
 	//endregion
@@ -35,15 +39,16 @@ const { testRule } = require( './rules' );
 	const rule = rules.find( ( { name } ) => name === ruleName );
 
 	if ( ! rule ) {
-		console.warn( `No rule defined for ${ ruleName }` );
+		console.warn( `No rule defined for '${ ruleName }'` );
 		return;
 	}
 
-	const message = await rule.message;
+	const message = await rule.impl;
 
 	if ( message ) {
+		console.log( `Sending alert for rule '${ ruleName }'` );
 		await postMessage( slackToken, channel, message );
 	} else {
-		console.log( `No message to send for rule ${ rule }` );
+		console.log( `No alert to send for rule '${ ruleName }'` );
 	}
 } )();
