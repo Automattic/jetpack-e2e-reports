@@ -56,7 +56,7 @@ async function consecutiveFailures( reportName, threshold ) {
 				if (
 					history &&
 					history.length >= threshold &&
-					[...new Set(history.substring( history.length - threshold ))].join("").toUpperCase() === 'FP'
+					[...new Set(history.substring( history.length - threshold ))].join("").toUpperCase() === 'PF'
 				) {
 					message = [
 						{
