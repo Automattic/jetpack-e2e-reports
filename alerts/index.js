@@ -43,13 +43,12 @@ const { testRule, consecutiveFailures } = require( './rules' );
 		return;
 	}
 
-	const { name, impl } = rule;
-	const message = await impl();
+	const message = await rule.impl;
 
 	if ( message ) {
-		console.log( `Sending alert for rule '${ name }'` );
+		console.log( `Sending alert for rule '${ ruleName }'` );
 		await postMessage( slackToken, channel, message );
 	} else {
-		console.log( `No alert to send for rule '${ name }'` );
+		console.log( `No alert to send for rule '${ ruleName }'` );
 	}
 } )();

@@ -40,7 +40,8 @@ async function consecutiveFailures( reportName, threshold ) {
 	console.log( `Checking for consecutive ${ threshold } failures in ${ reportName }` );
 	let message;
 
-	fetch( `${ dataSourceURL }/data/reports.json`, {
+	console.log( 'Fetching reports data' );
+	await fetch( `${ dataSourceURL }/data/reports.json`, {
 		headers: {
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
@@ -52,18 +53,20 @@ async function consecutiveFailures( reportName, threshold ) {
 
 			if ( report ) {
 				const history = report.history;
-				console.log(`History for ${ reportName }: ${history}`);
+				console.log( `History for '${ reportName }': ${ history }` );
 				if (
 					history &&
 					history.length >= threshold &&
-					[...new Set(history.substring( history.length - threshold ))].join("").toUpperCase() === 'PF'
+					[ ...new Set( history.substring( history.length - threshold ) ) ]
+						.join( '' )
+						.toUpperCase() === 'F'
 				) {
 					message = [
 						{
 							type: 'section',
 							text: {
 								type: 'mrkdwn',
-								text: `*Tests in ${ reportName } failed in the last ${ threshold } runs!*`,
+								text: `:exclamation: There are ${ threshold } consecutive test runs with failures in *${ reportName }*!`,
 							},
 						},
 						{
