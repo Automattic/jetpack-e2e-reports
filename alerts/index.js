@@ -48,6 +48,6 @@ const { testRule, consecutiveFailures } = require( './rules' );
 	if ( message ) {
 		await postMessage( slackToken, channel, message );
 	} else {
-		console.log( `No message to send for rule ${ rule }` );
+		console.log( `No message to send for rule ${ ruleName }` );
 	}
 } )();
