@@ -31,7 +31,7 @@ const { testRule, consecutiveFailures } = require( './rules' );
 		},
 		{
 			name: 'trunk_consecutive_failures',
-			impl: consecutiveFailures( 'trunk', 1 ),
+			impl: consecutiveFailures( 'trunk', 3 ),
 		},
 	];
 	//endregion
