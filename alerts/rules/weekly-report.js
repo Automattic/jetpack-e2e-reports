@@ -1,8 +1,6 @@
 const { dataSourceURL } = require( '../../src/config.json' );
 const { fetchJsonData } = require( '../fetch-data' );
 const moment = require( 'moment' );
-const { writeJson } = require( '../../bin/utils' );
-const path = require( 'path' );
 
 async function weeklyReport() {
 	console.log( "'Running 'weekly_report' rule'" );
@@ -28,8 +26,6 @@ async function weeklyReport() {
 				result.report === 'trunk'
 		);
 	} );
-
-	writeJson( testsData, 'trunk-7-days.json' );
 
 	const testsWithFailures = [];
 
