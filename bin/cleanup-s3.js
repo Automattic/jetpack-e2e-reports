@@ -95,7 +95,7 @@ let testsToDelete = [];
 			console.log( `PR ${ report } closed, marked for deletion` );
 			reportsToDelete.push( report );
 		} else {
-			console.log( `I don't know what to do with ${ report }, will keep it` );
+			console.log( `${ report } doesn't seem to be a closed PR, will keep it (state=${pull?.data?.state})` );
 		}
 	}
 
