@@ -1,10 +1,14 @@
 const { dataSourceURL } = require( '../../src/config.json' );
 const { fetchJsonData } = require( '../fetch-data' );
+const moment = require( 'moment' );
+const { writeJson } = require( '../../bin/utils' );
+const path = require( 'path' );
 
 async function weeklyReport() {
 	console.log( "'Running 'weekly_report' rule'" );
 
 	const summaryData = await fetchJsonData( `${ dataSourceURL }/data/summary.json` );
+	const testsData = await fetchJsonData( `${ dataSourceURL }/data/tests.json` );
 
 	const summaryContextElements = [];
 	for ( const key of Object.keys( summaryData.stats ) ) {
@@ -16,14 +20,35 @@ async function weeklyReport() {
 		} );
 	}
 
-	const testsWithFailures = ['Test one	10%', 'Test two	7%', 'Test three	2.5%'];
+	// remove results older than 7 days and not from trunk
+	testsData.tests.forEach( entry => {
+		entry.results = entry.results.filter(
+			result =>
+				moment.duration( moment.utc().diff( moment.utc( result.time ) ) ).as( 'days' ) < 7 &&
+				result.report === 'trunk'
+		);
+	} );
 
-	const message = [
+	writeJson( testsData, 'trunk-7-days.json' );
+
+	const testsWithFailures = [];
+
+	testsData.tests.forEach( entry => {
+		const failures = entry.results.filter( result => result.status === 'failed' );
+		if ( failures.length > 0 ) {
+			const rate = ( ( failures.length / entry.results.length ) * 100 ).toFixed( 2 );
+			testsWithFailures.push( { name: entry.name, rate, toString(){return `${ this.rate }%	${ this.name }`;} } );
+		}
+	} );
+
+	testsWithFailures.sort( ( a, b ) => b.rate - a.rate );
+
+	return [
 		{
 			type: 'section',
 			text: {
 				type: 'mrkdwn',
-				text: `:information_source: Weekly`,
+				text: `:information_source: End-to-end tests summary`,
 			},
 		},
 		{
@@ -35,7 +60,7 @@ async function weeklyReport() {
 			elements: [
 				{
 					type: 'mrkdwn',
-					text: `Tests with failures since last report:\n${ testsWithFailures.join('\n') }`,
+					text: `Tests with failures in the last 7 days:\n\n${ testsWithFailures.join( '\n' ) }`,
 				},
 			],
 		},
@@ -48,7 +73,7 @@ async function weeklyReport() {
 						type: 'plain_text',
 						text: 'See more',
 					},
-					url: 'https://automattic.github.io/jetpack-e2e-reports',
+					url: 'https://automattic.github.io/jetpack-e2e-reports/#/tests',
 				},
 			],
 		},
@@ -62,8 +87,6 @@ async function weeklyReport() {
 			],
 		},
 	];
-
-	return message;
 }
 
 module.exports = {
