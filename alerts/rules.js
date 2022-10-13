@@ -61,6 +61,35 @@ async function consecutiveFailures( reportName, threshold ) {
 						.join( '' )
 						.toUpperCase() === 'F'
 				) {
+					const buttons = [
+						{
+							type: 'button',
+							text: {
+								type: 'plain_text',
+								text: 'View reports',
+							},
+							url: `${ dataSourceURL }/reports/trunk/report/index.html`,
+						},
+					];
+
+					if ( process.env.RUN_ID ) {
+						buttons.push( {
+							type: 'button',
+							text: {
+								type: 'plain_text',
+								text: 'Tests run',
+							},
+							url: `https://github.com/Automattic/jetpack/actions/runs/${ process.env.RUN_ID }`,
+						} );
+					}
+
+                    let context = ' ';
+
+                    if (process.env.GITHUB_RUN_ID) {
+                        const runId = process.env.GITHUB_RUN_ID;
+                        context = `Alert created by run <https://github.com/Automattic/jetpack-e2e-reports/actions/runs/${runId} | ${runId}>`
+                    }
+
 					message = [
 						{
 							type: 'section',
@@ -69,19 +98,19 @@ async function consecutiveFailures( reportName, threshold ) {
 								text: `:exclamation: There are ${ threshold } consecutive test runs with failures in *${ reportName }*!`,
 							},
 						},
-						{
-							type: 'actions',
-							elements: [
-								{
-									type: 'button',
-									text: {
-										type: 'plain_text',
-										text: 'View reports',
-									},
-									url: `${ dataSourceURL }/reports/trunk/report/index.html`,
-								},
-							],
-						},
+                        {
+                            type: 'actions',
+                            elements: buttons,
+                        },
+                        {
+                            type: 'context',
+                            elements: [
+                                {
+                                    type: 'mrkdwn',
+                                    text: context
+                                }
+                                ],
+                        }
 					];
 				}
 			} else {

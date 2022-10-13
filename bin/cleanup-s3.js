@@ -79,7 +79,9 @@ let testsToDelete = [];
 		// If we're here, we should call GitHub to check if the PR is still open
 		let pull;
 		try {
-			console.log( `Report ${ report } state not found in opened or closed PRs list, checking with GitHub (assuming PR)` );
+			console.log(
+				`Report ${ report } state not found in opened or closed PRs list, checking with GitHub (assuming PR)`
+			);
 			pull = await octokit.rest.pulls.get( {
 				owner: 'Automattic',
 				repo: 'jetpack',
@@ -102,39 +104,39 @@ let testsToDelete = [];
 	);
 	console.groupEnd();
 
-		// Clean-up reports data file
-		console.group( '\n', 'Cleaning report.json file' );
+	// Clean-up reports data file
+	console.group( '\n', 'Cleaning report.json file' );
 
-		// Getting a new list of stored reports after they were cleaned-up
-		let storedReports = await listS3Folders( 'reports/', '/' );
-		storedReports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
+	// Getting a new list of stored reports after they were cleaned-up
+	let storedReports = await listS3Folders( 'reports/', '/' );
+	storedReports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
-		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
-		const initialReportsCount = json.reports.length;
+	const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
+	const initialReportsCount = json.reports.length;
 
-		// Only keep reports that are found in S3 storage
-		json.reports = json.reports.filter( report => storedReports.includes( report.name ) );
-		json.reportsCount = json.reports.length;
-		json.lastUpdate = new Date().toISOString();
-		console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
+	// Only keep reports that are found in S3 storage
+	json.reports = json.reports.filter( report => storedReports.includes( report.name ) );
+	json.reportsCount = json.reports.length;
+	json.lastUpdate = new Date().toISOString();
+	console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
 
-		const cmd = new PutObjectCommand( {
-			Bucket: s3Params.Bucket,
-			Key: 'data/reports.json',
-			Body: JSON.stringify( json ),
-			ContentType: 'application/json',
-		} );
-		await s3client.send( cmd );
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: 'data/reports.json',
+		Body: JSON.stringify( json ),
+		ContentType: 'application/json',
+	} );
+	await s3client.send( cmd );
+	console.groupEnd();
+
+	// Remove reports from S3 storage
+	console.group( '\n', 'Removing reports from storage' );
+	for ( const report of reportsToDelete ) {
+		console.group( '\n', `Removing report ${ report }` );
+		await removeS3Folder( `reports/${ report }` );
 		console.groupEnd();
-
-		// Remove reports from S3 storage
-		console.group( '\n', 'Removing reports from storage' );
-		for ( const report of reportsToDelete ) {
-			console.group( '\n', `Removing report ${ report }` );
-			await removeS3Folder( `reports/${ report }` );
-			console.groupEnd();
-		}
-		console.groupEnd();
+	}
+	console.groupEnd();
 
 	console.group( '\n', 'Cleaning old results for remaining reports' );
 	for ( const report of reportsToClean ) {
