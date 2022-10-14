@@ -145,7 +145,8 @@ export default class Failures extends BaseComponent {
 	getListOfFailures( results ) {
 		return (
 			<div>
-				{ results.map( ( result, id ) => {
+				{
+					results.sort( ( a, b ) => b.time - a.time ).map( ( result, id ) => {
 					let badge = moment( result.time ).format( 'MMM Do, h:mm a' );
 
 					let className = 'no-source';
