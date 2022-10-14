@@ -36,12 +36,16 @@ function cleanTrace( trace ) {
 		.filter( line => ! line.includes( 'runMicrotasks' ) )
 		.join( '\n' )
 		.replace( /\n+/g, '\n' )
+		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
 		.replace( /https:\/\/.+.a8c-localtunnel.cyou/g, 'SITE-URL' )
 		.replace(
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
 		)
-		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
+		.replace(
+			/waiting for selector "#block-.* a\[href\*=\'calypso-marketing-connections\'\]" to be visible/g,
+			'waiting for selector "#block-... a[href*=\'calypso-marketing-connections\']" to be visible'
+		)
 		.replace(
 			/ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs,
 			'ms exceeded.\n    at SearchHomepage.waitForLoadState'
