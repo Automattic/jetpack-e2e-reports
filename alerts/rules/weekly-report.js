@@ -12,10 +12,7 @@ async function weeklyReport() {
 	for ( const key of Object.keys( summaryData.stats ) ) {
 		const trunkStats = summaryData.stats[ key ].trunk;
 		const rate = ( ( trunkStats.failed / trunkStats.total ) * 100 ).toFixed( 2 );
-		summaryContextElements.push( {
-			type: 'mrkdwn',
-			text: `*${ key }*: ${ rate }%`,
-		} );
+		summaryContextElements.push( `${ key }: ${ rate }%` );
 	}
 
 	// remove results older than 7 days and not from trunk
@@ -33,32 +30,57 @@ async function weeklyReport() {
 		const failures = entry.results.filter( result => result.status === 'failed' );
 		if ( failures.length > 0 ) {
 			const rate = ( ( failures.length / entry.results.length ) * 100 ).toFixed( 2 );
-			testsWithFailures.push( { name: entry.name, rate, toString(){return `${ this.rate }%	${ this.name }`;} } );
+			testsWithFailures.push( {
+				name: entry.name,
+				rate,
+				toString() {
+					return `${ this.rate }%	${ this.name }`;
+				},
+			} );
 		}
 	} );
 
 	testsWithFailures.sort( ( a, b ) => b.rate - a.rate );
+	const testsLimit = 10;
+
+	const testsListText =
+		testsWithFailures.length > testsLimit
+			? `*${
+					testsWithFailures.length
+			  } tests failed in the last 7 days. Here are ${ testsLimit } with worst failure rates:*\n\n${ testsWithFailures
+					.slice( 0, 9 )
+					.join( '\n' ) }`
+			: `*${
+					testsWithFailures.length
+			  } tests failed in the last 7 days:*\n\n${ testsWithFailures.join( '\n' ) }`;
 
 	return [
 		{
 			type: 'section',
 			text: {
 				type: 'mrkdwn',
-				text: `:information_source: End-to-end tests summary`,
+				text: `:information_source: \tEnd-to-end tests results summary\n\n`,
 			},
 		},
 		{
-			type: 'context',
-			elements: summaryContextElements,
+			type: 'divider',
 		},
 		{
-			type: 'context',
-			elements: [
-				{
-					type: 'mrkdwn',
-					text: `Tests with failures in the last 7 days:\n\n${ testsWithFailures.join( '\n' ) }`,
-				},
-			],
+			type: 'section',
+			text: {
+				type: 'mrkdwn',
+				text: `*Failure rates:*\n${ summaryContextElements.join( '\t' ) }`,
+			},
+		},
+		{
+			type: 'divider',
+		},
+		{
+			type: 'section',
+			text: {
+				type: 'mrkdwn',
+				text: testsListText,
+			},
 		},
 		{
 			type: 'actions',
