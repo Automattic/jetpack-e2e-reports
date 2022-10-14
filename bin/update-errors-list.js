@@ -59,6 +59,7 @@ if ( ! reportId ) {
 				// This result is not in the list, we add it
 				console.log( 'Adding new result' );
 				existingError[ 0 ].results.push( result );
+				existingError.results.sort( ( a, b ) => a.time - b.time );
 			} else {
 				console.log( 'The result already exists. Nothing will be added' );
 			}
@@ -71,6 +72,7 @@ if ( ! reportId ) {
 
 			console.log( 'Creating new error entry' );
 			error.results.push( result );
+			error.results.sort( ( a, b ) => a.time - b.time );
 
 			json.errors.push( error );
 		}
