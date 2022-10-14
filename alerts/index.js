@@ -1,6 +1,8 @@
 const { setFailed, getInput } = require( '@actions/core' );
 const { postMessage } = require( './slack' );
-const { testRule, consecutiveFailures } = require( './rules' );
+const { testRule } = require( './rules/test-rule' );
+const { consecutiveFailures } = require( './rules/consecutive-failures' );
+const { weeklyReport } = require( './rules/weekly-report' );
 
 ( async function main() {
 	//region validate input
@@ -23,27 +25,18 @@ const { testRule, consecutiveFailures } = require( './rules' );
 	}
 	//endregion
 
-	//region rules
-	const rules = [
-		{
-			name: 'test_rule',
-			impl: testRule(),
-		},
-		{
-			name: 'trunk_consecutive_failures',
-			impl: consecutiveFailures( 'trunk', 3 ),
-		},
-	];
-	//endregion
+	const rules = {
+		test_rule: () => testRule(),
+		trunk_consecutive_failures: () => consecutiveFailures( 'trunk', 3 ),
+		weekly_report: () => weeklyReport(),
+	};
 
-	const rule = rules.find( ( { name } ) => name === ruleName );
-
-	if ( ! rule ) {
+	if ( ! Object.keys( rules ).find( name => name === ruleName ) ) {
 		console.warn( `No rule defined for '${ ruleName }'` );
 		return;
 	}
 
-	const message = await rule.impl;
+	const message = await rules[ ruleName ]();
 
 	if ( message ) {
 		console.log( `Sending alert for rule '${ ruleName }'` );

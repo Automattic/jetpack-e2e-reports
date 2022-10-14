@@ -1,14 +1,14 @@
-name: Test alerts
+name: Slack weekly report
 
 on:
+  schedule:
+    - cron: '0 8 * * 5' # every Friday at 8am UTC
+
   workflow_dispatch:
-  push:
-    branches:
-      - alerts-trunk-consecutive-failures
 
 jobs:
   alert:
-    name: "Send Slack alerts"
+    name: "Send Slack report"
     runs-on: ubuntu-latest
 
     steps:
@@ -28,9 +28,9 @@ jobs:
       - name: Install project dependencies
         run: npm install
 
-      - name: Alert for trunk consecutive failures
+      - name: Send report
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
-          slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
-          rule_name: "trunk_consecutive_failures"
+          slack_channel: ${{ secrets.SLACK_TEST_CHANNEL_ID }}
+          rule_name: "weekly_report"
         uses: ./alerts

@@ -95,7 +95,7 @@ let testsToDelete = [];
 			console.log( `PR ${ report } closed, marked for deletion` );
 			reportsToDelete.push( report );
 		} else {
-			console.log( `I don't know what to do with ${ report }, will keep it` );
+			console.log( `${ report } doesn't seem to be a closed PR, will keep it (state=${pull?.data?.state})` );
 		}
 	}
 
@@ -147,12 +147,35 @@ let testsToDelete = [];
 	console.groupEnd();
 
 	console.group( '\n', 'Cleaning sources for deleted results' );
+
 	console.group( '\n', 'Cleaning up tests data file' );
-	await cleanTestsSourceProperty( 'data/tests.json', 'tests' );
+	const testsJson = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
+	cleanOldResults( testsJson, 'tests', 60 );
+	cleanTestsSourceProperty( testsJson, 'tests' );
+	await s3client.send(
+		new PutObjectCommand( {
+			Bucket: s3Params.Bucket,
+			Key: 'data/tests.json',
+			Body: JSON.stringify( testsJson ),
+			ContentType: 'application/json',
+		} )
+	);
 	console.groupEnd();
+
 	console.group( '\n', 'Cleaning up errors data file' );
-	await cleanTestsSourceProperty( 'data/errors.json', 'errors' );
+	const errorsJson = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
+	cleanOldResults( errorsJson, 'errors', 180 );
+	cleanTestsSourceProperty( errorsJson, 'errors' );
+	await s3client.send(
+		new PutObjectCommand( {
+			Bucket: s3Params.Bucket,
+			Key: 'data/errors.json',
+			Body: JSON.stringify( errorsJson ),
+			ContentType: 'application/json',
+		} )
+	);
 	console.groupEnd();
+
 	console.groupEnd();
 } )();
 
@@ -213,18 +236,15 @@ async function cleanReport( report ) {
 
 /**
  * Go through all results in given data file and remove the source property for results that where deleted
- *	Expected data file structure {objectKey: [results:[{source: 'source'}]]}
+ *    Expected data file structure {objectKey: [results:[{source: 'source'}]]}
  *
- * @param {string}  dataFile s3 key of data file
- * @param  {string} objectKey
- * @return {Promise<void>}
+ * @param {Object} json      object to be cleaned
+ * @param {string} objectKey
  */
-async function cleanTestsSourceProperty( dataFile, objectKey ) {
+function cleanTestsSourceProperty( json, objectKey ) {
 	if ( testsToDelete.length === 0 && reportsToDelete.length === 0 ) {
 		return;
 	}
-
-	const json = JSON.parse( ( await readS3Object( dataFile ) ).toString() );
 
 	let removed = 0;
 	json[ objectKey ]
@@ -249,12 +269,16 @@ async function cleanTestsSourceProperty( dataFile, objectKey ) {
 	console.log( `Removed source property for ${ removed } results` );
 
 	json.lastUpdate = new Date().toISOString();
+}
 
-	const cmd = new PutObjectCommand( {
-		Bucket: s3Params.Bucket,
-		Key: dataFile,
-		Body: JSON.stringify( json ),
-		ContentType: 'application/json',
+function cleanOldResults( jsonData, objectKey, daysThreshold ) {
+	console.log( `Removing results older than ${ daysThreshold } days` );
+	jsonData[ objectKey ].forEach( entry => {
+		entry.results = entry.results.filter(
+			result =>
+				moment.duration( moment.utc().diff( moment.utc( result.time ) ) ).as( 'days' ) <
+				daysThreshold
+		);
 	} );
-	await s3client.send( cmd );
+	return jsonData;
 }
