@@ -54,7 +54,7 @@ async function consecutiveFailures( reportName, threshold ) {
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: `:exclamation: There are ${ history.length } consecutive test runs with failures in *${ reportName }*!`,
+						text: `:exclamation: There are ${ threshold } consecutive test runs with failures in *${ reportName }*!`,
 					},
 				},
 				{
