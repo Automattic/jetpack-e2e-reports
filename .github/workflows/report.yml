@@ -87,7 +87,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Alert for trunk consecutive failures
-        if: ${{ env.BRANCH == 'trunk' }}
+        if: ${{ env.BRANCH == 'trunk' && (env.REPORT_NAME != 'atomic' || env.REPORT_NAME != 'gutenberg') }}
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
