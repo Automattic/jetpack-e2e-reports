@@ -27,7 +27,7 @@ const { weeklyReport } = require( './rules/weekly-report' );
 
 	const rules = {
 		test_rule: () => testRule(),
-		trunk_consecutive_failures: () => consecutiveFailures( 'trunk', 3 ),
+		trunk_consecutive_failures: () => consecutiveFailures( 'trunk', 10 ),
 		weekly_report: () => weeklyReport(),
 	};
 
