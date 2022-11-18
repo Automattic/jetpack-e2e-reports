@@ -28,6 +28,9 @@ SCRIPT_PATH=$(
   pwd -P
 )
 
+echo
+echo "----------------------------------------"
+
 for d in "$RESULTS_PATH"/*; do
   echo "Checking for report metadata in $d"
   REPORT_ID=$(jq -r '.suite' "$d/report-metadata.json")
@@ -42,6 +45,8 @@ done
 
 s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
 REPORTS_BASE_URL=$(jq -r '.reportDeepUrl' "$SCRIPT_PATH/../src/config.json")
+
+echo "----------------------------------------"
 
 for d in "$LOCAL_REPORTS_PATH"/*; do
   REPORT_ID=$(basename "$d")
@@ -93,7 +98,8 @@ for d in "$LOCAL_REPORTS_PATH"/*; do
   echo "Copying report to S3"
   aws s3 cp "$d" "$s3_reports_path/$REPORT_ID" --recursive --only-show-errors
 
-  echo "----------------------------------------"
   echo
 done
+
+echo "----------------------------------------"
 
