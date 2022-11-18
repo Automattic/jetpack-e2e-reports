@@ -66,6 +66,7 @@ async function updateReportData( reportPath ) {
 		// Update the report entry in the reports list
 		if ( json.reports[ reportIndex ].history ) {
 			report.history = json.reports[ reportIndex ].history + report.history;
+			report.history = report.history.substring(report.history.length - 200);
 		}
 		json.reports[ reportIndex ] = report;
 	} else {
