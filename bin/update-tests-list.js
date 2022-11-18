@@ -4,31 +4,27 @@
  * It will read data from files in $reportID/report/data/test-cases
  */
 
-const { readS3Object, readJson, getFilesFromDir } = require( './utils' );
+const { readS3Object, readJson, getFilesFromDir, getLocalReportsPaths } = require( './utils' );
 const path = require( 'path' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
 const moment = require( 'moment' );
 
-const reportId = process.env.REPORT_ID;
-
-if ( ! reportId ) {
-	throw 'REPORT_ID env variable is not set';
-}
-
-async function addTestsToList( dataFile ) {
+async function addTestsToList( reportPath, dataFile ) {
 	// Get the existing tests list
 	console.log();
 	const s3Data = await readS3Object( dataFile );
 	const json = s3Data ? JSON.parse( s3Data.toString() ) : { tests: [] };
 
+	const reportId = path.basename( reportPath );
+
 	// Get the list of tests from  report/data/test-cases
-	const testFiles = getFilesFromDir( `${ reportId }/report/data/test-cases`, '.json' );
+	const testFiles = getFilesFromDir( `${ reportPath }/report/data/test-cases`, '.json' );
 	console.log( `Found ${ testFiles.length } tests` );
 
 	for ( const testFile of testFiles ) {
 		console.log( `Reading ${ testFile }` );
-		const testInfo = readJson( `${ reportId }/report/data/test-cases/${ testFile }` );
+		const testInfo = readJson( `${ reportPath }/report/data/test-cases/${ testFile }` );
 
 		const testResult = {
 			time: testInfo.time.stop,
@@ -84,10 +80,13 @@ async function addTestsToList( dataFile ) {
 }
 
 ( async () => {
-	await addTestsToList( 'data/tests.json' );
-	// Take the time when test execution ended and decide in which monthly test list to add the results
-	// We ignore the possibility of the suite to run in between months and having results in 2 months
-	const stopTime = readJson( path.join( reportId, 'report/widgets/summary.json' ) ).time.stop;
-	const monthlyFile = moment( stopTime ).format( 'YYYY-MM' );
-	await addTestsToList( `data/tests-${ monthlyFile }.json` );
+	const reports = getLocalReportsPaths();
+	for ( const reportPath of reports ) {
+		await addTestsToList( reportPath, 'data/tests.json' );
+		// Take the timestamp when test execution ended and decide in which monthly test list to add the results
+		// We ignore the possibility of the suite to run in between months and having results in 2 months
+		const stopTime = readJson( path.join( reportPath, 'report/widgets/summary.json' ) ).time.stop;
+		const monthlyFile = moment( stopTime ).format( 'YYYY-MM' );
+		await addTestsToList( reportPath, `data/tests-${ monthlyFile }.json` );
+	}
 } )();

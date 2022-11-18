@@ -4,28 +4,43 @@
  * It will read data from $reportID/report/widgets/summary.json, $reportID/metadata.json
  */
 
-const { readS3Object, readJson } = require( './utils' );
+const { readS3Object, readJson, getLocalReportsPaths } = require( './utils' );
 const path = require( 'path' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
 
-const reportId = process.env.REPORT_ID;
-
-if ( ! reportId ) {
-	throw 'REPORT_ID env variable is not set';
-}
-
+const reports = getLocalReportsPaths();
 let json = { reports: [] };
 
 ( async () => {
 	// Get the existing reports list
 	json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 
+	for ( const reportPath of reports ) {
+		await updateReportData(reportPath);
+	}
+
+	// Write the updated errors list locally
+	// writeJson( json, path.join( "", 'reports.json' ) );
+
+	// Upload the report to S3
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: 'data/reports.json',
+		Body: JSON.stringify( json, null, 2 ),
+		ContentType: 'application/json',
+	} );
+	await s3client.send( cmd );
+} )();
+
+async function updateReportData( reportPath ) {
+	const reportId = path.basename( reportPath );
+
 	// Get the report statistics from report/widgets/summary.json
-	const statistic = readJson( path.join( reportId, 'report/widgets/summary.json' ) ).statistic;
+	const statistic = readJson( path.join( reportPath, 'report/widgets/summary.json' ) ).statistic;
 
 	// Get the metadata
-	const metadata = readJson( path.join( reportId, 'metadata.json' ) ) || {
+	const metadata = readJson( path.join( reportPath, 'metadata.json' ) ) || {
 		branch: '',
 		pr_number: '',
 		pr_title: '',
@@ -60,13 +75,4 @@ let json = { reports: [] };
 
 	json.reportsCount = json.reports.length;
 	json.lastUpdate = new Date().toISOString();
-
-	// Upload the report to S3
-	const cmd = new PutObjectCommand( {
-		Bucket: s3Params.Bucket,
-		Key: 'data/reports.json',
-		Body: JSON.stringify( json, null, 2 ),
-		ContentType: 'application/json',
-	} );
-	await s3client.send( cmd );
-} )();
+}

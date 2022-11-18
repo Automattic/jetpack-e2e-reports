@@ -2,7 +2,7 @@
 
 # Required:
 # - RESULTS_PATH: Path to the test output directory
-# - REPORT_ID: The id of the report. This can be a branch name, a pull request number, or any other name
+# - REPORTS_PATH: The local path where the reports will be generated. Multiple reports can be generated in this directory, e.g. 'reports/atomic', 'reports/jetpack-production'
 
 set -eo pipefail
 
@@ -14,7 +14,12 @@ if [[ -z "$RESULTS_PATH" ]]; then
   echo "::error::RESULTS_PATH must be set"
   exit 1
 elif [[ ! -d "$RESULTS_PATH" ]]; then
-  echo "::error::'$RESULTS_PATH' does not exist or is not a directory"
+  echo "::error::'RESULTS_PATH' does not exist or is not a directory"
+  exit 1
+fi
+
+if [[ -z "$LOCAL_REPORTS_PATH" ]]; then
+  echo "::error::'LOCAL_REPORTS_PATH' is not defined"
   exit 1
 fi
 
@@ -27,7 +32,7 @@ for d in "$RESULTS_PATH"/*; do
   echo "Checking for report metadata in $d"
   REPORT_ID=$(jq -r '.suite' "$d/report-metadata.json")
   echo "Found report id: $REPORT_ID"
-  RESULTS_DIR="reports/$REPORT_ID/results"
+  RESULTS_DIR="$LOCAL_REPORTS_PATH/$REPORT_ID/results"
   echo "Creating '$RESULTS_DIR' results dir if it doesn't already exist"
   mkdir -p "$RESULTS_DIR"
   echo "Copy results from '$d/allure-results' to '$RESULTS_DIR'"
@@ -38,7 +43,7 @@ done
 s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
 REPORTS_BASE_URL=$(jq -r '.reportDeepUrl' "$SCRIPT_PATH/../src/config.json")
 
-for d in reports/*; do
+for d in "$LOCAL_REPORTS_PATH"/*; do
   REPORT_ID=$(basename "$d")
   echo "Creating report '$REPORT_ID'"
   RESULTS_PATH="$d/results"
@@ -71,6 +76,11 @@ for d in reports/*; do
   rm -rf "$RESULTS_PATH"
 
   echo "Writing metadata to file"
+
+  if [ "$CLIENT_PAYLOAD" == "" ]; then
+    CLIENT_PAYLOAD={}
+  fi
+
   echo "$CLIENT_PAYLOAD" | jq --arg updateDate "$(date +"%Y-%m-%dT%H:%M:%S%z")" '. + {"updated_on":$updateDate}' >"$d/metadata.json"
   cat "$d/metadata.json"
 
