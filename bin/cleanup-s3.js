@@ -104,6 +104,15 @@ let testsToDelete = [];
 	);
 	console.groupEnd();
 
+	// Remove reports from S3 storage
+	console.group( '\n', 'Removing reports from storage' );
+	for ( const report of reportsToDelete ) {
+		console.group( '\n', `Removing report ${ report }` );
+		await removeS3Folder( `reports/${ report }` );
+		console.groupEnd();
+	}
+	console.groupEnd();
+
 	// Clean-up reports data file
 	console.group( '\n', 'Cleaning report.json file' );
 
@@ -127,15 +136,6 @@ let testsToDelete = [];
 		ContentType: 'application/json',
 	} );
 	await s3client.send( cmd );
-	console.groupEnd();
-
-	// Remove reports from S3 storage
-	console.group( '\n', 'Removing reports from storage' );
-	for ( const report of reportsToDelete ) {
-		console.group( '\n', `Removing report ${ report }` );
-		await removeS3Folder( `reports/${ report }` );
-		console.groupEnd();
-	}
 	console.groupEnd();
 
 	console.group( '\n', 'Cleaning old results for remaining reports' );
