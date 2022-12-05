@@ -26,9 +26,10 @@ const { weeklyReport } = require( './rules/weekly-report' );
 	//endregion
 
 	const rules = {
-		test_rule: () => testRule(),
-		trunk_consecutive_failures: () => consecutiveFailures( 'trunk', 10 ),
-		weekly_report: () => weeklyReport(),
+		test_rule: async () => await testRule(),
+		consecutive_failures_trunk: async () => await consecutiveFailures('trunk', 10),
+		consecutive_failures_jetpack_production: async () => await consecutiveFailures('jetpack-production', 10),
+		weekly_report: async () => await weeklyReport(),
 	};
 
 	if ( ! Object.keys( rules ).find( name => name === ruleName ) ) {
