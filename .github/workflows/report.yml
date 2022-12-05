@@ -115,10 +115,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Set rule name
+        run: echo "RULE_NAME=consecutive_failures_${env.REPORT_NAME//-/_}" >> $GITHUB_ENV
+
       - name: Alert for consecutive failures
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
-          rule_name: "consecutive_failures_${{ env.REPORT_NAME }}"
+          rule_name: ${{ env.RULE_NAME }}
         uses: ./alerts
 
