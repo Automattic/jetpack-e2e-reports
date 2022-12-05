@@ -28,7 +28,9 @@ const { weeklyReport } = require( './rules/weekly-report' );
 	const rules = {
 		test_rule: async () => await testRule(),
 		consecutive_failures_trunk: async () => await consecutiveFailures('trunk', 10),
-		consecutive_failures_jetpack_production: async () => await consecutiveFailures('jetpack-production', 10),
+		consecutive_failures_jetpack_production: async () => await consecutiveFailures('jetpack-production', 5),
+		consecutive_failures_atomic: async () => await consecutiveFailures('atomic', 5),
+		consecutive_failures_gutenberg: async () => await consecutiveFailures('gutenberg', 5),
 		weekly_report: async () => await weeklyReport(),
 	};
 
