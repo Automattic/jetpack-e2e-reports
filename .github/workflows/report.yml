@@ -92,7 +92,8 @@ jobs:
       - name: "Output reports matrix"
         id: reports-matrix
         run: |
-          echo "::set-output name=matrix::$(ls -m ${{ env.LOCAL_REPORTS_PATH }})"
+          MATRIX="$(ls -m ${{ env.LOCAL_REPORTS_PATH }} | jq -Rnc 'inputs | split(", ")')"
+          echo "::set-output name=matrix::$MATRIX"
 
   alerts:
     name: "Alerts for ${{ matrix.report }}"
