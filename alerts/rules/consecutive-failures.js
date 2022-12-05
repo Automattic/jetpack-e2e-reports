@@ -3,7 +3,7 @@ const { fetchJsonData } = require( '../fetch-data' );
 
 async function consecutiveFailures( reportName, threshold ) {
 	console.log( `Running 'trunk_consecutive_failures' rule` );
-	console.log( `Checking for consecutive ${ threshold } failures in ${ reportName }` );
+	console.log( `Checking for ${ threshold } consecutive failures in ${ reportName }` );
 
 	let message;
 
@@ -54,7 +54,7 @@ async function consecutiveFailures( reportName, threshold ) {
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: `:exclamation: There are ${ threshold } consecutive test runs with failures in *${ reportName }*!`,
+						text: `:exclamation: There are ${ threshold } consecutive test runs with failures in report *${ reportName }*!`,
 					},
 				},
 				{
