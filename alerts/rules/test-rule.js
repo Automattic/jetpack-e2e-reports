@@ -1,4 +1,4 @@
-function testRule() {
+async function testRule() {
 	console.log("Running test rule");
 
 	return [

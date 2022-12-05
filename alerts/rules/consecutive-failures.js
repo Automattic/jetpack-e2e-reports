@@ -5,11 +5,6 @@ async function consecutiveFailures( reportName, threshold ) {
 	console.log( `Running 'trunk_consecutive_failures' rule` );
 	console.log( `Checking for consecutive ${ threshold } failures in ${ reportName }` );
 
-	if(process.env.REPORT_NAME === 'atomic' || process.env.REPORT_NAME === 'gutenberg') {
-		console.log( `Skipping for report ${process.env.REPORT_NAME}` );
-		return;
-	}
-
 	let message;
 
 	console.log( 'Fetching reports data' );
