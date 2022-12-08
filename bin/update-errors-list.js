@@ -55,12 +55,9 @@ async function updateErrorsData( reportPath ) {
 			e => e.trace === cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
-		const trunkReports = require( '../src/config.json' ).trunkRuns;
-
 		const result = {
 			time: testInfo.time.stop,
 			report: reportId,
-			isTrunk: trunkReports.includes( reportId ),
 			source: testInfo.source,
 			test: testInfo.fullName,
 		};
