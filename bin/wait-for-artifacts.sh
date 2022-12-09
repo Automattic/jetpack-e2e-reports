@@ -13,7 +13,7 @@ if [[ -z "$REPOSITORY" ]]; then
 fi
 
 get_artifacts_count() {
-  curl -s https://api.github.com/repos/$REPOSITORY/actions/runs/$RUN_ID/artifacts | jq '.total_count'
+  curl -s https://api.github.com/repos/Automattic/jetpack/actions/runs/$RUN_ID/artifacts | jq '.total_count'
 }
 
 ARTEFACTS_COUNT=$( get_artifacts_count )

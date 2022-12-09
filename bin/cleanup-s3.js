@@ -79,20 +79,23 @@ let testsToDelete = [];
 		// If we're here, we should call GitHub to check if the PR is still open
 		let pull;
 		try {
+			console.log(
+				`Report ${ report } state not found in opened or closed PRs list, checking with GitHub (assuming PR)`
+			);
 			pull = await octokit.rest.pulls.get( {
 				owner: 'Automattic',
 				repo: 'jetpack',
 				pull_number: report,
 			} );
 		} catch ( e ) {
-			console.error( `Checking state for pull request ${ report } failed: ${ e.message }` );
+			console.error( `Checking state for pull request '${ report }' failed: ${ e.message }` );
 		}
 
 		if ( pull && pull.data.state === 'closed' ) {
-			// console.log( `PR ${ report } closed, marked for deletion` );
+			console.log( `PR ${ report } closed, marked for deletion` );
 			reportsToDelete.push( report );
 		} else {
-			console.log( `I don't know what to do with ${ report }, will keep it` );
+			console.log( `${ report } doesn't seem to be a closed PR, will keep it (state=${pull?.data?.state})` );
 		}
 	}
 
@@ -101,35 +104,39 @@ let testsToDelete = [];
 	);
 	console.groupEnd();
 
-	if ( reportsToDelete.length > 0 ) {
-		// Remove reports from reports data file
-		console.group( '\n', 'Cleaning report.json file' );
-		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
-		const initialReportsCount = json.reports.length;
-
-		json.reports = json.reports.filter( report => ! reportsToDelete.includes( report.name ) );
-		json.reportsCount = json.reports.length;
-		json.lastUpdate = new Date().toISOString();
-		console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
-
-		const cmd = new PutObjectCommand( {
-			Bucket: s3Params.Bucket,
-			Key: 'data/reports.json',
-			Body: JSON.stringify( json ),
-			ContentType: 'application/json',
-		} );
-		await s3client.send( cmd );
-		console.groupEnd();
-
-		// Remove reports from S3 storage
-		console.group( '\n', 'Removing reports from storage' );
-		for ( const report of reportsToDelete ) {
-			console.group( '\n', `Removing report ${ report }` );
-			await removeS3Folder( `reports/${ report }` );
-			console.groupEnd();
-		}
+	// Remove reports from S3 storage
+	console.group( '\n', 'Removing reports from storage' );
+	for ( const report of reportsToDelete ) {
+		console.group( '\n', `Removing report ${ report }` );
+		await removeS3Folder( `reports/${ report }` );
 		console.groupEnd();
 	}
+	console.groupEnd();
+
+	// Clean-up reports data file
+	console.group( '\n', 'Cleaning report.json file' );
+
+	// Getting a new list of stored reports after they were cleaned-up
+	let storedReports = await listS3Folders( 'reports/', '/' );
+	storedReports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
+
+	const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
+	const initialReportsCount = json.reports.length;
+
+	// Only keep reports that are found in S3 storage
+	json.reports = json.reports.filter( report => storedReports.includes( report.name ) );
+	json.reportsCount = json.reports.length;
+	json.lastUpdate = new Date().toISOString();
+	console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
+
+	const cmd = new PutObjectCommand( {
+		Bucket: s3Params.Bucket,
+		Key: 'data/reports.json',
+		Body: JSON.stringify( json ),
+		ContentType: 'application/json',
+	} );
+	await s3client.send( cmd );
+	console.groupEnd();
 
 	console.group( '\n', 'Cleaning old results for remaining reports' );
 	for ( const report of reportsToClean ) {
@@ -140,12 +147,35 @@ let testsToDelete = [];
 	console.groupEnd();
 
 	console.group( '\n', 'Cleaning sources for deleted results' );
+
 	console.group( '\n', 'Cleaning up tests data file' );
-	await cleanTestsSourceProperty( 'data/tests.json', 'tests' );
+	const testsJson = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
+	cleanOldResults( testsJson, 'tests', 60 );
+	cleanTestsSourceProperty( testsJson, 'tests' );
+	await s3client.send(
+		new PutObjectCommand( {
+			Bucket: s3Params.Bucket,
+			Key: 'data/tests.json',
+			Body: JSON.stringify( testsJson ),
+			ContentType: 'application/json',
+		} )
+	);
 	console.groupEnd();
+
 	console.group( '\n', 'Cleaning up errors data file' );
-	await cleanTestsSourceProperty( 'data/errors.json', 'errors' );
+	const errorsJson = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
+	cleanOldResults( errorsJson, 'errors', 180 );
+	cleanTestsSourceProperty( errorsJson, 'errors' );
+	await s3client.send(
+		new PutObjectCommand( {
+			Bucket: s3Params.Bucket,
+			Key: 'data/errors.json',
+			Body: JSON.stringify( errorsJson ),
+			ContentType: 'application/json',
+		} )
+	);
 	console.groupEnd();
+
 	console.groupEnd();
 } )();
 
@@ -206,18 +236,15 @@ async function cleanReport( report ) {
 
 /**
  * Go through all results in given data file and remove the source property for results that where deleted
- *	Expected data file structure {objectKey: [results:[{source: 'source'}]]}
+ *    Expected data file structure {objectKey: [results:[{source: 'source'}]]}
  *
- * @param {string}  dataFile s3 key of data file
- * @param  {string} objectKey
- * @return {Promise<void>}
+ * @param {Object} json      object to be cleaned
+ * @param {string} objectKey
  */
-async function cleanTestsSourceProperty( dataFile, objectKey ) {
+function cleanTestsSourceProperty( json, objectKey ) {
 	if ( testsToDelete.length === 0 && reportsToDelete.length === 0 ) {
 		return;
 	}
-
-	const json = JSON.parse( ( await readS3Object( dataFile ) ).toString() );
 
 	let removed = 0;
 	json[ objectKey ]
@@ -242,12 +269,16 @@ async function cleanTestsSourceProperty( dataFile, objectKey ) {
 	console.log( `Removed source property for ${ removed } results` );
 
 	json.lastUpdate = new Date().toISOString();
+}
 
-	const cmd = new PutObjectCommand( {
-		Bucket: s3Params.Bucket,
-		Key: dataFile,
-		Body: JSON.stringify( json ),
-		ContentType: 'application/json',
+function cleanOldResults( jsonData, objectKey, daysThreshold ) {
+	console.log( `Removing results older than ${ daysThreshold } days` );
+	jsonData[ objectKey ].forEach( entry => {
+		entry.results = entry.results.filter(
+			result =>
+				moment.duration( moment.utc().diff( moment.utc( result.time ) ) ).as( 'days' ) <
+				daysThreshold
+		);
 	} );
-	await s3client.send( cmd );
+	return jsonData;
 }

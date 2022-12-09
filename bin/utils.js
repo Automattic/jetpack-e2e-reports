@@ -36,12 +36,16 @@ function cleanTrace( trace ) {
 		.filter( line => ! line.includes( 'runMicrotasks' ) )
 		.join( '\n' )
 		.replace( /\n+/g, '\n' )
+		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
 		.replace( /https:\/\/.+.a8c-localtunnel.cyou/g, 'SITE-URL' )
 		.replace(
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
 		)
-		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
+		.replace(
+			/waiting for selector "#block-.* a\[href\*=\'calypso-marketing-connections\'\]" to be visible/g,
+			'waiting for selector "#block-... a[href*=\'calypso-marketing-connections\']" to be visible'
+		)
 		.replace(
 			/ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs,
 			'ms exceeded.\n    at SearchHomepage.waitForLoadState'
@@ -191,6 +195,24 @@ function printProgress( progress ) {
 	process.stdout.write( progress );
 }
 
+/**
+ * Find any folders in a path defined in REPORTS_PATH environment variable path and return their paths
+ *
+ * @return {*[]} array of paths
+ */
+function getLocalReportsPaths() {
+	const reportsPath = process.env.LOCAL_REPORTS_PATH;
+
+	if ( ! reportsPath ) {
+		throw 'LOCAL_REPORTS_PATH env variable is not set';
+	}
+
+	return fs
+		.readdirSync( reportsPath, { withFileTypes: true } )
+		.filter( d => d.isDirectory() )
+		.map( d => path.join(reportsPath, d.name) );
+}
+
 module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
@@ -206,4 +228,5 @@ module.exports = {
 	listS3Folders,
 	removeS3Folder,
 	printProgress,
+	getLocalReportsPaths
 };

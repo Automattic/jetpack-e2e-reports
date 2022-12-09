@@ -1,11 +1,12 @@
 const fs = require( 'fs' );
-const { cleanTrace, writeJson } = require( '../utils' );
+const { cleanTrace, writeJson, printProgress } = require( '../utils' );
 
-const dataFile = 'docs/data/errors.json';
+const dataFile = './public/data/errors.json';
 const json = JSON.parse( fs.readFileSync( dataFile ).toString() );
 
 const mergedErrors = [];
 
+let checked = 0;
 for ( const error of json.errors ) {
 	error.trace = cleanTrace( error.trace );
 
@@ -16,6 +17,9 @@ for ( const error of json.errors ) {
 	} else {
 		mergedErrors.push( error );
 	}
+
+	checked++;
+	printProgress( `Checked ${ checked } errors` );
 }
 
 // ensure unique results for each error
@@ -32,6 +36,8 @@ for ( const error of mergedErrors ) {
 	total += error.results.length - unique.length;
 	error.results = unique;
 }
+
+console.log();
 console.log( total );
 
 console.log( `Merged errors: ${ json.errors.length - mergedErrors.length }` );

@@ -2,7 +2,7 @@ name: Report
 
 on:
   repository_dispatch:
-    types: [e2e]
+    types: [e2e**]
 
   workflow_dispatch:
     inputs:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   report:
-    name: "Create new test report"
+    name: "Create test report"
     runs-on: ubuntu-latest
     env:
       PR_NUMBER: ${{ github.event.client_payload.pr_number }}
@@ -22,6 +22,9 @@ jobs:
       BRANCH: ${{ github.event.client_payload.branch }}
       REPORT_NAME: ${{ github.event.client_payload.report_name }}
       CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+      LOCAL_REPORTS_PATH: reports
+    outputs:
+      matrix: ${{ steps.reports-matrix.outputs.matrix }}
 
     steps:
       - name: Setup Node
@@ -58,7 +61,7 @@ jobs:
       - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
-          repo: ${{ env.REPOSITORY }}
+          repo: Automattic/jetpack
           workflow: e2e-tests.yml
           workflow_conclusion: "completed"
           run_id: ${{ env.RUN_ID }}
@@ -85,3 +88,41 @@ jobs:
           echo "::group::Update tests list"
           node ./bin/update-tests-list.js
           echo "::endgroup::"
+
+      - name: "Output reports matrix"
+        id: reports-matrix
+        run: |
+          MATRIX="$(ls -m ${{ env.LOCAL_REPORTS_PATH }} | jq -Rnc 'inputs | split(", ")')"
+          echo "::set-output name=matrix::$MATRIX"
+
+  alerts:
+    if: ${{ github.event.client_payload.pr_number == '' }}
+    name: "Alerts for ${{ matrix.report }}"
+    runs-on: ubuntu-latest
+    needs: report
+    strategy:
+      matrix:
+        report: ${{ fromJson(needs.report.outputs.matrix) }}
+    env:
+      REPORT_NAME: ${{ matrix.report }}
+
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set rule name
+        run: echo "RULE_NAME=consecutive_failures_${REPORT_NAME//-/_}" >> $GITHUB_ENV
+
+      - name: Run ${{ env.RULE_NAME }} rule
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
+          rule_name: ${{ env.RULE_NAME }}
+        uses: ./alerts
+

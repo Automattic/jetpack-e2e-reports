@@ -1,0 +1,36 @@
+name: Slack weekly report
+
+on:
+  schedule:
+    - cron: '0 8 * * 5' # every Friday at 8am UTC
+
+  workflow_dispatch:
+
+jobs:
+  alert:
+    name: "Send Slack report"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Send report
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          slack_channel: ${{ secrets.SLACK_CHANNEL_ID }}
+          rule_name: "weekly_report"
+        uses: ./alerts
