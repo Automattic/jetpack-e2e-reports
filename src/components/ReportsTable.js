@@ -129,8 +129,8 @@ export default class ReportsTable extends React.Component {
 			reportTitle = `${ metadata.pr_title } ${ prNumber }`;
 		}
 
-		const branchUrl = `https://github.com/Automattic/jetpack/tree/${ metadata.branch }`;
-		const prUrl = `https://github.com/Automattic/jetpack/pull/${ metadata.pr_number }`;
+		const branchUrl = `https://github.com/${ metadata.repository }/tree/${ metadata.branch }`;
+		const prUrl = `https://github.com/${ metadata.repository }/pull/${ metadata.pr_number }`;
 
 		let statusIcon = faQuestion;
 		let statusClassName = 'warning';
