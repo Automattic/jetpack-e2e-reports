@@ -21,6 +21,13 @@ const reportsToClean = [];
 let testsToDelete = [];
 const reportAgeThresholdInDays = 30;
 
+const plus = String.fromCodePoint( 0x2795 );
+const done = String.fromCodePoint( 0x2714 );
+const remove = String.fromCodePoint( 0x267b );
+const question = String.fromCodePoint( 0x2753 );
+const problem = String.fromCodePoint( 0x2757 );
+const clean = String.fromCodePoint( 0x1F9F9 );
+
 ( async () => {
 	const closedPRs = await octokit.rest.pulls.list( {
 		owner: 'Automattic',
@@ -48,7 +55,7 @@ const reportAgeThresholdInDays = 30;
 
 		// Skip folders that should be ignored
 		if ( config.ignore.includes( report ) ) {
-			console.log( `${ report } is in ignore list, skipping` );
+			console.log( `${ done } ${ report } is in ignore list, skipping` );
 
 			console.groupEnd();
 			continue;
@@ -56,7 +63,7 @@ const reportAgeThresholdInDays = 30;
 
 		// Permanent reports should not be removed, only old results should be cleaned
 		if ( config.permanent.includes( report ) ) {
-			console.log( `${ report } is a permanent report, marking for cleaning` );
+			console.log( `${ plus } ${ report } is a permanent report, marking for cleaning` );
 			// console.log( `Report ${ report } is permanent, will check for old results` );
 			reportsToClean.push( report );
 
@@ -66,7 +73,7 @@ const reportAgeThresholdInDays = 30;
 
 		// Report for a closed PR should be removed
 		if ( closed.includes( report ) ) {
-			console.log( `PR ${ report } is closed, marking report for deletion` );
+			console.log( `${ plus } PR ${ report } is closed, marking report for deletion` );
 			reportsToDelete.push( report );
 
 			console.groupEnd();
@@ -97,7 +104,7 @@ const reportAgeThresholdInDays = 30;
 			}
 
 			if ( pull?.data?.state === 'closed' ) {
-				console.log( `PR ${ report } closed, marking report for deletion` );
+				console.log( `${ plus } PR ${ report } closed, marking report for deletion` );
 				reportsToDelete.push( report );
 
 				console.groupEnd();
@@ -122,7 +129,7 @@ const reportAgeThresholdInDays = 30;
 	// Remove reports from S3 storage
 	console.group( '\n', 'Removing reports from storage' );
 	for ( const report of reportsToDelete ) {
-		console.group( '\n', `Removing report ${ report }` );
+		console.group( '\n', `${ remove } Removing report ${ report }` );
 		await removeS3Folder( `reports/${ report }` );
 		console.groupEnd();
 	}
@@ -142,7 +149,7 @@ const reportAgeThresholdInDays = 30;
 	json.reports = json.reports.filter( report => storedReports.includes( report.name ) );
 	json.reportsCount = json.reports.length;
 	json.lastUpdate = new Date().toISOString();
-	console.log( `Removed ${ initialReportsCount - json.reports.length } reports` );
+	console.log( `${ clean } Removed ${ initialReportsCount - json.reports.length } reports` );
 
 	const cmd = new PutObjectCommand( {
 		Bucket: s3Params.Bucket,
@@ -195,7 +202,7 @@ const reportAgeThresholdInDays = 30;
 } )();
 
 async function checkReportAge( report ) {
-	console.log( `Checking age of ${ report } report` );
+	console.log( `${ question } Checking age of ${ report } report` );
 
 	const metadata = await getJSONFromS3( `reports/${ report }/metadata.json`, true );
 
@@ -206,14 +213,14 @@ async function checkReportAge( report ) {
 
 	if ( duration > reportAgeThresholdInDays ) {
 		console.log(
-			`Report is older than ${ reportAgeThresholdInDays } days (${ duration }), marking for deletion`
+			`${ plus } Report is older than ${ reportAgeThresholdInDays } days (${ duration }), marking for deletion`
 		);
 		reportsToDelete.push( report );
 		return;
 	}
 
 	// console.log( `PR ${ report } is still open, will check for old results` );
-	console.log( `Report is ${ duration } days old, marking for cleaning of old results` );
+	console.log( `${ plus } Report is ${ duration } days old, marking for cleaning of old results` );
 	reportsToClean.push( report );
 }
 
@@ -221,7 +228,7 @@ async function cleanReport( report ) {
 	const history = await getJSONFromS3( `reports/${ report }/report/history/history.json`, true );
 
 	if ( ! history ) {
-		console.warn( `There was an error reading history data found for report ${ report }` );
+		console.warn( `${ problem } There was an error reading history data found for report ${ report }` );
 		return;
 	}
 
@@ -237,7 +244,7 @@ async function cleanReport( report ) {
 	}
 
 	if ( ! shouldClean.some( el => el === true ) ) {
-		console.log( `All tests in the report have less than 20 results, cleaning is not necessary` );
+		console.log( `${ done } All tests in the report have less than 20 results, cleaning is not necessary` );
 		return;
 	}
 
@@ -275,7 +282,7 @@ async function cleanReport( report ) {
 	}
 
 	console.log(
-		`Deleted ${ attachmentsToDelete.length } attachments and ${ testsToDelete.length } test result files`
+		`${ clean } Deleted ${ attachmentsToDelete.length } attachments and ${ testsToDelete.length } test result files`
 	);
 }
 
@@ -311,7 +318,7 @@ function cleanTestsSourceProperty( json, objectKey ) {
 			}
 		} );
 
-	console.log( `Removed source property for ${ removed } results` );
+	console.log( `${ clean } Removed source property for ${ removed } results` );
 
 	json.lastUpdate = new Date().toISOString();
 }
