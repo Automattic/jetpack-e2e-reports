@@ -141,8 +141,9 @@ async function listS3Objects( prefix, delimiter = '' ) {
 	const objects = [];
 	let truncated = true;
 	let pageMarker;
+	let page = 1;
 
-	while ( truncated ) {
+	while ( truncated && page < 10 ) {
 		try {
 			console.log(`Listing objects with prefix ${ prefix } and marker ${ pageMarker }` );
 			const data = await s3client.send( new ListObjectsCommand( bucketParams ) );
@@ -152,6 +153,7 @@ async function listS3Objects( prefix, delimiter = '' ) {
 			if ( truncated ) {
 				pageMarker = data.Contents.slice( -1 )[ 0 ].Key;
 				bucketParams.Marker = pageMarker;
+				page++;
 			}
 		} catch ( err ) {
 			console.log( 'Error', err );

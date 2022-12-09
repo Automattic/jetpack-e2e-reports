@@ -264,11 +264,14 @@ async function cleanReport( report ) {
 	);
 
 	testsToDelete = testIds.filter( testId => ! testsToKeep.includes( testId ) );
+	console.log( `Found ${ testsToDelete.length } tests to delete` );
 
 	let attachmentsToDelete = [];
-	for ( const testId of testsToDelete ) {
+	for ( let i = 0; i < testsToDelete.length; i++ ) {
+		printProgress( 'Checking each test file for attachments', i, testsToDelete.length );
+
 		const testInfo = await getJSONFromS3(
-			`reports/${ report }/report/data/test-cases/${ testId }.json`,
+			`reports/${ report }/report/data/test-cases/${ testsToDelete[ i ] }.json`,
 			true
 		);
 		if ( testInfo.testStage && testInfo.testStage.attachments ) {
@@ -277,18 +280,27 @@ async function cleanReport( report ) {
 			);
 		}
 	}
+	console.log();
 
-	for ( const attachmentSource of attachmentsToDelete ) {
-		const key = `reports/${ report }/report/data/attachments/${ attachmentSource }`;
+	for ( let i = 0; i < attachmentsToDelete.length; i++ ) {
+		printProgress(
+			`Cleaning attachments (${ attachmentsToDelete.length })`,
+			i,
+			attachmentsToDelete.length
+		);
+		const key = `reports/${ report }/report/data/attachments/${ attachmentsToDelete[ i ] }`;
 		// console.log( `Removing attachment ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
+	console.log();
 
-	for ( const testId of testsToDelete ) {
-		const key = `reports/${ report }/report/data/test-cases/${ testId }.json`;
+	for ( let i = 0; i < testsToDelete.length; i++ ) {
+		printProgress( `Cleaning test files (${ testsToDelete.length })`, i, testsToDelete.length );
+		const key = `reports/${ report }/report/data/test-cases/${ testsToDelete[ i ] }.json`;
 		// console.log( `Removing test result ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
+	console.log();
 
 	console.log(
 		`${ clean } Deleted ${ attachmentsToDelete.length } attachments and ${ testsToDelete.length } test result files`
@@ -342,4 +354,11 @@ function cleanOldResults( jsonData, objectKey, daysThreshold ) {
 		);
 	} );
 	return jsonData;
+}
+
+function printProgress( line, i, total ) {
+	const progress = Math.round( ( i / ( total - 1 ) ) * 100 );
+	if ( i % 50 === 0 || progress === 100 ) {
+		process.stdout.write( `${ line }: ${ progress }%\r` );
+	}
 }
