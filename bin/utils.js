@@ -180,6 +180,16 @@ async function removeS3Folder( prefix ) {
 	}
 }
 
+async function getJSONFromS3( key, silent = false ) {
+	try {
+		const content = ( await readS3Object( key, silent ) ).toString();
+		return JSON.parse( content );
+	} catch ( err ) {
+		console.error( err );
+		return null;
+	}
+}
+
 const streamToString = stream => {
 	return new Promise( ( resolve, reject ) => {
 		const chunks = [];
@@ -210,7 +220,7 @@ function getLocalReportsPaths() {
 	return fs
 		.readdirSync( reportsPath, { withFileTypes: true } )
 		.filter( d => d.isDirectory() )
-		.map( d => path.join(reportsPath, d.name) );
+		.map( d => path.join( reportsPath, d.name ) );
 }
 
 module.exports = {
@@ -228,5 +238,6 @@ module.exports = {
 	listS3Folders,
 	removeS3Folder,
 	printProgress,
-	getLocalReportsPaths
+	getLocalReportsPaths,
+	getJSONFromS3,
 };

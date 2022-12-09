@@ -2,7 +2,13 @@
  * This script will clean old reports and reports for closed PRs
  */
 
-const { readS3Object, listS3Folders, removeS3Folder, listS3Objects } = require( './utils' );
+const {
+	readS3Object,
+	listS3Folders,
+	removeS3Folder,
+	listS3Objects,
+	getJSONFromS3,
+} = require( './utils' );
 const { s3Params, s3client } = require( './s3-client' );
 const { Octokit } = require( '@octokit/rest' );
 const { PutObjectCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
@@ -13,6 +19,7 @@ const octokit = new Octokit();
 const reportsToDelete = [];
 const reportsToClean = [];
 let testsToDelete = [];
+const reportAgeThresholdInDays = 30;
 
 ( async () => {
 	const closedPRs = await octokit.rest.pulls.list( {
@@ -37,9 +44,13 @@ let testsToDelete = [];
 	reports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
 	for ( const report of reports ) {
+		console.group( '\n', `Checking report ${ report }` );
+
 		// Skip folders that should be ignored
 		if ( config.ignore.includes( report ) ) {
 			console.log( `${ report } is in ignore list, skipping` );
+
+			console.groupEnd();
 			continue;
 		}
 
@@ -48,6 +59,8 @@ let testsToDelete = [];
 			console.log( `${ report } is a permanent report, marking for cleaning` );
 			// console.log( `Report ${ report } is permanent, will check for old results` );
 			reportsToClean.push( report );
+
+			console.groupEnd();
 			continue;
 		}
 
@@ -55,23 +68,25 @@ let testsToDelete = [];
 		if ( closed.includes( report ) ) {
 			console.log( `PR ${ report } is closed, marking report for deletion` );
 			reportsToDelete.push( report );
+
+			console.groupEnd();
 			continue;
 		}
 
 		// Report for an open PR should be checked for age
 		if ( open.includes( report ) ) {
-			console.log( `PR ${ report } is still open, checking for age` );
+			console.log( `PR ${ report } is still open` );
 			await checkReportAge( report, reportsToDelete, reportsToClean );
+
+			console.groupEnd();
 			continue;
 		}
 
 		// If the report is possibly for a PR (name is only numbers), check if it's closed
-		if( report.match( /^\d+$/ ) ) {
+		if ( report.match( /^\d+$/ ) ) {
 			let pull;
 			try {
-				console.log(
-					`Assuming ${ report } is a report for a pull request, checking PR state`
-				);
+				console.log( `Assuming ${ report } is a report for a pull request, checking PR state` );
 				pull = await octokit.rest.pulls.get( {
 					owner: 'Automattic',
 					repo: 'jetpack',
@@ -84,6 +99,8 @@ let testsToDelete = [];
 			if ( pull?.data?.state === 'closed' ) {
 				console.log( `PR ${ report } closed, marking report for deletion` );
 				reportsToDelete.push( report );
+
+				console.groupEnd();
 				continue;
 			} else {
 				console.log(
@@ -94,6 +111,7 @@ let testsToDelete = [];
 
 		// If we're still here it means the report is not for a closed PR, so we'll check for age
 		await checkReportAge( report, reportsToDelete, reportsToClean );
+		console.groupEnd();
 	}
 
 	console.log(
@@ -177,40 +195,50 @@ let testsToDelete = [];
 } )();
 
 async function checkReportAge( report ) {
-	console.log( `Checking ${ report } report for age` );
-	const metadata = JSON.parse(
-		( await readS3Object( `reports/${ report }/metadata.json`, true ) ).toString()
-	);
+	console.log( `Checking age of ${ report } report` );
+
+	const metadata = await getJSONFromS3( `reports/${ report }/metadata.json`, true );
+
 	const duration = moment
 		.duration( moment.utc().diff( moment.utc( metadata.updated_on ) ) )
-		.as( 'days' );
+		.as( 'days' )
+		.toFixed( 1 );
 
-	if ( duration > 30 ) {
-		console.log( `Report ${ report } is older than 30 days (${ duration }), marking for deletion` );
+	if ( duration > reportAgeThresholdInDays ) {
+		console.log(
+			`Report is older than ${ reportAgeThresholdInDays } days (${ duration }), marking for deletion`
+		);
 		reportsToDelete.push( report );
 		return;
 	}
 
 	// console.log( `PR ${ report } is still open, will check for old results` );
+	console.log( `Report is ${ duration } days old, marking for cleaning of old results` );
 	reportsToClean.push( report );
 }
 
 async function cleanReport( report ) {
-	const historyData = await readS3Object( `reports/${ report }/report/history/history.json`, true );
+	const history = await getJSONFromS3( `reports/${ report }/report/history/history.json`, true );
 
-	if ( ! historyData ) {
+	if ( ! history ) {
 		console.warn( `There was an error reading history data found for report ${ report }` );
 		return;
 	}
 
-	const history = JSON.parse( historyData.toString() );
-
 	let testsToKeep = [];
+	const shouldClean = [];
 
-	// eslint-disable-next-line no-unused-vars
-	for ( const [ key, value ] of Object.entries( history ) ) {
+	for ( const [ , value ] of Object.entries( history ) ) {
 		const testIds = value.items.map( item => item.uid );
 		testsToKeep = testsToKeep.concat( testIds );
+		if ( testsToKeep.length >= 20 ) {
+			shouldClean.push( true );
+		}
+	}
+
+	if ( ! shouldClean.some( el => el === true ) ) {
+		console.log( `All tests in the report have less than 20 results, cleaning is not necessary` );
+		return;
 	}
 
 	const testFiles = await listS3Objects( `reports/${ report }/report/data/test-cases` );
