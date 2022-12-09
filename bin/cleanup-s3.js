@@ -11,11 +11,10 @@ const moment = require( 'moment' );
 const octokit = new Octokit();
 
 const reportsToDelete = [];
+const reportsToClean = [];
 let testsToDelete = [];
 
 ( async () => {
-	const reportsToClean = [];
-
 	const closedPRs = await octokit.rest.pulls.list( {
 		owner: 'Automattic',
 		repo: 'jetpack',
@@ -38,65 +37,63 @@ let testsToDelete = [];
 	reports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
 	for ( const report of reports ) {
+		// Skip folders that should be ignored
 		if ( config.ignore.includes( report ) ) {
 			console.log( `${ report } is in ignore list, skipping` );
 			continue;
 		}
 
+		// Permanent reports should not be removed, only old results should be cleaned
+		if ( config.permanent.includes( report ) ) {
+			console.log( `${ report } is a permanent report, marking for cleaning` );
+			// console.log( `Report ${ report } is permanent, will check for old results` );
+			reportsToClean.push( report );
+			continue;
+		}
+
+		// Report for a closed PR should be removed
 		if ( closed.includes( report ) ) {
 			console.log( `PR ${ report } is closed, marking report for deletion` );
 			reportsToDelete.push( report );
 			continue;
 		}
 
+		// Report for an open PR should be checked for age
 		if ( open.includes( report ) ) {
-			const metadata = JSON.parse(
-				( await readS3Object( `reports/${ report }/metadata.json`, true ) ).toString()
-			);
-			const duration = moment
-				.duration( moment.utc().diff( moment.utc( metadata.updated_on ) ) )
-				.as( 'days' );
+			console.log( `PR ${ report } is still open, checking for age` );
+			await checkReportAge( report, reportsToDelete, reportsToClean );
+			continue;
+		}
 
-			if ( duration > 30 ) {
+		// If the report is possibly for a PR (name is only numbers), check if it's closed
+		if( report.match( /^\d+$/ ) ) {
+			let pull;
+			try {
 				console.log(
-					`Report ${ report } is older than 30 days (${ duration }), marking for deletion`
+					`Assuming ${ report } is a report for a pull request, checking PR state`
 				);
-				reportsToDelete.push( report );
-				continue;
+				pull = await octokit.rest.pulls.get( {
+					owner: 'Automattic',
+					repo: 'jetpack',
+					pull_number: report,
+				} );
+			} catch ( e ) {
+				console.error( `Checking state for pull request '${ report }' failed: ${ e.message }` );
 			}
 
-			// console.log( `PR ${ report } is still open, will check for old results` );
-			reportsToClean.push( report );
-			continue;
+			if ( pull?.data?.state === 'closed' ) {
+				console.log( `PR ${ report } closed, marking report for deletion` );
+				reportsToDelete.push( report );
+				continue;
+			} else {
+				console.log(
+					`${ report } doesn't seem to be a closed PR, will keep it (state=${ pull?.data?.state })`
+				);
+			}
 		}
 
-		if ( config.permanent.includes( report ) ) {
-			// console.log( `Report ${ report } is permanent, will check for old results` );
-			reportsToClean.push( report );
-			continue;
-		}
-
-		// If we're here, we should call GitHub to check if the PR is still open
-		let pull;
-		try {
-			console.log(
-				`Report ${ report } state not found in opened or closed PRs list, checking with GitHub (assuming PR)`
-			);
-			pull = await octokit.rest.pulls.get( {
-				owner: 'Automattic',
-				repo: 'jetpack',
-				pull_number: report,
-			} );
-		} catch ( e ) {
-			console.error( `Checking state for pull request '${ report }' failed: ${ e.message }` );
-		}
-
-		if ( pull && pull.data.state === 'closed' ) {
-			console.log( `PR ${ report } closed, marked for deletion` );
-			reportsToDelete.push( report );
-		} else {
-			console.log( `${ report } doesn't seem to be a closed PR, will keep it (state=${pull?.data?.state})` );
-		}
+		// If we're still here it means the report is not for a closed PR, so we'll check for age
+		await checkReportAge( report, reportsToDelete, reportsToClean );
 	}
 
 	console.log(
@@ -178,6 +175,25 @@ let testsToDelete = [];
 
 	console.groupEnd();
 } )();
+
+async function checkReportAge( report ) {
+	console.log( `Checking ${ report } report for age` );
+	const metadata = JSON.parse(
+		( await readS3Object( `reports/${ report }/metadata.json`, true ) ).toString()
+	);
+	const duration = moment
+		.duration( moment.utc().diff( moment.utc( metadata.updated_on ) ) )
+		.as( 'days' );
+
+	if ( duration > 30 ) {
+		console.log( `Report ${ report } is older than 30 days (${ duration }), marking for deletion` );
+		reportsToDelete.push( report );
+		return;
+	}
+
+	// console.log( `PR ${ report } is still open, will check for old results` );
+	reportsToClean.push( report );
+}
 
 async function cleanReport( report ) {
 	const historyData = await readS3Object( `reports/${ report }/report/history/history.json`, true );
