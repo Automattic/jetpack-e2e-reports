@@ -207,6 +207,7 @@ async function cleanReport( report ) {
 
 	let testsToKeep = [];
 
+	// eslint-disable-next-line no-unused-vars
 	for ( const [ key, value ] of Object.entries( history ) ) {
 		const testIds = value.items.map( item => item.uid );
 		testsToKeep = testsToKeep.concat( testIds );
