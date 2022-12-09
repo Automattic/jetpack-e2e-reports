@@ -23,7 +23,6 @@ const reportAgeThresholdInDays = 30;
 
 const plus = String.fromCodePoint( 0x2795 );
 const done = String.fromCodePoint( 0x2714 );
-const remove = String.fromCodePoint( 0x267b );
 const question = String.fromCodePoint( 0x2753 );
 const problem = String.fromCodePoint( 0x2757 );
 const clean = String.fromCodePoint( 0x1f9f9 );
@@ -135,7 +134,7 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 	// Remove reports from S3 storage
 	console.group( '\n', 'Removing reports from storage' );
 	for ( const report of reportsToDelete ) {
-		console.group( '\n', `${ remove } Removing report ${ report }` );
+		console.group( '\n', `Removing report ${ report }` );
 		await removeS3Folder( `reports/${ report }` );
 		console.groupEnd();
 	}
@@ -268,7 +267,7 @@ async function cleanReport( report ) {
 
 	let attachmentsToDelete = [];
 	for ( let i = 0; i < testsToDelete.length; i++ ) {
-		printProgress( 'Checking each test file for attachments', i, testsToDelete.length );
+		printProgress( '\t\t\tChecking each test file for attachments', i, testsToDelete.length );
 
 		const testInfo = await getJSONFromS3(
 			`reports/${ report }/report/data/test-cases/${ testsToDelete[ i ] }.json`,
@@ -280,11 +279,13 @@ async function cleanReport( report ) {
 			);
 		}
 	}
-	console.log();
+	if ( testsToDelete.length > 0 ) {
+		console.log();
+	}
 
 	for ( let i = 0; i < attachmentsToDelete.length; i++ ) {
 		printProgress(
-			`Cleaning attachments (${ attachmentsToDelete.length })`,
+			`\t\t\tCleaning attachments (${ attachmentsToDelete.length })`,
 			i,
 			attachmentsToDelete.length
 		);
@@ -292,15 +293,19 @@ async function cleanReport( report ) {
 		// console.log( `Removing attachment ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
-	console.log();
+	if ( attachmentsToDelete.length > 0 ) {
+		console.log();
+	}
 
 	for ( let i = 0; i < testsToDelete.length; i++ ) {
-		printProgress( `Cleaning test files (${ testsToDelete.length })`, i, testsToDelete.length );
+		printProgress( `\t\t\tCleaning test files (${ testsToDelete.length })`, i, testsToDelete.length );
 		const key = `reports/${ report }/report/data/test-cases/${ testsToDelete[ i ] }.json`;
 		// console.log( `Removing test result ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
 	}
-	console.log();
+	if ( testsToDelete.length > 0 ) {
+		console.log();
+	}
 
 	console.log(
 		`${ clean } Deleted ${ attachmentsToDelete.length } attachments and ${ testsToDelete.length } test result files`
