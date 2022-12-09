@@ -20,7 +20,9 @@ export default class Test extends BaseComponent {
 
 	async componentDidMount() {
 		this.setState( {
-			rawData:  await fetchJsonData( `${ config.dataSourceURL }/data/tests/dedicated-sync-flow.json` )
+			rawData: await fetchJsonData(
+				`${ config.dataSourceURL }/data/tests/dedicated-sync-flow.json`
+			),
 		} );
 
 		this.setState( { days: this.filterData( this.state.rawData.stats.daily ) } );
@@ -88,10 +90,10 @@ export default class Test extends BaseComponent {
 		}
 
 		Object.keys( summaryData ).forEach( key => {
-			summaryData[ key ].failureRate = summaryData[ key ].total > 0 ? (
-				( summaryData[ key ].failed / summaryData[ key ].total ) *
-				100
-			).toFixed( 2 ) : 0;
+			summaryData[ key ].failureRate =
+				summaryData[ key ].total > 0
+					? ( ( summaryData[ key ].failed / summaryData[ key ].total ) * 100 ).toFixed( 2 )
+					: 0;
 		} );
 
 		return summaryData;
@@ -347,6 +349,20 @@ export default class Test extends BaseComponent {
 		};
 	}
 
+	listResults() {
+		console.log( this.state.rawData.results );
+
+		const reports = this.state.rawData.results.map( ( result, id ) => {
+			return (
+				<ul key={ id }>
+					<li>{ result.report }</li>
+				</ul>
+			);
+		} );
+
+		return <div>{ reports }</div>;
+	}
+
 	render() {
 		if ( ! this.state.isDataReady ) {
 			return null;
@@ -419,6 +435,7 @@ export default class Test extends BaseComponent {
 				<hr />
 				<ReactEcharts option={ this.monthlyChartOptions() } />
 				<hr />
+				{ this.listResults() }
 			</div>
 		);
 	}
