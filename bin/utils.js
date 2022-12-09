@@ -132,19 +132,31 @@ async function readS3Object( key, silent = false ) {
 }
 
 async function listS3Objects( prefix, delimiter = '' ) {
-	console.log( `Listing objects with prefix ${ prefix }` );
-	const cmd = new ListObjectsCommand( {
+	const bucketParams = {
 		Bucket: s3Params.Bucket,
 		Prefix: prefix,
 		Delimiter: delimiter,
-	} );
-	let objects = [];
+	};
 
-	try {
-		const data = await s3client.send( cmd );
-		objects = data.Contents.map( item => item.Key );
-	} catch ( err ) {
-		console.log( 'Error', err );
+	const objects = [];
+	let truncated = true;
+	let pageMarker;
+
+	while ( truncated ) {
+		try {
+			console.log(`Listing objects with prefix ${ prefix } and marker ${ pageMarker }` );
+			const data = await s3client.send( new ListObjectsCommand( bucketParams ) );
+			objects.push( ...data.Contents.map( item => item.Key ) );
+
+			truncated = data.IsTruncated;
+			if ( truncated ) {
+				pageMarker = data.Contents.slice( -1 )[ 0 ].Key;
+				bucketParams.Marker = pageMarker;
+			}
+		} catch ( err ) {
+			console.log( 'Error', err );
+			truncated = false;
+		}
 	}
 
 	return objects;

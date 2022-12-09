@@ -26,9 +26,15 @@ const done = String.fromCodePoint( 0x2714 );
 const remove = String.fromCodePoint( 0x267b );
 const question = String.fromCodePoint( 0x2753 );
 const problem = String.fromCodePoint( 0x2757 );
-const clean = String.fromCodePoint( 0x1F9F9 );
+const clean = String.fromCodePoint( 0x1f9f9 );
 
 ( async () => {
+	// If a REPORT env exists, clean up that single report and exit
+	if ( process.env.REPORT ) {
+		await cleanReport( process.env.REPORT );
+		return;
+	}
+
 	const closedPRs = await octokit.rest.pulls.list( {
 		owner: 'Automattic',
 		repo: 'jetpack',
@@ -228,7 +234,9 @@ async function cleanReport( report ) {
 	const history = await getJSONFromS3( `reports/${ report }/report/history/history.json`, true );
 
 	if ( ! history ) {
-		console.warn( `${ problem } There was an error reading history data found for report ${ report }` );
+		console.warn(
+			`${ problem } There was an error reading history data found for report ${ report }`
+		);
 		return;
 	}
 
@@ -244,7 +252,9 @@ async function cleanReport( report ) {
 	}
 
 	if ( ! shouldClean.some( el => el === true ) ) {
-		console.log( `${ done } All tests in the report have less than 20 results, cleaning is not necessary` );
+		console.log(
+			`${ done } All tests in the report have less than 20 results, cleaning is not necessary`
+		);
 		return;
 	}
 
@@ -257,10 +267,9 @@ async function cleanReport( report ) {
 
 	let attachmentsToDelete = [];
 	for ( const testId of testsToDelete ) {
-		const testInfo = JSON.parse(
-			(
-				await readS3Object( `reports/${ report }/report/data/test-cases/${ testId }.json`, true )
-			 ).toString()
+		const testInfo = await getJSONFromS3(
+			`reports/${ report }/report/data/test-cases/${ testId }.json`,
+			true
 		);
 		if ( testInfo.testStage && testInfo.testStage.attachments ) {
 			attachmentsToDelete = attachmentsToDelete.concat(
