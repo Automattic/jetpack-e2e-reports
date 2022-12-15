@@ -27,7 +27,7 @@ async function consecutiveFailures( reportName, threshold ) {
 						type: 'plain_text',
 						text: 'View reports',
 					},
-					url: `${ dataSourceURL }/reports/trunk/report/index.html`,
+					url: `${ dataSourceURL }/reports/${ reportName }/report/index.html`,
 				},
 			];
 
