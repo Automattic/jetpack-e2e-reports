@@ -1,6 +1,7 @@
 const { dataSourceURL } = require( '../../src/config.json' );
 const { fetchJsonData } = require( '../fetch-data' );
 const moment = require( 'moment' );
+const trunkReports = require( '../../src/config.json' ).trunkRuns;
 
 async function weeklyReport() {
 	console.log( "'Running 'weekly_report' rule'" );
@@ -20,7 +21,7 @@ async function weeklyReport() {
 		entry.results = entry.results.filter(
 			result =>
 				moment.duration( moment.utc().diff( moment.utc( result.time ) ) ).as( 'days' ) < 7 &&
-				result.report === 'trunk'
+				trunkReports.includes( result.report )
 		);
 	} );
 
