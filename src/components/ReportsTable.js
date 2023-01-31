@@ -105,14 +105,14 @@ export default class ReportsTable extends React.Component {
 	}
 
 	getReportRow( report, id ) {
-		const { statistic, metadata } = report; //destructuring
+		const { statistic, metadata, history } = report; //destructuring
 		const isFailed = statistic.total !== statistic.passed + statistic.skipped;
 		return (
 			<tr key={ id }>
 				<td className={ 'reportNameCell' }>
 					{ this.getReportLinkCell( report, metadata, isFailed, statistic.total ) }
 				</td>
-				<td>{ this.getTestResultsCell( statistic ) }</td>
+				<td>{ this.getTestResultsCell( statistic ) } { this.getTestResultsHistoryCell( history ) }</td>
 				<td>{ this.getMetadataCell( report ) }</td>
 			</tr>
 		);
@@ -190,6 +190,14 @@ export default class ReportsTable extends React.Component {
 		} );
 
 		return <div>{ counts }</div>;
+	}
+
+	getTestResultsHistoryCell( history ) {
+		const formattedHistory = history.slice(-10).split('').map( ( item, id ) => {
+			const statusClass = item === 'F' ? 'failed' : 'passed';
+			return (<span key={ id } className={ `label label-status-${statusClass}` }>{ item }</span>)
+		});
+		return <div>{ formattedHistory }</div>;
 	}
 
 	getMetadataCell( report ) {
