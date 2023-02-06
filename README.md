@@ -18,7 +18,7 @@ The reports are generated using [Allure](http://allure.qatools.ru) framework. Al
 
 ## Stats
 
-After each report gets generated the report details and all tests results are stored in json data files. These data files are used by the dashboard to display data.
+After each report gets generated the report details and all tests results are also pushed in json data files. These data files are used by the dashboard to display data.
 Once a day, a GitHub action runs and (re)generates some stats based on the stored results (see [Stats](https://automattic.github.io/jetpack-e2e-reports/#/charts)).
 
 ## Cleanup
