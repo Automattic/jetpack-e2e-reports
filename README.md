@@ -12,7 +12,7 @@ You can find all the available reports by checking the [reports list](https://au
 
 All reports are stored in an Amazon S3 bucket, in the `reports` folder.
 
-The tests run in [Jetpack monorepo](https://github.com/Automattic/jetpack) CI. At the end of the E2E tests job suite a repository dispatch event is sent to this repo with all the required information about the test run, triggering the report workflow.
+The tests run in [Jetpack monorepo](https://github.com/Automattic/jetpack) CI. The monorepo job sends a repository dispatch event to this repo with all the required information about the test run, triggering the report workflow.
 
 The reports are generated using [Allure](http://allure.qatools.ru) framework. Allure results in json format are being created by the tests and are stored as artefacts in GitHub after each test run. The workflow in this repo will download the artefacts, use the results to generate a new report and then push the results and the newly generated report in the configured S3 bucket.
 
