@@ -10,7 +10,7 @@ You can find all the available reports by checking the [reports list](https://au
 
 ## How it works
 
-All reports are stored in an Amazon S3 bucket.
+All reports are stored in an Amazon S3 bucket, in the `reports` folder.
 
 The tests run in [Jetpack monorepo](https://github.com/Automattic/jetpack) CI. At the end of the E2E tests job suite a repository dispatch event is sent to this repo with all the required information about the test run, triggering the report workflow.
 
@@ -20,6 +20,8 @@ The reports are generated using [Allure](http://allure.qatools.ru) framework. Al
 
 After each report gets generated the report details and all tests results are also pushed in json data files. These data files are used by the dashboard to display data.
 Once a day, a GitHub action runs and (re)generates some stats based on the stored results (see [Stats](https://automattic.github.io/jetpack-e2e-reports/#/charts)).
+
+All data files are stored in the `data` folder in the S3 bucket.
 
 You can refer to the [scripts docs](bin/readme.md) for more information.
 

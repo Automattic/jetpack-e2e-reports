@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# This script generates a report from the Allure results in the RESULTS_PATH directory and uploads it to S3.
 # Required:
 # - RESULTS_PATH: Path to the test output directory
 # - REPORTS_PATH: The local path where the reports will be generated. Multiple reports can be generated in this directory, e.g. 'reports/atomic', 'reports/jetpack-production'
