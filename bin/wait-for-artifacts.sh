@@ -19,7 +19,7 @@ get_artifacts_count() {
 ARTEFACTS_COUNT=$( get_artifacts_count )
 
 i=1
-while [ $i -le 18 ] && [ "$ARTEFACTS_COUNT" == 0 ]
+while [ $i -le 24 ] && [ "$ARTEFACTS_COUNT" == 0 ]
 do
   echo "Found artifacts: $ARTEFACTS_COUNT"
   echo "Waiting for artifacts to be available ($i)"
