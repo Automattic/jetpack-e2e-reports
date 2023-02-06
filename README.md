@@ -21,16 +21,30 @@ The reports are generated using [Allure](http://allure.qatools.ru) framework. Al
 After each report gets generated the report details and all tests results are also pushed in json data files. These data files are used by the dashboard to display data.
 Once a day, a GitHub action runs and (re)generates some stats based on the stored results (see [Stats](https://automattic.github.io/jetpack-e2e-reports/#/charts)).
 
+You can refer to the [scripts docs](bin/readme.md) for more information.
+
+## Permanent reports
+
+Most reports are only temporary, usually for a PR, and will be deleted after a while. But there are also permanent reports, that will never be deleted. These are configured in the [config](src/config.json) file. 
+
+## Trunk runs
+
+There are some statistics displayed by branch, more specifically by the branch being the main one or a feature one. The reports that are created for a main branch are configured in the config file as `trunkRuns`.
+
 ## Cleanup
 
-A cleanup job runs daily, deleting:
+A cleanup job runs on a schedule, deleting:
 
 - full reports for pull requests that are closed
 - full reports that were not updated in the last 60 days
 - test files and attachments referencing tests that are not included in the history list (for each test we keep the last 20 results, as Allure only displays the last 20 results).
 
-Some reports are configured as "permanent", and they are never fully deleted, only their old results are being cleaned.
+The permanent reports are never fully deleted, they're only cleaned of old results.
 
 ## Dashboard app
 
 The dashboard app is deployed automatically to GitHub Pages when code is pushed to the repo.
+
+## Slack alerts
+
+Some Slack alerts are sent for events like a specific number of consecutive failures for a given report. You can refer to the [alerts docs](alerts/readme.md) for more information. 
