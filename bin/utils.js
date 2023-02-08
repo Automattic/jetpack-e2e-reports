@@ -47,6 +47,14 @@ function cleanTrace( trace ) {
 			'waiting for selector "#block-... a[href*=\'calypso-marketing-connections\']" to be visible'
 		)
 		.replace(
+			/partner_id=\S+/g,
+			'partner_id=***'
+		)
+		.replace(
+			/partner_secret=\S+/g,
+			'partner_secret=***'
+		)
+		.replace(
 			/ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs,
 			'ms exceeded.\n    at SearchHomepage.waitForLoadState'
 		); // remove multiple possible events that can happen before timeout
