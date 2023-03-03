@@ -33,8 +33,7 @@ const { weeklyReport } = require( './rules/weekly-report' );
 		consecutive_failures_jetpack_social_plugin: async () => await consecutiveFailures('jetpack-social-plugin', 5),
 		consecutive_failures_jetpack_search_plugin: async () => await consecutiveFailures('jetpack-search-plugin', 5),
 		consecutive_failures_atomic: async () => await consecutiveFailures('atomic', 5),
-		// TODO: Re-enable this alert once Jetpack #29113 is merged.
-		// consecutive_failures_gutenberg: async () => await consecutiveFailures('gutenberg', 5),
+		consecutive_failures_gutenberg: async () => await consecutiveFailures('gutenberg', 5),
 		weekly_report: async () => await weeklyReport(),
 	};
 
