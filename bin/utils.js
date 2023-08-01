@@ -189,16 +189,21 @@ async function listS3Folders( prefix ) {
 
 async function removeS3Folder( prefix ) {
 	console.log( `Removing all files with prefix ${ prefix }` );
-	const objectsInFolder = await s3client.send(
-		new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix } )
-	);
 
-	for ( const { Key } of objectsInFolder.Contents ) {
-		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key } ) );
-	}
+	try {
+		const objectsInFolder = await s3client.send(
+			new ListObjectsCommand( { Bucket: s3Params.Bucket, Prefix: prefix } )
+		);
 
-	if ( objectsInFolder.IsTruncated ) {
+		for ( const { Key } of objectsInFolder.Contents ) {
+			await s3client.send(new DeleteObjectCommand({Bucket: s3Params.Bucket, Key}));
+		}
+
+		if ( objectsInFolder.IsTruncated ) {
 		await removeS3Folder( prefix );
+		}
+	} catch ( err ) {
+		console.log( 'Error', err );
 	}
 }
 
