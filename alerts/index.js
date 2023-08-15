@@ -33,6 +33,7 @@ const { weeklyReport } = require( './rules/weekly-report' );
 		consecutive_failures_jetpack_social_plugin: async () => await consecutiveFailures('jetpack-social-plugin', 5),
 		consecutive_failures_jetpack_search_plugin: async () => await consecutiveFailures('jetpack-search-plugin', 5),
 		consecutive_failures_atomic: async () => await consecutiveFailures('atomic', 5),
+		consecutive_failures_vip: async () => await consecutiveFailures('vip', 5),
 		consecutive_failures_gutenberg: async () => await consecutiveFailures('gutenberg', 5),
 		weekly_report: async () => await weeklyReport(),
 	};
