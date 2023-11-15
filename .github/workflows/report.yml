@@ -28,15 +28,15 @@ jobs:
 
     steps:
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Parse event information
         run: ./bin/set-event-data.sh
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -93,7 +93,7 @@ jobs:
         id: reports-matrix
         run: |
           MATRIX="$(ls -m ${{ env.LOCAL_REPORTS_PATH }} | jq -Rnc 'inputs | split(", ")')"
-          echo "::set-output name=matrix::$MATRIX"
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
 
   alerts:
     if: ${{ github.event.client_payload.pr_number == '' }}
@@ -108,10 +108,10 @@ jobs:
 
     steps:
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: npm install
