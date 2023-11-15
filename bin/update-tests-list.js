@@ -58,7 +58,7 @@ async function addTestsToList( reportPath, dataFile ) {
 				`Adding test ${ testInfo.fullName } with result ${ JSON.stringify( testResult ) }`
 			);
 			const test = {
-				name: testInfo.name,
+				name: testInfo.fullName,
 				results: [ testResult ],
 			};
 
