@@ -95,16 +95,6 @@ jobs:
           MATRIX="$(ls -m ${{ env.LOCAL_REPORTS_PATH }} | jq -Rnc 'inputs | split(", ")')"
           echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
 
-  run_cleanup:
-    needs: report
-    name: "Start the cleanup workflow"
-    runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Run cleanup workflow
-        run: gh workflow run cleanup.yml
-
   alerts:
     if: ${{ github.event.client_payload.pr_number == '' }}
     name: "Alerts for ${{ matrix.report }}"
