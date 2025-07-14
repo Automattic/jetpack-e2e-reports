@@ -17,7 +17,7 @@ let json = { reports: [] };
 	json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 
 	for ( const reportPath of reports ) {
-		await updateReportData(reportPath);
+		await updateReportData( reportPath );
 	}
 
 	// Write the updated errors list locally
@@ -64,13 +64,15 @@ async function updateReportData( reportPath ) {
 
 	if ( reportIndex !== -1 ) {
 		// Update the report entry in the reports list
+		console.log( `Updating report entry ${ reportId }` );
 		if ( json.reports[ reportIndex ].history ) {
 			report.history = json.reports[ reportIndex ].history + report.history;
-			report.history = report.history.substring(report.history.length - 200);
+			report.history = report.history.substring( report.history.length - 200 );
 		}
 		json.reports[ reportIndex ] = report;
 	} else {
 		// push new report
+		console.log( `Creating new report entry ${ reportId }` );
 		json.reports.push( report );
 	}
 
