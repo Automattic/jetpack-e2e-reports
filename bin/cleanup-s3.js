@@ -1,5 +1,13 @@
 /**
  * This script will clean old reports and reports for closed PRs
+ *
+ * Usage:
+ *   node ./bin/cleanup-s3.js [options]
+ *
+ * Options:
+ *   --skipGitHubStatus    Skip GitHub API calls for fetching PR status and checking individual PRs
+ *   --report <name>       Clean up only the specified report and exit
+ *   --jsonOnly            Skip checking reports on storage and only clean the data files
  */
 
 const {
@@ -16,6 +24,13 @@ const config = require( '../src/config.json' );
 const moment = require( 'moment' );
 const octokit = new Octokit();
 
+// Parse command line arguments
+const args = process.argv.slice( 2 );
+const skipGitHubStatus = args.includes( '--skipGitHubStatus' );
+const jsonOnly = args.includes( '--jsonOnly' );
+const reportIndex = args.indexOf( '--report' );
+const reportName = reportIndex !== -1 && args[ reportIndex + 1 ] ? args[ reportIndex + 1 ] : null;
+
 const reportsToDelete = [];
 const reportsToClean = [];
 let testsToDelete = [];
@@ -28,34 +43,56 @@ const problem = String.fromCodePoint( 0x2757 );
 const clean = String.fromCodePoint( 0x1f9f9 );
 
 ( async () => {
-	// If a REPORT env exists, clean up that single report and exit
-	if ( process.env.REPORT ) {
-		await cleanReport( process.env.REPORT );
+	// If a --report argument exists, clean up that single report and exit
+	if ( reportName ) {
+		await cleanReport( reportName );
 		return;
 	}
 
-	const closedPRs = await octokit.rest.pulls.list( {
-		owner: 'Automattic',
-		repo: 'jetpack',
-		state: 'closed',
-		per_page: 100,
-	} );
+	let closed = [];
+	let open = [];
 
-	const openPRs = await octokit.rest.pulls.list( {
-		owner: 'Automattic',
-		repo: 'jetpack',
-		state: 'open',
-		per_page: 100,
-	} );
+	if ( ! skipGitHubStatus ) {
+		const closedPRs = await octokit.rest.pulls.list( {
+			owner: 'Automattic',
+			repo: 'jetpack',
+			state: 'closed',
+			per_page: 100,
+		} );
 
-	const closed = closedPRs.data.map( pr => pr.number.toString() );
-	const open = openPRs.data.map( pr => pr.number.toString() );
+		const openPRs = await octokit.rest.pulls.list( {
+			owner: 'Automattic',
+			repo: 'jetpack',
+			state: 'open',
+			per_page: 100,
+		} );
 
-	console.group( '\n', 'Checking existing reports' );
-	let reports = await listS3Folders( 'reports/', '/' );
-	reports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
+		closed = closedPRs.data.map( pr => pr.number.toString() );
+		open = openPRs.data.map( pr => pr.number.toString() );
+	}
+
+	// If jsonOnly flag is set, skip checking reports and go directly to cleaning JSON files
+	if ( jsonOnly ) {
+		console.log( 'Skipping report checking due to --jsonOnly flag' );
+	} else {
+		console.group( '\n', 'Checking existing reports' );
+		let reports = await listS3Folders( 'reports/', '/' );
+		reports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
 	for ( const report of reports ) {
+		const batchSize = 10;
+		if ( reportsToDelete.length >= batchSize || reportsToClean.length >= batchSize ) {
+			console.log(
+				`${ problem } Batch of ${ batchSize } reports to delete or clean created. Moving on to cleaning`
+			);
+			console.groupEnd();
+			break;
+		}
+		if ( reportsToDelete.length > 10 || reportsToClean.length > 10 ) {
+			console.log( `${ problem } Batch of reports to delete created. Moving on to cleaning` );
+			console.groupEnd();
+			break;
+		}
 		console.group( '\n', `Checking report ${ report }` );
 
 		// Skip folders that should be ignored
@@ -95,7 +132,7 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 		}
 
 		// If the report is possibly for a PR (name is only numbers), check if it's closed
-		if ( report.match( /^\d+$/ ) ) {
+		if ( report.match( /^\d+$/ ) && ! skipGitHubStatus ) {
 			let pull;
 			try {
 				console.log( `Assuming ${ report } is a report for a pull request, checking PR state` );
@@ -126,26 +163,29 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 		console.groupEnd();
 	}
 
-	console.log(
-		`The following reports were marked for deletion: ${ JSON.stringify( reportsToDelete ) }`
-	);
-	console.groupEnd();
-
-	// Remove reports from S3 storage
-	console.group( '\n', 'Removing reports from storage' );
-	for ( const report of reportsToDelete ) {
-		console.group( '\n', `Removing report ${ report }` );
-		await removeS3Folder( `reports/${ report }` );
+		console.log(
+			`The following reports were marked for deletion: ${ JSON.stringify( reportsToDelete ) }`
+		);
 		console.groupEnd();
 	}
-	console.groupEnd();
+
+	// Remove reports from S3 storage (only if not jsonOnly mode)
+	if ( ! jsonOnly ) {
+		console.group( '\n', 'Removing reports from storage' );
+		for ( const report of reportsToDelete ) {
+			console.group( '\n', `Removing report ${ report }` );
+			await removeS3Folder( `reports/${ report }` );
+			console.groupEnd();
+		}
+		console.groupEnd();
+	}
 
 	// Clean-up reports data file
 	console.group( '\n', 'Cleaning report.json file' );
 
 	// Getting a new list of stored reports after they were cleaned-up
 	let storedReports = await listS3Folders( 'reports/', '/' );
-	storedReports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
+	storedReports = storedReports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
 	const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 	const initialReportsCount = json.reports.length;
@@ -165,13 +205,16 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 	await s3client.send( cmd );
 	console.groupEnd();
 
-	console.group( '\n', 'Cleaning old results for remaining reports' );
-	for ( const report of reportsToClean ) {
-		console.group( '\n', `Cleaning report ${ report }` );
-		await cleanReport( report );
+	// Clean old results for remaining reports (only if not jsonOnly mode)
+	if ( ! jsonOnly ) {
+		console.group( '\n', 'Cleaning old results for remaining reports' );
+		for ( const report of reportsToClean ) {
+			console.group( '\n', `Cleaning report ${ report }` );
+			await cleanReport( report );
+			console.groupEnd();
+		}
 		console.groupEnd();
 	}
-	console.groupEnd();
 
 	console.group( '\n', 'Cleaning sources for deleted results' );
 
@@ -208,13 +251,21 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 
 async function checkReportAge( report ) {
 	console.log( `${ question } Checking age of ${ report } report` );
+	let duration = 0;
 
-	const metadata = await getJSONFromS3( `reports/${ report }/metadata.json`, true );
+	try {
+		const metadata = await getJSONFromS3( `reports/${ report }/metadata.json`, true );
 
-	const duration = moment
-		.duration( moment.utc().diff( moment.utc( metadata.updated_on ) ) )
-		.as( 'days' )
-		.toFixed( 1 );
+		duration = moment
+			.duration( moment.utc().diff( moment.utc( metadata.updated_on ) ) )
+			.as( 'days' )
+			.toFixed( 1 );
+	} catch ( e ) {
+		console.error( `${ problem } Error checking age of ${ report } report: ${ e.message }` );
+		console.log( `${ plus } Cannot determine age, marking for deletion` );
+		reportsToDelete.push( report );
+		return;
+	}
 
 	if ( duration > reportAgeThresholdInDays ) {
 		console.log(
@@ -298,7 +349,11 @@ async function cleanReport( report ) {
 	}
 
 	for ( let i = 0; i < testsToDelete.length; i++ ) {
-		printProgress( `\t\t\tCleaning test files (${ testsToDelete.length })`, i, testsToDelete.length );
+		printProgress(
+			`\t\t\tCleaning test files (${ testsToDelete.length })`,
+			i,
+			testsToDelete.length
+		);
 		const key = `reports/${ report }/report/data/test-cases/${ testsToDelete[ i ] }.json`;
 		// console.log( `Removing test result ${ key }` );
 		await s3client.send( new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: key } ) );
