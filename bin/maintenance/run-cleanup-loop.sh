@@ -1,9 +1,9 @@
 #!/bin/bash
 
-for i in {1..500}
+for i in {1..50}
 do
-    echo "Running cleanup iteration $i/500"
-    node ./bin/cleanup-s3.js --skipGitHubStatus
+    echo "Running cleanup iteration $i/50"
+    node ./bin/cleanup-s3.js --storageOnly --skipGithubStatus
     echo "Completed iteration $i"
     echo "---"
 done

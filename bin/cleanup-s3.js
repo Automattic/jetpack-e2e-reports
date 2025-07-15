@@ -8,6 +8,7 @@
  *   --skipGitHubStatus    Skip GitHub API calls for fetching PR status and checking individual PRs
  *   --report <name>       Clean up only the specified report and exit
  *   --jsonOnly            Skip checking reports on storage and only clean the data files
+ *   --batchSize <number>  Limit the number of reports to process in a single run (default: 0 = no limit)
  */
 
 const {
@@ -26,10 +27,14 @@ const octokit = new Octokit();
 
 // Parse command line arguments
 const args = process.argv.slice( 2 );
-const skipGitHubStatus = args.includes( '--skipGitHubStatus' );
-const jsonOnly = args.includes( '--jsonOnly' );
-const reportIndex = args.indexOf( '--report' );
+const argsLower = args.map( arg => arg.toLowerCase() );
+const skipGitHubStatus = argsLower.includes( '--skipgithubstatus' );
+const jsonOnly = argsLower.includes( '--jsononly' );
+const storageOnly = argsLower.includes( '--storageonly' );
+const reportIndex = argsLower.indexOf( '--report' );
 const reportName = reportIndex !== -1 && args[ reportIndex + 1 ] ? args[ reportIndex + 1 ] : null;
+const batchSizeIndex = argsLower.indexOf( '--batchsize' );
+const batchSize = batchSizeIndex !== -1 && args[ batchSizeIndex + 1 ] ? parseInt( args[ batchSizeIndex + 1 ], 10 ) : 0;
 
 const reportsToDelete = [];
 const reportsToClean = [];
@@ -43,6 +48,15 @@ const problem = String.fromCodePoint( 0x2757 );
 const clean = String.fromCodePoint( 0x1f9f9 );
 
 ( async () => {
+	// Display summary of all flags and arguments
+	console.log( '\n=== Cleanup Script Configuration ===' );
+	console.log( `Skip GitHub Status: ${ skipGitHubStatus }` );
+	console.log( `JSON Only: ${ jsonOnly }` );
+	console.log( `Storage Only: ${ storageOnly }` );
+	console.log( `Report Name: ${ reportName || 'None (process all reports)' }` );
+	console.log( `Batch Size: ${ batchSize === 0 ? 'No limit' : batchSize }` );
+	console.log( '====================================\n' );
+
 	// If a --report argument exists, clean up that single report and exit
 	if ( reportName ) {
 		await cleanReport( reportName );
@@ -79,89 +93,84 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 		let reports = await listS3Folders( 'reports/', '/' );
 		reports = reports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
 
-	for ( const report of reports ) {
-		const batchSize = 10;
-		if ( reportsToDelete.length >= batchSize || reportsToClean.length >= batchSize ) {
-			console.log(
-				`${ problem } Batch of ${ batchSize } reports to delete or clean created. Moving on to cleaning`
-			);
-			console.groupEnd();
-			break;
-		}
-		if ( reportsToDelete.length > 10 || reportsToClean.length > 10 ) {
-			console.log( `${ problem } Batch of reports to delete created. Moving on to cleaning` );
-			console.groupEnd();
-			break;
-		}
-		console.group( '\n', `Checking report ${ report }` );
+		for ( const report of reports ) {
+			// Check batch size limits if batching is enabled (batchSize > 0)
+			if ( batchSize > 0 && ( reportsToDelete.length >= batchSize || reportsToClean.length >= batchSize ) ) {
+				console.log(
+					`${ problem } Batch of ${ batchSize } reports to delete or clean created. Moving on to cleaning`
+				);
+				console.groupEnd();
+				break;
+			}
+			console.group( '\n', `Checking report ${ report }` );
 
-		// Skip folders that should be ignored
-		if ( config.ignore.includes( report ) ) {
-			console.log( `${ done } ${ report } is in ignore list, skipping` );
+			// Skip folders that should be ignored
+			if ( config.ignore.includes( report ) ) {
+				console.log( `${ done } ${ report } is in ignore list, skipping` );
 
-			console.groupEnd();
-			continue;
-		}
-
-		// Permanent reports should not be removed, only old results should be cleaned
-		if ( config.permanent.includes( report ) ) {
-			console.log( `${ plus } ${ report } is a permanent report, marking for cleaning` );
-			// console.log( `Report ${ report } is permanent, will check for old results` );
-			reportsToClean.push( report );
-
-			console.groupEnd();
-			continue;
-		}
-
-		// Report for a closed PR should be removed
-		if ( closed.includes( report ) ) {
-			console.log( `${ plus } PR ${ report } is closed, marking report for deletion` );
-			reportsToDelete.push( report );
-
-			console.groupEnd();
-			continue;
-		}
-
-		// Report for an open PR should be checked for age
-		if ( open.includes( report ) ) {
-			console.log( `PR ${ report } is still open` );
-			await checkReportAge( report, reportsToDelete, reportsToClean );
-
-			console.groupEnd();
-			continue;
-		}
-
-		// If the report is possibly for a PR (name is only numbers), check if it's closed
-		if ( report.match( /^\d+$/ ) && ! skipGitHubStatus ) {
-			let pull;
-			try {
-				console.log( `Assuming ${ report } is a report for a pull request, checking PR state` );
-				pull = await octokit.rest.pulls.get( {
-					owner: 'Automattic',
-					repo: 'jetpack',
-					pull_number: report,
-				} );
-			} catch ( e ) {
-				console.error( `Checking state for pull request '${ report }' failed: ${ e.message }` );
+				console.groupEnd();
+				continue;
 			}
 
-			if ( pull?.data?.state === 'closed' ) {
-				console.log( `${ plus } PR ${ report } closed, marking report for deletion` );
+			// Permanent reports should not be removed, only old results should be cleaned
+			if ( config.permanent.includes( report ) ) {
+				console.log( `${ plus } ${ report } is a permanent report, marking for cleaning` );
+				// console.log( `Report ${ report } is permanent, will check for old results` );
+				reportsToClean.push( report );
+
+				console.groupEnd();
+				continue;
+			}
+
+			// Report for a closed PR should be removed
+			if ( closed.includes( report ) ) {
+				console.log( `${ plus } PR ${ report } is closed, marking report for deletion` );
 				reportsToDelete.push( report );
 
 				console.groupEnd();
 				continue;
-			} else {
-				console.log(
-					`${ report } doesn't seem to be a closed PR, will keep it (state=${ pull?.data?.state })`
-				);
 			}
-		}
 
-		// If we're still here it means the report is not for a closed PR, so we'll check for age
-		await checkReportAge( report, reportsToDelete, reportsToClean );
-		console.groupEnd();
-	}
+			// Report for an open PR should be checked for age
+			if ( open.includes( report ) ) {
+				console.log( `PR ${ report } is still open` );
+				await checkReportAge( report, reportsToDelete, reportsToClean );
+
+				console.groupEnd();
+				continue;
+			}
+
+			// If the report is possibly for a PR (name is only numbers), check if it's closed
+			if ( report.match( /^\d+$/ ) && !skipGitHubStatus ) {
+				let pull;
+				try {
+					console.log( `Assuming ${ report } is a report for a pull request, checking PR state` );
+					pull = await octokit.rest.pulls.get( {
+						owner: 'Automattic',
+						repo: 'jetpack',
+						pull_number: report,
+					} );
+				} catch ( e ) {
+					console.error( `Checking state for pull request '${ report }' failed: ${ e.message }` );
+				}
+
+				if ( pull?.data?.state === 'closed' ) {
+					console.log( `${ plus } PR ${ report } closed, marking report for deletion` );
+					reportsToDelete.push( report );
+
+					console.groupEnd();
+					continue;
+				} else {
+					console.log(
+						`${ report } doesn't seem to be a closed PR, will keep it (state=${ pull?.data?.state })`
+					);
+				}
+			}
+
+			// If we're still here it means the report is not for a closed PR, so we'll check for age
+			await checkReportAge( report, reportsToDelete, reportsToClean );
+			console.groupEnd();
+		}
 
 		console.log(
 			`The following reports were marked for deletion: ${ JSON.stringify( reportsToDelete ) }`
@@ -180,30 +189,34 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 		console.groupEnd();
 	}
 
-	// Clean-up reports data file
-	console.group( '\n', 'Cleaning report.json file' );
+	// Clean-up reports data file (only if not storageOnly mode)
+	if ( ! storageOnly ) {
+		console.group( '\n', 'Cleaning report.json file' );
 
-	// Getting a new list of stored reports after they were cleaned-up
-	let storedReports = await listS3Folders( 'reports/', '/' );
-	storedReports = storedReports.map( report => report.replace( 'reports/', '' ).replace( '/', '' ) );
+		// Getting a new list of stored reports after they were cleaned-up
+		const storedReports = await listS3Folders( 'reports/', '/' );
+		console.log( storedReports)
 
-	const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
-	const initialReportsCount = json.reports.length;
+		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
+		const initialReportsCount = json.reports.length;
 
-	// Only keep reports that are found in S3 storage
-	json.reports = json.reports.filter( report => storedReports.includes( report.name ) );
-	json.reportsCount = json.reports.length;
-	json.lastUpdate = new Date().toISOString();
-	console.log( `${ clean } Removed ${ initialReportsCount - json.reports.length } reports` );
+		// Only keep reports that are found in S3 storage
+		json.reports = json.reports.filter( report =>
+			storedReports.includes( `reports/${ report.name }` )
+		);
+		json.reportsCount = json.reports.length;
+		json.lastUpdate = new Date().toISOString();
+		console.log( `${ clean } Removed ${ initialReportsCount - json.reports.length } reports` );
 
-	const cmd = new PutObjectCommand( {
-		Bucket: s3Params.Bucket,
-		Key: 'data/reports.json',
-		Body: JSON.stringify( json ),
-		ContentType: 'application/json',
-	} );
-	await s3client.send( cmd );
-	console.groupEnd();
+		const cmd = new PutObjectCommand( {
+			Bucket: s3Params.Bucket,
+			Key: 'data/reports.json',
+			Body: JSON.stringify( json ),
+			ContentType: 'application/json',
+		} );
+		await s3client.send( cmd );
+		console.groupEnd();
+	}
 
 	// Clean old results for remaining reports (only if not jsonOnly mode)
 	if ( ! jsonOnly ) {
