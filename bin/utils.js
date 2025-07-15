@@ -187,8 +187,10 @@ async function listS3Folders( prefix ) {
 	return objects;
 }
 
-async function removeS3Folder( prefix ) {
-	console.log( `Removing all files with prefix ${ prefix }` );
+async function removeS3Folder( prefix, quiet = false ) {
+	if ( ! quiet ) {
+		console.log( `Removing all files with prefix ${ prefix }` );
+	}
 
 	try {
 		const objectsInFolder = await s3client.send(

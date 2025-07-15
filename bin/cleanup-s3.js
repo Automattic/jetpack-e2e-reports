@@ -34,7 +34,10 @@ const storageOnly = argsLower.includes( '--storageonly' );
 const reportIndex = argsLower.indexOf( '--report' );
 const reportName = reportIndex !== -1 && args[ reportIndex + 1 ] ? args[ reportIndex + 1 ] : null;
 const batchSizeIndex = argsLower.indexOf( '--batchsize' );
-const batchSize = batchSizeIndex !== -1 && args[ batchSizeIndex + 1 ] ? parseInt( args[ batchSizeIndex + 1 ], 10 ) : 0;
+const batchSize =
+	batchSizeIndex !== -1 && args[ batchSizeIndex + 1 ]
+		? parseInt( args[ batchSizeIndex + 1 ], 10 )
+		: 0;
 
 const reportsToDelete = [];
 const reportsToClean = [];
@@ -95,7 +98,10 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 
 		for ( const report of reports ) {
 			// Check batch size limits if batching is enabled (batchSize > 0)
-			if ( batchSize > 0 && ( reportsToDelete.length >= batchSize || reportsToClean.length >= batchSize ) ) {
+			if (
+				batchSize > 0 &&
+				( reportsToDelete.length >= batchSize || reportsToClean.length >= batchSize )
+			) {
 				console.log(
 					`${ problem } Batch of ${ batchSize } reports to delete or clean created. Moving on to cleaning`
 				);
@@ -141,7 +147,7 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 			}
 
 			// If the report is possibly for a PR (name is only numbers), check if it's closed
-			if ( report.match( /^\d+$/ ) && !skipGitHubStatus ) {
+			if ( report.match( /^\d+$/ ) && ! skipGitHubStatus ) {
 				let pull;
 				try {
 					console.log( `Assuming ${ report } is a report for a pull request, checking PR state` );
@@ -180,11 +186,14 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 
 	// Remove reports from S3 storage (only if not jsonOnly mode)
 	if ( ! jsonOnly ) {
-		console.group( '\n', 'Removing reports from storage' );
-		for ( const report of reportsToDelete ) {
-			console.group( '\n', `Removing report ${ report }` );
-			await removeS3Folder( `reports/${ report }` );
-			console.groupEnd();
+		console.group( '\nRemoving reports from storage' );
+		for ( let i = 0; i < reportsToDelete.length; i++ ) {
+			const report = reportsToDelete[ i ];
+			printProgress( `Removing report ${ report }`, i, reportsToDelete.length, 1 );
+			await removeS3Folder( `reports/${ report }`, true );
+		}
+		if ( reportsToDelete.length > 0 ) {
+			console.log();
 		}
 		console.groupEnd();
 	}
@@ -195,7 +204,7 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 
 		// Getting a new list of stored reports after they were cleaned-up
 		const storedReports = await listS3Folders( 'reports/', '/' );
-		console.log( storedReports)
+		console.log( storedReports );
 
 		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
 		const initialReportsCount = json.reports.length;
@@ -429,9 +438,9 @@ function cleanOldResults( jsonData, objectKey, daysThreshold ) {
 	return jsonData;
 }
 
-function printProgress( line, i, total ) {
-	const progress = Math.round( ( i / ( total - 1 ) ) * 100 );
-	if ( i % 50 === 0 || progress === 100 ) {
+function printProgress( line, i, total, interval = 50 ) {
+	const progress = Math.round( ( ( i + 1 ) / total ) * 100 );
+	if ( i % interval === 0 || progress === 100 ) {
 		process.stdout.write( `${ line }: ${ progress }%\r` );
 	}
 }
