@@ -8,6 +8,7 @@
  *   --skipGitHubStatus    Skip GitHub API calls for fetching PR status and checking individual PRs
  *   --report <name>       Clean up only the specified report and exit
  *   --jsonOnly            Skip checking reports on storage and only clean the data files
+ *   --storageOnly         Skip cleaning the data files and only clean reports on storage
  *   --batchSize <number>  Limit the number of reports to process in a single run (default: 0 = no limit)
  */
 
@@ -49,6 +50,7 @@ const done = String.fromCodePoint( 0x2714 );
 const question = String.fromCodePoint( 0x2753 );
 const problem = String.fromCodePoint( 0x2757 );
 const clean = String.fromCodePoint( 0x1f9f9 );
+const trash = String.fromCodePoint( 0x1f5d1 );
 
 ( async () => {
 	// Display summary of all flags and arguments
@@ -189,7 +191,7 @@ const clean = String.fromCodePoint( 0x1f9f9 );
 		console.group( '\nRemoving reports from storage' );
 		for ( let i = 0; i < reportsToDelete.length; i++ ) {
 			const report = reportsToDelete[ i ];
-			printProgress( `Removing report ${ report }`, i, reportsToDelete.length, 1 );
+			printProgress( `\t ${ trash }  Removing report ${ report }`, i, reportsToDelete.length, 1 );
 			await removeS3Folder( `reports/${ report }`, true );
 		}
 		if ( reportsToDelete.length > 0 ) {
@@ -303,11 +305,11 @@ async function checkReportAge( report ) {
 }
 
 async function cleanReport( report ) {
-	const history = await getJSONFromS3( `reports/${ report }/report/history/history.json`, true );
+	const history = await getJSONFromS3( `reports/${ report }/report/history/history.json`, false );
 
 	if ( ! history ) {
 		console.warn(
-			`${ problem } There was an error reading history data found for report ${ report }`
+			`${ problem } There was an error reading history data for report '${ report }'`
 		);
 		return;
 	}
