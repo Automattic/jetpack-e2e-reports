@@ -191,7 +191,12 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 		console.group( '\nRemoving reports from storage' );
 		for ( let i = 0; i < reportsToDelete.length; i++ ) {
 			const report = reportsToDelete[ i ];
-			printProgress( `\t ${ trash }  Removing report ${ report }`, i, reportsToDelete.length, 1 );
+			printProgress(
+				`\t ${ trash }  Removing reports (current report ${ report })`,
+				i,
+				reportsToDelete.length,
+				1
+			);
 			await removeS3Folder( `reports/${ report }`, true );
 		}
 		if ( reportsToDelete.length > 0 ) {
@@ -308,9 +313,7 @@ async function cleanReport( report ) {
 	const history = await getJSONFromS3( `reports/${ report }/report/history/history.json`, false );
 
 	if ( ! history ) {
-		console.warn(
-			`${ problem } There was an error reading history data for report '${ report }'`
-		);
+		console.warn( `${ problem } There was an error reading history data for report '${ report }'` );
 		return;
 	}
 
