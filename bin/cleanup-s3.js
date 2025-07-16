@@ -211,6 +211,10 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 
 		// Getting a new list of stored reports after they were cleaned-up
 		const storedReports = await listS3Folders( 'reports/', '/' );
+		// Remove the 'reports/' prefix and trailing slash from each report name
+		storedReports.forEach( ( report, index ) => {
+			storedReports[ index ] = report.replace( 'reports/', '' ).replace( '/', '' );
+		} );
 		console.log( storedReports );
 
 		const json = JSON.parse( ( await readS3Object( 'data/reports.json' ) ).toString() );
