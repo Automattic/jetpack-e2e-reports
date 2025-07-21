@@ -74,7 +74,7 @@ export default class Charts extends BaseComponent {
 		}
 
 		entries.forEach( day => {
-			day.failedRate = ( ( day.failed / day.total ) * 100 ).toFixed( 2 );
+			day.failedRate = day.total === 0 ? '0.00' : ( ( day.failed / day.total ) * 100 ).toFixed( 2 );
 		} );
 
 		sortArray( entries, 'date', false );
@@ -98,7 +98,7 @@ export default class Charts extends BaseComponent {
 		}
 
 		Object.keys( summaryData ).forEach( key => {
-			summaryData[ key ].failureRate = (
+			summaryData[ key ].failureRate = summaryData[ key ].total === 0 ? '0.00' : (
 				( summaryData[ key ].failed / summaryData[ key ].total ) *
 				100
 			).toFixed( 2 );
