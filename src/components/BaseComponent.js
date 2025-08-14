@@ -1,7 +1,5 @@
 import React from 'react';
-import { Button, FormControl, InputGroup } from 'react-bootstrap';
-import { faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, FormControl, InputGroup, Form } from 'react-bootstrap';
 import moment from 'moment';
 
 export default class BaseComponent extends React.Component {
@@ -25,24 +23,35 @@ export default class BaseComponent extends React.Component {
 		} );
 	}
 
-	getTrunkOnlyFilterButton() {
-		const icon = this.state.filters.isTrunkOnly ? faCheckSquare : faSquare;
+	getReportFilterDropdown( availableReports ) {
+		const selectedReport = this.state.filters.selectedReport || 'trunk';
 
 		return (
-			<Button
+			<Form.Select
 				variant="dark"
-				className="filter-btn"
-				onClick={ () => {
+				className="report-filter-dropdown"
+				value={ selectedReport }
+				onChange={ ( e ) => {
+					const newValue = e.target.value;
 					this.setState( prevState => ( {
 						filters: {
 							...prevState.filters,
-							isTrunkOnly: ! this.state.filters.isTrunkOnly,
+							selectedReport: newValue,
 						},
 					} ) );
 				} }
+				style={ { 
+					width: 'auto',
+					display: 'inline-block',
+					backgroundColor: '#343a40',
+					color: '#fff',
+					border: '1px solid #495057'
+				} }
 			>
-				<FontAwesomeIcon icon={ icon } /> trunk only
-			</Button>
+				{ availableReports.map( ( report, index ) => (
+					<option key={ index } value={ report }>{ report }</option>
+				) ) }
+			</Form.Select>
 		);
 	}
 

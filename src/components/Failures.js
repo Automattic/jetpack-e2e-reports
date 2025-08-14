@@ -9,14 +9,16 @@ export default class Failures extends BaseComponent {
 	state = {
 		rawData: {
 			errorsData: {},
+			summaryData: {},
 		},
 		errors: {
 			list: [],
 			totalErrors: 0,
 			distinctErrors: 0,
 		},
+		availableReports: [],
 		filters: {
-			isTrunkOnly: false,
+			selectedReport: 'trunk',
 			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
@@ -25,11 +27,23 @@ export default class Failures extends BaseComponent {
 	};
 
 	async componentDidMount() {
+		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
+		
 		this.setState( {
 			rawData: {
 				errorsData: await fetchJsonData( `${ config.dataSourceURL }/data/errors.json` ),
+				summaryData,
 			},
 		} );
+
+		// Extract available reports from summary data
+		const reports = [];
+		if ( summaryData.stats && summaryData.stats['24h'] ) {
+			Object.keys( summaryData.stats['24h'] ).forEach( key => {
+				reports.push( key );
+			} );
+		}
+		this.setState( { availableReports: reports } );
 
 		this.setErrorsData();
 
@@ -68,9 +82,18 @@ export default class Failures extends BaseComponent {
 			} );
 		}
 
-		if ( this.state.filters.isTrunkOnly ) {
+		// Filter by selected report
+		if ( this.state.filters.selectedReport === 'trunk' ) {
+			// Use config.trunkRuns for trunk filter
 			errors.forEach( e => {
 				e.results = e.results.filter( r => config.trunkRuns.includes( r.report ) );
+			} );
+		} else if ( this.state.filters.selectedReport === 'total' ) {
+			// For 'total', don't filter - include all reports
+		} else {
+			// Filter by specific report name
+			errors.forEach( e => {
+				e.results = e.results.filter( r => r.report === this.state.filters.selectedReport );
 			} );
 		}
 
@@ -228,7 +251,7 @@ export default class Failures extends BaseComponent {
 				<hr />
 				<div className="row">{ this.getFilterByDateFields() }</div>
 				<div className="row">
-					<div className="col-sm filters">{ this.getTrunkOnlyFilterButton() }</div>
+					<div className="col-sm filters">{ this.getReportFilterDropdown( this.state.availableReports ) }</div>
 					<div className="col-md sort-buttons">
 						{ this.getSortButtons(
 							{
