@@ -1,5 +1,5 @@
 async function testRule() {
-	console.log("Running test rule");
+	console.log( 'Running test rule' );
 
 	return [
 		{
@@ -36,5 +36,5 @@ async function testRule() {
 }
 
 module.exports = {
-	testRule
+	testRule,
 };

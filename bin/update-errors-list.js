@@ -17,7 +17,7 @@ let json = { errors: [] };
 	json = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
 
 	for ( const reportPath of reports ) {
-		await updateErrorsData(reportPath);
+		await updateErrorsData( reportPath );
 	}
 
 	// Write the updated errors list locally

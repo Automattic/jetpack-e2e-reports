@@ -221,9 +221,7 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 		const initialReportsCount = json.reports.length;
 
 		// Only keep reports that are found in S3 storage
-		json.reports = json.reports.filter( report =>
-			storedReports.includes( `${ report.name }` )
-		);
+		json.reports = json.reports.filter( report => storedReports.includes( `${ report.name }` ) );
 
 		json.reportsCount = json.reports.length;
 		json.lastUpdate = new Date().toISOString();

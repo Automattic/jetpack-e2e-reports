@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import configData from '../config.json';
+import configData from '../../config.json';
 
 export default class ReportsTable extends React.Component {
 	state = {
@@ -112,7 +112,9 @@ export default class ReportsTable extends React.Component {
 				<td className={ 'reportNameCell' }>
 					{ this.getReportLinkCell( report, metadata, isFailed, statistic.total ) }
 				</td>
-				<td>{ this.getTestResultsCell( statistic ) } { this.getTestResultsHistoryCell( history ) }</td>
+				<td>
+					{ this.getTestResultsCell( statistic ) } { this.getTestResultsHistoryCell( history ) }
+				</td>
 				<td>{ this.getMetadataCell( report ) }</td>
 			</tr>
 		);
@@ -193,10 +195,17 @@ export default class ReportsTable extends React.Component {
 	}
 
 	getTestResultsHistoryCell( history ) {
-		const formattedHistory = history.slice(-10).split('').map( ( item, id ) => {
-			const statusClass = item === 'F' ? 'failed' : 'passed';
-			return (<span key={ id } className={ `label label-status-${statusClass}` }>{ item }</span>)
-		});
+		const formattedHistory = history
+			.slice( -10 )
+			.split( '' )
+			.map( ( item, id ) => {
+				const statusClass = item === 'F' ? 'failed' : 'passed';
+				return (
+					<span key={ id } className={ `label label-status-${ statusClass }` }>
+						{ item }
+					</span>
+				);
+			} );
 		return <div>{ formattedHistory }</div>;
 	}
 

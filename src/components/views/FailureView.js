@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import { fetchJsonData } from '../utils/fetch';
-import config from '../config.json';
-import BaseComponent from './BaseComponent';
+import { fetchJsonData } from '../../utils/fetch';
+import config from '../../config.json';
+import SortButtons from '../ui/SortButtons';
+import FilterReportDropdown from '../ui/FilterReportDropdown';
+import FilterDateFields from '../ui/FilterDateFields';
 
-export default class Failures extends BaseComponent {
+export default class Failures extends React.Component {
 	state = {
 		rawData: {
 			errorsData: {},
@@ -28,7 +30,7 @@ export default class Failures extends BaseComponent {
 
 	async componentDidMount() {
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
-		
+
 		this.setState( {
 			rawData: {
 				errorsData: await fetchJsonData( `${ config.dataSourceURL }/data/errors.json` ),
@@ -38,8 +40,8 @@ export default class Failures extends BaseComponent {
 
 		// Extract available reports from summary data
 		const reports = [];
-		if ( summaryData.stats && summaryData.stats['24h'] ) {
-			Object.keys( summaryData.stats['24h'] ).forEach( key => {
+		if ( summaryData.stats && summaryData.stats[ '24h' ] ) {
+			Object.keys( summaryData.stats[ '24h' ] ).forEach( key => {
 				reports.push( key );
 			} );
 		}
@@ -168,35 +170,36 @@ export default class Failures extends BaseComponent {
 	getListOfFailures( results ) {
 		return (
 			<div>
-				{
-					results.sort( ( a, b ) => b.time - a.time ).map( ( result, id ) => {
-					let badge = moment( result.time ).format( 'MMM Do, h:mm a' );
+				{ results
+					.sort( ( a, b ) => b.time - a.time )
+					.map( ( result, id ) => {
+						let badge = moment( result.time ).format( 'MMM Do, h:mm a' );
 
-					let className = 'no-source';
+						let className = 'no-source';
 
-					if ( result.source ) {
-						const url = `${ config.reportDeepUrl }/${
-							result.report
-						}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
-						badge = (
-							<a href={ url } target="_blank" rel="noreferrer" className="report-link">
+						if ( result.source ) {
+							const url = `${ config.reportDeepUrl }/${
+								result.report
+							}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
+							badge = (
+								<a href={ url } target="_blank" rel="noreferrer" className="report-link">
+									{ badge }
+								</a>
+							);
+
+							className = '';
+						} else {
+							// don't display results with no source,
+							// because it looks bad for some common errors that have a lot of results
+							return '';
+						}
+
+						return (
+							<span key={ id } className={ `failure-link ${ className }` }>
 								{ badge }
-							</a>
+							</span>
 						);
-
-						className = '';
-					} else {
-						// don't display results with no source,
-						// because it looks bad for some common errors that have a lot of results
-						return '';
-					}
-
-					return (
-						<span key={ id } className={ `failure-link ${ className }` }>
-							{ badge }
-						</span>
-					);
-				} ) }
+					} ) }
 			</div>
 		);
 	}
@@ -249,18 +252,44 @@ export default class Failures extends BaseComponent {
 					</div>
 				</div>
 				<hr />
-				<div className="row">{ this.getFilterByDateFields() }</div>
 				<div className="row">
-					<div className="col-sm filters">{ this.getReportFilterDropdown( this.state.availableReports ) }</div>
+					<FilterDateFields
+						onDateChange={ dates => {
+							this.setState( prevState => ( {
+								filters: {
+									...prevState.filters,
+									startDate: dates.startDate,
+									endDate: dates.endDate,
+								},
+							} ) );
+						} }
+					/>
+				</div>
+				<div className="row">
+					<div className="col-sm filters">
+						<FilterReportDropdown
+							availableReports={ this.state.availableReports }
+							selectedReport={ this.state.filters.selectedReport }
+							onChange={ newValue => {
+								this.setState( prevState => ( {
+									filters: {
+										...prevState.filters,
+										selectedReport: newValue,
+									},
+								} ) );
+							} }
+						/>
+					</div>
 					<div className="col-md sort-buttons">
-						{ this.getSortButtons(
-							{
+						<SortButtons
+							sortOptions={ {
 								recent: 'most recent',
 								common: 'most common',
-							},
-							this.state.sort.by,
-							this.state.sort.isAsc
-						) }
+							} }
+							currentSortStateBy={ this.state.sort.by }
+							currentSortStateIsAsc={ this.state.sort.isAsc }
+							onSort={ this.sortData.bind( this ) }
+						/>
 					</div>
 				</div>
 				<hr />

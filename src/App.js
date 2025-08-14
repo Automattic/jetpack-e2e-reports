@@ -4,12 +4,12 @@ import ReactGA from 'react-ga';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import Reports from './components/Reports';
+import ReportView from './components/views/ReportView';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import Tests from './components/Tests';
-import Charts from './components/Charts';
-import Failures from './components/Failures';
-import Performance from './components/Performance';
+import TestView from './components/views/TestView';
+import StatsView from './components/views/StatsView';
+import FailureView from './components/views/FailureView';
+import PerformanceView from './components/views/PerformanceView';
 
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
@@ -27,7 +27,7 @@ function App() {
 						<Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
 							<Nav activeKey={ location.pathname } className="ml-auto">
 								<Nav.Link href={ `${ basename }/#/reports` }>Reports</Nav.Link>
-								<Nav.Link href={ `${ basename }/#/charts` }>Stats</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/stats` }>Stats</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/tests` }>Tests</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/failures` }>Failures</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/performance` }>Performance</Nav.Link>
@@ -37,12 +37,13 @@ function App() {
 				</Navbar>
 				<HashRouter>
 					<Routes>
-						<Route exact path="/" element={ <Reports /> } />
-						<Route exact path="/reports" element={ <Reports /> } />
-						<Route exact path="/tests" element={ <Tests /> } />
-						<Route exact path="/failures" element={ <Failures /> } />
-						<Route exact path="/performance" element={ <Performance /> } />
-						<Route exact path="/charts" element={ <Charts /> } />
+						<Route exact path="/" element={ <ReportView /> } />
+						<Route exact path="/reports" element={ <ReportView /> } />
+						<Route exact path="/tests" element={ <TestView /> } />
+						<Route exact path="/failures" element={ <FailureView /> } />
+						<Route exact path="/performance" element={ <PerformanceView /> } />
+						<Route exact path="/charts" element={ <StatsView /> } />
+						<Route exact path="/stats" element={ <StatsView /> } />
 					</Routes>
 				</HashRouter>
 			</div>

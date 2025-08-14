@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactGA from 'react-ga';
-import configData from '../config.json';
-import ReportsTable from './ReportsTable';
+import configData from '../../config.json';
+import ReportsTable from '../layout/ReportsTable';
 
 export default class Reports extends React.Component {
 	constructor( props ) {

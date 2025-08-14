@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import { fetchJsonData } from '../utils/fetch';
-import config from '../config.json';
-import BaseComponent from './BaseComponent';
+import { fetchJsonData } from '../../utils/fetch';
+import config from '../../config.json';
+import SortButtons from '../ui/SortButtons';
+import FilterReportDropdown from '../ui/FilterReportDropdown';
+import FilterDateFields from '../ui/FilterDateFields';
 
-export default class Tests extends BaseComponent {
+export default class Tests extends React.Component {
 	state = {
 		rawData: {
 			testsData: {},
@@ -30,7 +32,7 @@ export default class Tests extends BaseComponent {
 
 	async componentDidMount() {
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
-		
+
 		this.setState( {
 			rawData: {
 				testsData: await fetchJsonData( `${ config.dataSourceURL }/data/tests.json` ),
@@ -40,8 +42,8 @@ export default class Tests extends BaseComponent {
 
 		// Extract available reports from summary data
 		const reports = [];
-		if ( summaryData.stats && summaryData.stats['24h'] ) {
-			Object.keys( summaryData.stats['24h'] ).forEach( key => {
+		if ( summaryData.stats && summaryData.stats[ '24h' ] ) {
+			Object.keys( summaryData.stats[ '24h' ] ).forEach( key => {
 				reports.push( key );
 			} );
 		}
@@ -233,7 +235,19 @@ export default class Tests extends BaseComponent {
 
 		return (
 			<div>
-				<div className="row align-items-center">{ this.getFilterByDateFields() }</div>
+				<div className="row align-items-center">
+					<FilterDateFields
+						onDateChange={ dates => {
+							this.setState( prevState => ( {
+								filters: {
+									...prevState.filters,
+									startDate: dates.startDate,
+									endDate: dates.endDate,
+								},
+							} ) );
+						} }
+					/>
+				</div>
 				<hr />
 				<div className="row text-center">
 					<div className="col-sm">
@@ -267,16 +281,30 @@ export default class Tests extends BaseComponent {
 				</div>
 				<hr />
 				<div className="row">
-					<div className="col-sm filters">{ this.getReportFilterDropdown( this.state.availableReports ) }</div>
+					<div className="col-sm filters">
+						<FilterReportDropdown
+							availableReports={ this.state.availableReports }
+							selectedReport={ this.state.filters.selectedReport }
+							onChange={ newValue => {
+								this.setState( prevState => ( {
+									filters: {
+										...prevState.filters,
+										selectedReport: newValue,
+									},
+								} ) );
+							} }
+						/>
+					</div>
 					<div className="col-md sort-buttons">
-						{ this.getSortButtons(
-							{
+						<SortButtons
+							sortOptions={ {
 								total: 'runs',
 								failedRate: 'failure rate',
-							},
-							this.state.sort.by,
-							this.state.sort.isAsc
-						) }
+							} }
+							currentSortStateBy={ this.state.sort.by }
+							currentSortStateIsAsc={ this.state.sort.isAsc }
+							onSort={ this.sortData.bind( this ) }
+						/>
 					</div>
 				</div>
 				<hr />

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { fetchJsonData } from '../utils/fetch';
-import { sortArray } from '../utils/sort';
-import BaseComponent from './BaseComponent';
-import config from '../config.json';
+import { fetchJsonData } from '../../utils/fetch';
+import { sortArray } from '../../utils/sort';
+import FilterReportDropdown from '../ui/FilterReportDropdown';
+import config from '../../config.json';
 import moment from 'moment';
 
-export default class Charts extends BaseComponent {
+export default class Charts extends React.Component {
 	state = {
 		rawData: {
 			dailyData: [],
@@ -24,9 +24,9 @@ export default class Charts extends BaseComponent {
 	};
 
 	async componentDidMount() {
-		console.log('Fetching initial data...');
+		console.log( 'Fetching initial data...' );
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
-		
+
 		this.setState( {
 			rawData: {
 				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
@@ -38,8 +38,8 @@ export default class Charts extends BaseComponent {
 
 		// Extract available reports from summary data
 		const reports = [];
-		if ( summaryData.stats && summaryData.stats['24h'] ) {
-			Object.keys( summaryData.stats['24h'] ).forEach( key => {
+		if ( summaryData.stats && summaryData.stats[ '24h' ] ) {
+			Object.keys( summaryData.stats[ '24h' ] ).forEach( key => {
 				reports.push( key );
 			} );
 		}
@@ -98,7 +98,12 @@ export default class Charts extends BaseComponent {
 		const selectedReport = this.state.filters.selectedReport || 'trunk';
 
 		Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
-			const reportData = this.state.rawData.summaryData.stats[ key ][ selectedReport ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
+			const reportData = this.state.rawData.summaryData.stats[ key ][ selectedReport ] || {
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+				total: 0,
+			};
 			summaryData[ key ] = { ...reportData };
 		} );
 
@@ -108,10 +113,10 @@ export default class Charts extends BaseComponent {
 			summaryData[ key ].failed = summaryData[ key ].failed || 0;
 			summaryData[ key ].skipped = summaryData[ key ].skipped || 0;
 			summaryData[ key ].total = summaryData[ key ].total || 0;
-			summaryData[ key ].failureRate = summaryData[ key ].total === 0 ? '0.00' : (
-				( summaryData[ key ].failed / summaryData[ key ].total ) *
-				100
-			).toFixed( 2 );
+			summaryData[ key ].failureRate =
+				summaryData[ key ].total === 0
+					? '0.00'
+					: ( ( summaryData[ key ].failed / summaryData[ key ].total ) * 100 ).toFixed( 2 );
 		} );
 
 		return summaryData;
@@ -375,7 +380,20 @@ export default class Charts extends BaseComponent {
 		return (
 			<div>
 				<div className="row">
-					<div className="col-sm filters">{ this.getReportFilterDropdown( this.state.availableReports ) }</div>
+					<div className="col-sm filters">
+						<FilterReportDropdown
+							availableReports={ this.state.availableReports }
+							selectedReport={ this.state.filters.selectedReport }
+							onChange={ newValue => {
+								this.setState( prevState => ( {
+									filters: {
+										...prevState.filters,
+										selectedReport: newValue,
+									},
+								} ) );
+							} }
+						/>
+					</div>
 				</div>
 				<hr />
 				<div className="row">
