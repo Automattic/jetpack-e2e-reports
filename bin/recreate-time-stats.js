@@ -141,7 +141,7 @@ function pushData( data, date, result ) {
 		entry = data.filter( k => k.date === date );
 	}
 
-	console.log( entry );
+	// console.log( entry );
 
 	const isTrunk = trunkReports.includes( result.report );
 
