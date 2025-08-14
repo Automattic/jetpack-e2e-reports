@@ -1,6 +1,3 @@
-import React from 'react';
-import ReactGA from 'react-ga';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
@@ -10,9 +7,6 @@ import TestView from './views/TestView';
 import StatsView from './views/StatsView';
 import FailureView from './views/FailureView';
 import PerformanceView from './views/PerformanceView';
-
-const TRACKING_ID = 'UA-208890082-1';
-ReactGA.initialize( TRACKING_ID );
 
 function App() {
 	const basename = '/jetpack-e2e-reports';

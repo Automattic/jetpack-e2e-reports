@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactGA from 'react-ga';
 import configData from '../config.json';
 import ReportsTable from '../components/ReportsTable';
 
@@ -44,7 +43,6 @@ export default class Reports extends React.Component {
 				} );
 			} )
 			.catch( console.log );
-		ReactGA.pageview( '/reports' );
 	}
 
 	render() {

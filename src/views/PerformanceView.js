@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactGA from 'react-ga';
 import { Container, Row, Col } from 'react-bootstrap';
 import config from '../config.json';
 import ReactEcharts from 'echarts-for-react';
@@ -93,7 +92,6 @@ export default class Performance extends React.Component {
 			} )
 			.catch( console.log );
 
-		ReactGA.pageview( 'performance' );
 	}
 
 	renderChart( type, chartData ) {

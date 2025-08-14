@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactGA from 'react-ga';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import config from '../config.json';
@@ -60,7 +59,6 @@ export default class Tests extends React.Component {
 		} );
 
 		this.setDatePickersValues( this.state.filters.startDate, this.state.filters.endDate );
-		ReactGA.pageview( '/tests' );
 	}
 
 	componentDidUpdate( prevProps, prevState ) {

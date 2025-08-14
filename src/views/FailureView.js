@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactGA from 'react-ga';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import config from '../config.json';
@@ -56,7 +55,6 @@ export default class Failures extends React.Component {
 			isDataReady: true,
 		} );
 		this.setDatePickersValues( this.state.filters.startDate, this.state.filters.endDate );
-		ReactGA.pageview( '/failures' );
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
