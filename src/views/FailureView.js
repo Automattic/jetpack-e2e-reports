@@ -1,11 +1,14 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import { fetchJsonData } from '../../utils/fetch';
-import config from '../../config.json';
-import SortButtons from '../ui/SortButtons';
-import FilterReportDropdown from '../ui/FilterReportDropdown';
-import FilterDateFields from '../ui/FilterDateFields';
+import { fetchJsonData } from '../utils/fetch';
+import config from '../config.json';
+import SortButtons from '../components/SortButtons';
+import FilterReportDropdown from '../components/FilterReportDropdown';
+import FilterDateFields from '../components/FilterDateFields';
+import StatBox from '../components/StatBox';
+import ErrorCard from '../components/ErrorCard';
+import LoadingState from '../components/LoadingState';
 
 export default class Failures extends React.Component {
 	state = {
@@ -205,101 +208,83 @@ export default class Failures extends React.Component {
 	}
 
 	getErrorContent( error, id ) {
-		let details = `${ error.total } times, since ${ moment(
-			error.oldest
-		).fromNow() }. Last failed ${ moment( error.newest ).fromNow() }`;
-
-		if ( error.total === 1 ) {
-			details = `once, ${ moment( error.oldest ).fromNow() }`;
-		}
-
 		return (
-			<div className="error-container" key={ id }>
-				<div className="row">
-					<pre className="error-container-trace">{ error.trace }</pre>
-					<div>{ details }</div>
-				</div>
-				<div className="row">{ this.getListOfTests( error.tests ) }</div>
-				<div className="row">{ this.getListOfFailures( error.results ) }</div>
-			</div>
+			<ErrorCard
+				key={ id }
+				error={ error }
+				getListOfTests={ this.getListOfTests.bind( this ) }
+				getListOfFailures={ this.getListOfFailures.bind( this ) }
+			/>
 		);
 	}
 
 	render() {
-		if ( ! this.state.isDataReady ) {
-			return null;
-		}
-
-		const lastUpdate = moment( this.state.rawData.errorsData.lastUpdate ).fromNow();
+		const lastUpdate = this.state.isDataReady
+			? moment( this.state.rawData.errorsData.lastUpdate ).fromNow()
+			: '';
 
 		return (
-			<div>
-				<hr />
-				<div className="row text-center">
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">{ this.state.errors.totalErrors }</span>
-							<br />
-							<span className="stat-description">total errors</span>
+			<LoadingState isLoading={ ! this.state.isDataReady }>
+				<div>
+					<hr />
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox value={ this.state.errors.totalErrors } description="total errors" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ this.state.errors.distinctErrors } description="distinct errors" />
 						</div>
 					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">{ this.state.errors.distinctErrors }</span>
-							<br />
-							<span className="stat-description">distinct errors</span>
-						</div>
-					</div>
-				</div>
-				<hr />
-				<div className="row">
-					<FilterDateFields
-						onDateChange={ dates => {
-							this.setState( prevState => ( {
-								filters: {
-									...prevState.filters,
-									startDate: dates.startDate,
-									endDate: dates.endDate,
-								},
-							} ) );
-						} }
-					/>
-				</div>
-				<div className="row">
-					<div className="col-sm filters">
-						<FilterReportDropdown
-							availableReports={ this.state.availableReports }
-							selectedReport={ this.state.filters.selectedReport }
-							onChange={ newValue => {
+					<hr />
+					<div className="row">
+						<FilterDateFields
+							onDateChange={ dates => {
 								this.setState( prevState => ( {
 									filters: {
 										...prevState.filters,
-										selectedReport: newValue,
+										startDate: dates.startDate,
+										endDate: dates.endDate,
 									},
 								} ) );
 							} }
 						/>
 					</div>
-					<div className="col-md sort-buttons">
-						<SortButtons
-							sortOptions={ {
-								recent: 'most recent',
-								common: 'most common',
-							} }
-							currentSortStateBy={ this.state.sort.by }
-							currentSortStateIsAsc={ this.state.sort.isAsc }
-							onSort={ this.sortData.bind( this ) }
-						/>
+					<div className="row">
+						<div className="col-sm filters">
+							<FilterReportDropdown
+								availableReports={ this.state.availableReports }
+								selectedReport={ this.state.filters.selectedReport }
+								onChange={ newValue => {
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											selectedReport: newValue,
+										},
+									} ) );
+								} }
+							/>
+						</div>
+						<div className="col-md sort-buttons">
+							<SortButtons
+								sortOptions={ {
+									recent: 'most recent',
+									common: 'most common',
+								} }
+								currentSortStateBy={ this.state.sort.by }
+								currentSortStateIsAsc={ this.state.sort.isAsc }
+								onSort={ this.sortData.bind( this ) }
+							/>
+						</div>
+					</div>
+					<hr />
+					<div>
+						{ this.state.errors.list.map( ( error, id ) => this.getErrorContent( error, id ) ) }
+					</div>
+					<div className="row">
+						<div className="text-right col small">updated { lastUpdate }</div>
 					</div>
 				</div>
-				<hr />
-				<div>
-					{ this.state.errors.list.map( ( error, id ) => this.getErrorContent( error, id ) ) }
-				</div>
-				<div className="row">
-					<div className="text-right col small">updated { lastUpdate }</div>
-				</div>
-			</div>
+			</LoadingState>
 		);
 	}
 }

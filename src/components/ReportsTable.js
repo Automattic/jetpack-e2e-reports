@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import configData from '../../config.json';
+import configData from '../config.json';
 
 export default class ReportsTable extends React.Component {
 	state = {

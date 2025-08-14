@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import moment from 'moment';
-import { fetchJsonData } from '../../utils/fetch';
-import config from '../../config.json';
-import SortButtons from '../ui/SortButtons';
-import FilterReportDropdown from '../ui/FilterReportDropdown';
-import FilterDateFields from '../ui/FilterDateFields';
+import { fetchJsonData } from '../utils/fetch';
+import config from '../config.json';
+import SortButtons from '../components/SortButtons';
+import FilterReportDropdown from '../components/FilterReportDropdown';
+import FilterDateFields from '../components/FilterDateFields';
+import StatBox from '../components/StatBox';
+import StatusBadge from '../components/StatusBadge';
+import TestResultTimeline from '../components/TestResultTimeline';
+import LoadingState from '../components/LoadingState';
 
 export default class Tests extends React.Component {
 	state = {
@@ -166,10 +170,12 @@ export default class Tests extends React.Component {
 
 			return (
 				<li key={ id }>
-					<span key={ id } className={ `label label-fill label-status-${ label } ${ classHide }` }>
-						{ count } { label }
-						<span className={ `badge-pill stat-pill` }>{ rate }</span>
-					</span>
+					<StatusBadge
+						status={ label }
+						content={ `${ count } ${ label }` }
+						badge={ rate }
+						className={ `label-fill ${ classHide }` }
+					/>
 				</li>
 			);
 		} );
@@ -178,38 +184,7 @@ export default class Tests extends React.Component {
 	}
 
 	getResultsLine( test ) {
-		const badges = test.results.slice( -150 ).map( ( result, id ) => {
-			let classHasSource = 'no-source';
-			let url;
-
-			if ( result.source ) {
-				classHasSource = '';
-				url = `${ config.reportDeepUrl }/${
-					result.report
-				}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
-			}
-
-			return (
-				<span
-					key={ id }
-					onClick={ () => {
-						if ( url ) {
-							window.open( url, '_blank' );
-						}
-					} }
-					className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
-					aria-hidden="true"
-				>
-					&nbsp;
-					<span className="tooltip-content">
-						{ moment( result.time ).format( 'MMM Do, h:mm a' ) }
-						<br />
-						{ result.source }
-					</span>
-				</span>
-			);
-		} );
-		return <div>{ badges }</div>;
+		return <TestResultTimeline results={ test.results } reportDeepUrl={ config.reportDeepUrl } />;
 	}
 
 	getTestContent( test, id ) {
@@ -229,87 +204,71 @@ export default class Tests extends React.Component {
 	}
 
 	render() {
-		if ( ! this.state.isDataReady ) {
-			return null;
-		}
-
 		return (
-			<div>
-				<div className="row align-items-center">
-					<FilterDateFields
-						onDateChange={ dates => {
-							this.setState( prevState => ( {
-								filters: {
-									...prevState.filters,
-									startDate: dates.startDate,
-									endDate: dates.endDate,
-								},
-							} ) );
-						} }
-					/>
-				</div>
-				<hr />
-				<div className="row text-center">
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">{ this.state.tests.distinctTests }</span>
-							<br />
-							<span className="stat-description">tests</span>
-						</div>
-					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">{ this.state.tests.totalTestResults }</span>
-							<br />
-							<span className="stat-description">results</span>
-						</div>
-					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">{ this.state.tests.failedResults }</span>
-							<br />
-							<span className="stat-description">failures</span>
-						</div>
-					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">{ this.state.tests.failedRate }%</span>
-							<br />
-							<span className="stat-description">failure rate</span>
-						</div>
-					</div>
-				</div>
-				<hr />
-				<div className="row">
-					<div className="col-sm filters">
-						<FilterReportDropdown
-							availableReports={ this.state.availableReports }
-							selectedReport={ this.state.filters.selectedReport }
-							onChange={ newValue => {
+			<LoadingState isLoading={ ! this.state.isDataReady }>
+				<div>
+					<div className="row align-items-center">
+						<FilterDateFields
+							onDateChange={ dates => {
 								this.setState( prevState => ( {
 									filters: {
 										...prevState.filters,
-										selectedReport: newValue,
+										startDate: dates.startDate,
+										endDate: dates.endDate,
 									},
 								} ) );
 							} }
 						/>
 					</div>
-					<div className="col-md sort-buttons">
-						<SortButtons
-							sortOptions={ {
-								total: 'runs',
-								failedRate: 'failure rate',
-							} }
-							currentSortStateBy={ this.state.sort.by }
-							currentSortStateIsAsc={ this.state.sort.isAsc }
-							onSort={ this.sortData.bind( this ) }
-						/>
+					<hr />
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox value={ this.state.tests.distinctTests } description="tests" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ this.state.tests.totalTestResults } description="results" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ this.state.tests.failedResults } description="failures" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ `${ this.state.tests.failedRate }%` } description="failure rate" />
+						</div>
+					</div>
+					<hr />
+					<div className="row">
+						<div className="col-sm filters">
+							<FilterReportDropdown
+								availableReports={ this.state.availableReports }
+								selectedReport={ this.state.filters.selectedReport }
+								onChange={ newValue => {
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											selectedReport: newValue,
+										},
+									} ) );
+								} }
+							/>
+						</div>
+						<div className="col-md sort-buttons">
+							<SortButtons
+								sortOptions={ {
+									total: 'runs',
+									failedRate: 'failure rate',
+								} }
+								currentSortStateBy={ this.state.sort.by }
+								currentSortStateIsAsc={ this.state.sort.isAsc }
+								onSort={ this.sortData.bind( this ) }
+							/>
+						</div>
+					</div>
+					<hr />
+					<div>
+						{ this.state.tests.list.map( ( test, id ) => this.getTestContent( test, id ) ) }
 					</div>
 				</div>
-				<hr />
-				<div>{ this.state.tests.list.map( ( test, id ) => this.getTestContent( test, id ) ) }</div>
-			</div>
+			</LoadingState>
 		);
 	}
 }

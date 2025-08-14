@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { fetchJsonData } from '../../utils/fetch';
-import { sortArray } from '../../utils/sort';
-import FilterReportDropdown from '../ui/FilterReportDropdown';
-import config from '../../config.json';
+import { fetchJsonData } from '../utils/fetch';
+import { sortArray } from '../utils/sort';
+import FilterReportDropdown from '../components/FilterReportDropdown';
+import StatBox from '../components/StatBox';
+import LoadingState from '../components/LoadingState';
+import config from '../config.json';
 import moment from 'moment';
 
-export default class Charts extends React.Component {
+export default class Stats extends React.Component {
 	state = {
 		rawData: {
 			dailyData: [],
@@ -96,6 +98,11 @@ export default class Charts extends React.Component {
 		// we don't modify the original data
 		const summaryData = {};
 		const selectedReport = this.state.filters.selectedReport || 'trunk';
+
+		// Safety check to ensure data exists
+		if (!this.state.rawData.summaryData.stats) {
+			return summaryData;
+		}
 
 		Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
 			const reportData = this.state.rawData.summaryData.stats[ key ][ selectedReport ] || {
@@ -373,91 +380,95 @@ export default class Charts extends React.Component {
 	}
 
 	render() {
-		if ( ! this.state.isDataReady ) {
-			return null;
-		}
-
 		return (
-			<div>
-				<div className="row">
-					<div className="col-sm filters">
-						<FilterReportDropdown
-							availableReports={ this.state.availableReports }
-							selectedReport={ this.state.filters.selectedReport }
-							onChange={ newValue => {
-								this.setState( prevState => ( {
-									filters: {
-										...prevState.filters,
-										selectedReport: newValue,
-									},
-								} ) );
-							} }
-						/>
-					</div>
-				</div>
-				<hr />
-				<div className="row">
-					<div className="col-sm">
-						<span className="inner-title">Failure rate</span>
-					</div>
-				</div>
-				<div className="row text-center">
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.summary[ '24h' ].failureRate }
-								<small>%</small>
-							</span>
-							<br />
-							<span className="stat-description">24h</span>
+			<LoadingState isLoading={ ! this.state.isDataReady }>
+				<div>
+					<div className="row">
+						<div className="col-sm filters">
+							<FilterReportDropdown
+								availableReports={ this.state.availableReports }
+								selectedReport={ this.state.filters.selectedReport }
+								onChange={ newValue => {
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											selectedReport: newValue,
+										},
+									} ) );
+								} }
+							/>
 						</div>
 					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.summary[ '7d' ].failureRate }
-								<small>%</small>
-							</span>
-							<br />
-							<span className="stat-description">7d</span>
+					<hr />
+					<div className="row">
+						<div className="col-sm">
+							<span className="inner-title">Failure rate</span>
 						</div>
 					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.summary[ '14d' ].failureRate }
-								<small>%</small>
-							</span>
-							<br />
-							<span className="stat-description">14d</span>
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ this.state.summary[ '24h' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="24h"
+							/>
+						</div>
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ this.state.summary[ '7d' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="7d"
+							/>
+						</div>
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ this.state.summary[ '14d' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="14d"
+							/>
+						</div>
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ this.state.summary[ '30d' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="30d"
+							/>
 						</div>
 					</div>
-					<div className="col-sm">
-						<div className="stat-box">
-							<span className="stat-number">
-								{ this.state.summary[ '30d' ].failureRate }
-								<small>%</small>
-							</span>
-							<br />
-							<span className="stat-description">30d</span>
+					<div className="row justify-content-end">
+						<div className="col-sm text-end">
+							<small>
+								updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }
+							</small>
 						</div>
 					</div>
+					<hr />
+					<ReactEcharts option={ this.dailyChartOptions() } />
+					<hr />
+					<ReactEcharts option={ this.dailyHeatMapOptions() } />
+					<hr />
+					<ReactEcharts option={ this.weeklyChartOptions() } />
+					<hr />
+					<ReactEcharts option={ this.monthlyChartOptions() } />
+					<hr />
 				</div>
-				<div className="row justify-content-end">
-					<div className="col-sm text-end">
-						<small>updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }</small>
-					</div>
-				</div>
-				<hr />
-				<ReactEcharts option={ this.dailyChartOptions() } />
-				<hr />
-				<ReactEcharts option={ this.dailyHeatMapOptions() } />
-				<hr />
-				<ReactEcharts option={ this.weeklyChartOptions() } />
-				<hr />
-				<ReactEcharts option={ this.monthlyChartOptions() } />
-				<hr />
-			</div>
+			</LoadingState>
 		);
 	}
 }

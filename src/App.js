@@ -4,12 +4,12 @@ import ReactGA from 'react-ga';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import ReportView from './components/views/ReportView';
+import ReportView from './views/ReportView';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import TestView from './components/views/TestView';
-import StatsView from './components/views/StatsView';
-import FailureView from './components/views/FailureView';
-import PerformanceView from './components/views/PerformanceView';
+import TestView from './views/TestView';
+import StatsView from './views/StatsView';
+import FailureView from './views/FailureView';
+import PerformanceView from './views/PerformanceView';
 
 const TRACKING_ID = 'UA-208890082-1';
 ReactGA.initialize( TRACKING_ID );
