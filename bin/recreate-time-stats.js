@@ -8,12 +8,15 @@ const moment = require( 'moment' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
 const trunkReports = require( '../src/config.json' ).trunkRuns;
+const permanentReports = require( '../src/config.json' ).permanent;
 const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }';
 
 ( async () => {
 	const srcData = { tests: [] };
 	const s3DataFiles = await listS3Objects( 'data' );
-	const testsDataFiles = s3DataFiles.filter( fileName => fileName.startsWith( 'data/tests-' ) );
+	const testsDataFiles = s3DataFiles
+		.filter( fileName => fileName.startsWith( 'data/tests-' ) )
+		.slice( -18 );
 
 	for ( const dataFile of testsDataFiles ) {
 		const monthSrcData = JSON.parse( ( await readS3Object( `${ dataFile }` ) ).toString() );
@@ -33,8 +36,17 @@ const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }'
 		lastUpdate: '',
 	};
 
+	// Add permanent reports to each time period
+	for ( const period of [ '24h', '7d', '14d', '30d' ] ) {
+		for ( const reportName of permanentReports ) {
+			summaryData.stats[ period ][ reportName ] = JSON.parse( resultsTemplate );
+		}
+	}
+
 	for ( const test of srcData.tests ) {
 		for ( const result of test.results ) {
+			// here we have result.report to check against reportName
+
 			const date = moment.utc( result.time ).format( 'YYYY-MM-DD' );
 			const week = moment.utc( result.time ).format( 'GGGG-[week]-WW' );
 			const month = moment.utc( result.time ).format( 'YYYY-MM' );
@@ -98,30 +110,49 @@ function updateSummaryEntry( entry, result ) {
 	if ( isTrunk ) {
 		entry.trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry.trunk.total++;
-	} else {
-		entry.total[ result.status === 'broken' ? 'failed' : result.status ]++;
-		entry.total.total++;
 	}
+
+	if ( permanentReports.includes( result.report ) ) {
+		entry[ result.report ][ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry[ result.report ].total++;
+	}
+
+	entry.total[ result.status === 'broken' ? 'failed' : result.status ]++;
+	entry.total.total++;
 }
 
 function pushData( data, date, result ) {
 	let entry = data.filter( k => k.date === date );
 
 	if ( entry.length === 0 ) {
-		data.push( {
+		// console.log('Creating new entry for date:', date);
+		const resultEntry = {
 			date,
 			trunk: JSON.parse( resultsTemplate ),
 			total: JSON.parse( resultsTemplate ),
-		} );
+		};
+
+		for ( const reportName of permanentReports ) {
+			resultEntry[ reportName ] = JSON.parse( resultsTemplate );
+		}
+
+		data.push( resultEntry );
 
 		entry = data.filter( k => k.date === date );
 	}
+
+	console.log( entry );
 
 	const isTrunk = trunkReports.includes( result.report );
 
 	if ( isTrunk ) {
 		entry[ 0 ].trunk[ result.status === 'broken' ? 'failed' : result.status ]++;
 		entry[ 0 ].trunk.total++;
+	}
+
+	if ( permanentReports.includes( result.report ) ) {
+		entry[ 0 ][ result.report ][ result.status === 'broken' ? 'failed' : result.status ]++;
+		entry[ 0 ][ result.report ].total++;
 	}
 
 	entry[ 0 ].total[ result.status === 'broken' ? 'failed' : result.status ]++;
