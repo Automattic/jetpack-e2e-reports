@@ -266,8 +266,18 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 
 	console.group( '\n', 'Cleaning up errors data file' );
 	const errorsJson = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
-	cleanOldResults( errorsJson, 'errors', 180 );
+	cleanOldResults( errorsJson, 'errors', 90 );
+
+	errorsJson.errors = errorsJson.errors.filter( e => {
+		if (!e.results || e.results.length === 0) {
+			console.log(`Removing error with no results: ${e.trace?.substring(0, 50)}...`);
+			return false;
+		}
+		return true;
+	} );
+
 	cleanTestsSourceProperty( errorsJson, 'errors' );
+
 	await s3client.send(
 		new PutObjectCommand( {
 			Bucket: s3Params.Bucket,
