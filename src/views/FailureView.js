@@ -156,15 +156,15 @@ export default class Failures extends React.Component {
 
 	getListOfTests( tests ) {
 		return (
-			<div>
+			<ul className="tests-for-error-list">
 				{ tests.map( ( test, id ) => {
 					return (
-						<span key={ id } className="label label-status-skipped">
-							{ test.name } <span className={ `badge-pill stat-pill` }>{ test.times.length }</span>
-						</span>
+						<li key={ id } className="">
+							{ test.times.length } x { test.name }
+						</li>
 					);
 				} ) }
-			</div>
+			</ul>
 		);
 	}
 
