@@ -38,6 +38,7 @@ function cleanTrace( trace ) {
 		.replace( /\n+/g, '\n' )
 		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
 		.replace( /https:\/\/.+.a8c-localtunnel.cyou/g, 'SITE-URL' )
+		.replace( /https:\/\/.+.trycloudflare.com/g, 'SITE-URL' )
 		.replace(
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
 			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
