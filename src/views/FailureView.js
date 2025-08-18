@@ -224,31 +224,8 @@ export default class Failures extends React.Component {
 		return (
 			<LoadingState isLoading={ ! this.state.isDataReady }>
 				<div>
-					<hr />
-					<div className="row text-center">
-						<div className="col-sm">
-							<StatBox value={ this.state.errors.totalErrors } description="total errors" />
-						</div>
-						<div className="col-sm">
-							<StatBox value={ this.state.errors.distinctErrors } description="distinct errors" />
-						</div>
-					</div>
-					<hr />
 					<div className="row">
-						<FilterDateFields
-							onDateChange={ dates => {
-								this.setState( prevState => ( {
-									filters: {
-										...prevState.filters,
-										startDate: dates.startDate,
-										endDate: dates.endDate,
-									},
-								} ) );
-							} }
-						/>
-					</div>
-					<div className="row">
-						<div className="col-sm filters">
+						<div className="col-auto filters">
 							<FilterReportDropdown
 								availableReports={ this.state.availableReports }
 								selectedReport={ this.state.filters.selectedReport }
@@ -262,7 +239,32 @@ export default class Failures extends React.Component {
 								} }
 							/>
 						</div>
-						<div className="col-md sort-buttons">
+						<div className="col">
+							<FilterDateFields
+								onDateChange={ dates => {
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											startDate: dates.startDate,
+											endDate: dates.endDate,
+										},
+									} ) );
+								} }
+							/>
+						</div>
+					</div>
+					<hr />
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox value={ this.state.errors.totalErrors } description="total errors" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ this.state.errors.distinctErrors } description="distinct errors" />
+						</div>
+					</div>
+					<hr />
+					<div className="row">
+						<div className="col sort-buttons">
 							<SortButtons
 								sortOptions={ {
 									recent: 'most recent',

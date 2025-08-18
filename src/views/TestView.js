@@ -206,17 +206,33 @@ export default class Tests extends React.Component {
 			<LoadingState isLoading={ ! this.state.isDataReady }>
 				<div>
 					<div className="row align-items-center">
-						<FilterDateFields
-							onDateChange={ dates => {
-								this.setState( prevState => ( {
-									filters: {
-										...prevState.filters,
-										startDate: dates.startDate,
-										endDate: dates.endDate,
-									},
-								} ) );
-							} }
+						<div className="col-auto filters">
+							<FilterReportDropdown
+								availableReports={ this.state.availableReports }
+								selectedReport={ this.state.filters.selectedReport }
+								onChange={ newValue => {
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											selectedReport: newValue,
+										},
+									} ) );
+								} }
+							/>
+						</div>
+						<div className="col-auto">
+							<FilterDateFields
+								onDateChange={ dates => {
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											startDate: dates.startDate,
+											endDate: dates.endDate,
+										},
+									} ) );
+								} }
 						/>
+						</div>
 					</div>
 					<hr />
 					<div className="row text-center">
@@ -235,20 +251,7 @@ export default class Tests extends React.Component {
 					</div>
 					<hr />
 					<div className="row">
-						<div className="col-sm filters">
-							<FilterReportDropdown
-								availableReports={ this.state.availableReports }
-								selectedReport={ this.state.filters.selectedReport }
-								onChange={ newValue => {
-									this.setState( prevState => ( {
-										filters: {
-											...prevState.filters,
-											selectedReport: newValue,
-										},
-									} ) );
-								} }
-							/>
-						</div>
+						
 						<div className="col-md sort-buttons">
 							<SortButtons
 								sortOptions={ {
