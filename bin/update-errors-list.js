@@ -74,6 +74,8 @@ async function updateErrorsData( reportPath ) {
 				console.log( 'Adding new result' );
 				existingError[ 0 ].results.push( result );
 				existingError[ 0 ].results.sort( ( a, b ) => a.time - b.time );
+				// eslint-disable-next-line dot-notation
+				existingError[ 0 ][ 'latestOccurrence' ] = existingError[ 0 ].results[ 0 ].time;
 			} else {
 				console.log( 'The result already exists. Nothing will be added' );
 			}
@@ -82,15 +84,22 @@ async function updateErrorsData( reportPath ) {
 			const error = {
 				trace: cleanError( testInfo.statusMessage, testInfo.statusTrace ),
 				results: [],
+				latestOccurrence: ''
 			};
 
 			console.log( 'Creating new error entry' );
 			error.results.push( result );
 			error.results.sort( ( a, b ) => a.time - b.time );
+			error.latestOccurrence = result.time;
 
 			json.errors.push( error );
 		}
 	}
+
+	// Sort the errors
+	json.errors.sort( ( a, b ) => {
+		return a.latestOccurrence.localeCompare( b.latestOccurrence );
+	} );
 
 	// Only keep the last 1000 errors
 	if ( json.errors.length > 1000 ) {
