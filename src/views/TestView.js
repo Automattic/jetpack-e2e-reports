@@ -231,7 +231,7 @@ export default class Tests extends React.Component {
 										},
 									} ) );
 								} }
-						/>
+							/>
 						</div>
 					</div>
 					<hr />
@@ -251,7 +251,6 @@ export default class Tests extends React.Component {
 					</div>
 					<hr />
 					<div className="row">
-						
 						<div className="col-md sort-buttons">
 							<SortButtons
 								sortOptions={ {

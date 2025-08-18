@@ -91,7 +91,6 @@ export default class Performance extends React.Component {
 				} );
 			} )
 			.catch( console.log );
-
 	}
 
 	renderChart( type, chartData ) {

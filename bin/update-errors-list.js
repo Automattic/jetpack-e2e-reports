@@ -92,5 +92,10 @@ async function updateErrorsData( reportPath ) {
 		}
 	}
 
+	// Only keep the last 1000 errors
+	if ( json.errors.length > 1000 ) {
+		json.errors = json.errors.slice( -1000 );
+	}
+
 	json.lastUpdate = new Date().toISOString();
 }

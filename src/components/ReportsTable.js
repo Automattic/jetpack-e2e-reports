@@ -145,12 +145,7 @@ export default class ReportsTable extends React.Component {
 				<li>
 					<FontAwesomeIcon className={ statusClassName } icon={ statusIcon } />
 					&nbsp;
-					<a
-						href={ linkUrl }
-						className="report-link"
-						target="_blank"
-						rel="noreferrer"
-					>
+					<a href={ linkUrl } className="report-link" target="_blank" rel="noreferrer">
 						{ reportTitle }
 						<br />
 					</a>

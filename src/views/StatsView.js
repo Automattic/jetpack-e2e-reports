@@ -100,7 +100,7 @@ export default class Stats extends React.Component {
 		const selectedReport = this.state.filters.selectedReport || 'trunk';
 
 		// Safety check to ensure data exists
-		if (!this.state.rawData.summaryData.stats) {
+		if ( ! this.state.rawData.summaryData.stats ) {
 			return summaryData;
 		}
 
