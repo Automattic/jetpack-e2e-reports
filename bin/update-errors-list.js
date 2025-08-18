@@ -104,9 +104,9 @@ async function updateErrorsData( reportPath ) {
 		return a.latestOccurrence - b.latestOccurrence;
 	});
 
-	// Only keep the last 1000 errors
-	if ( json.errors.length > 1000 ) {
-		json.errors = json.errors.slice( -1000 );
+	// Only keep the last 500 errors
+	if ( json.errors.length > 500 ) {
+		json.errors = json.errors.slice( -500 );
 	}
 
 	json.lastUpdate = new Date().toISOString();
