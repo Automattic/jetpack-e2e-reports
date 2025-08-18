@@ -97,9 +97,12 @@ async function updateErrorsData( reportPath ) {
 	}
 
 	// Sort the errors
-	json.errors.sort( ( a, b ) => {
-		return a.latestOccurrence.localeCompare( b.latestOccurrence );
-	} );
+	json.errors.sort((a, b) => {
+		if (!a.latestOccurrence || !b.latestOccurrence) {
+			return 0;
+		}
+		return a.latestOccurrence - b.latestOccurrence;
+	});
 
 	// Only keep the last 1000 errors
 	if ( json.errors.length > 1000 ) {
