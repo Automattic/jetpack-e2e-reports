@@ -5,7 +5,7 @@ import ReportView from './views/ReportView';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import TestView from './views/TestView';
 import StatsView from './views/StatsView';
-import FailureView from './views/FailureView';
+import ErrorsView from './views/ErrorsView';
 import PerformanceView from './views/PerformanceView';
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
 								<Nav.Link href={ `${ basename }/#/reports` }>Reports</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/stats` }>Stats</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/tests` }>Tests</Nav.Link>
-								<Nav.Link href={ `${ basename }/#/failures` }>Failures</Nav.Link>
+								<Nav.Link href={ `${ basename }/#/errors` }>Errors</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/performance` }>Performance</Nav.Link>
 							</Nav>
 						</Navbar.Collapse>
@@ -34,7 +34,7 @@ function App() {
 						<Route exact path="/" element={ <ReportView /> } />
 						<Route exact path="/reports" element={ <ReportView /> } />
 						<Route exact path="/tests" element={ <TestView /> } />
-						<Route exact path="/failures" element={ <FailureView /> } />
+						<Route exact path="/errors" element={ <ErrorsView /> } />
 						<Route exact path="/performance" element={ <PerformanceView /> } />
 						<Route exact path="/charts" element={ <StatsView /> } />
 						<Route exact path="/stats" element={ <StatsView /> } />

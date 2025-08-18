@@ -8,7 +8,7 @@ import StatBox from '../components/StatBox';
 import ErrorCard from '../components/ErrorCard';
 import LoadingState from '../components/LoadingState';
 
-export default class Failures extends React.Component {
+export default class ErrorsView extends React.Component {
 	state = {
 		rawData: {
 			errorsData: {},
