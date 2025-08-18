@@ -84,7 +84,7 @@ async function updateErrorsData( reportPath ) {
 			const error = {
 				trace: cleanError( testInfo.statusMessage, testInfo.statusTrace ),
 				results: [],
-				latestOccurrence: ''
+				latestOccurrence: '',
 			};
 
 			console.log( 'Creating new error entry' );
@@ -97,12 +97,12 @@ async function updateErrorsData( reportPath ) {
 	}
 
 	// Sort the errors
-	json.errors.sort((a, b) => {
-		if (!a.latestOccurrence || !b.latestOccurrence) {
+	json.errors.sort( ( a, b ) => {
+		if ( ! a.latestOccurrence || ! b.latestOccurrence ) {
 			return 0;
 		}
 		return a.latestOccurrence - b.latestOccurrence;
-	});
+	} );
 
 	// Only keep the last 500 errors
 	if ( json.errors.length > 500 ) {

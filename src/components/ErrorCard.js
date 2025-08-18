@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 const ErrorCard = ( { error, getListOfTests, getListOfFailures } ) => {
-	let details = `${ error.total } times, since ${ moment(
+	let details = `${ error.total } occurrences, since ${ moment(
 		error.oldest
 	).fromNow() }. Last failed ${ moment( error.newest ).fromNow() }`;
 

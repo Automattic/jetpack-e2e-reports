@@ -4,7 +4,6 @@ import { fetchJsonData } from '../utils/fetch';
 import config from '../config.json';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
-import FilterDateFields from '../components/FilterDateFields';
 import StatBox from '../components/StatBox';
 import ErrorCard from '../components/ErrorCard';
 import LoadingState from '../components/LoadingState';
@@ -23,8 +22,6 @@ export default class Failures extends React.Component {
 		availableReports: [],
 		filters: {
 			selectedReport: 'trunk',
-			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
-			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
 		sort: { by: 'common', isAsc: false },
 		isDataReady: false,
@@ -71,19 +68,6 @@ export default class Failures extends React.Component {
 		// make a copy of raw data errors object to process
 		// wwe don't modify the original data
 		let errors = JSON.parse( JSON.stringify( this.state.rawData.errorsData.errors ) );
-
-		if ( this.state.filters.startDate && this.state.filters.endDate ) {
-			errors.forEach( e => {
-				e.results = e.results.filter( r =>
-					moment( r.time ).isBetween(
-						moment( this.state.filters.startDate, 'YYYY-MM-DD' ),
-						moment( this.state.filters.endDate, 'YYYY-MM-DD' ),
-						'd',
-						'[]'
-					)
-				);
-			} );
-		}
 
 		// Filter by selected report
 		if ( this.state.filters.selectedReport === 'trunk' ) {
@@ -234,19 +218,6 @@ export default class Failures extends React.Component {
 										filters: {
 											...prevState.filters,
 											selectedReport: newValue,
-										},
-									} ) );
-								} }
-							/>
-						</div>
-						<div className="col">
-							<FilterDateFields
-								onDateChange={ dates => {
-									this.setState( prevState => ( {
-										filters: {
-											...prevState.filters,
-											startDate: dates.startDate,
-											endDate: dates.endDate,
 										},
 									} ) );
 								} }

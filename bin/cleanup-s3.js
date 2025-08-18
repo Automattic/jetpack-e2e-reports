@@ -269,8 +269,8 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 	cleanOldResults( errorsJson, 'errors', 90 );
 
 	errorsJson.errors = errorsJson.errors.filter( e => {
-		if (!e.results || e.results.length === 0) {
-			console.log(`Removing error with no results: ${e.trace?.substring(0, 50)}...`);
+		if ( ! e.results || e.results.length === 0 ) {
+			console.log( `Removing error with no results: ${ e.trace?.substring( 0, 50 ) }...` );
 			return false;
 		}
 		return true;
