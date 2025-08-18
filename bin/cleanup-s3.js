@@ -266,7 +266,7 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 
 	console.group( '\n', 'Cleaning up errors data file' );
 	const errorsJson = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
-	cleanOldResults( errorsJson, 'errors', 90 );
+	cleanOldResults( errorsJson, 'errors', 60 );
 
 	errorsJson.errors = errorsJson.errors.filter( e => {
 		if ( ! e.results || e.results.length === 0 ) {
