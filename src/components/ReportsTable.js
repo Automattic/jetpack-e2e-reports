@@ -104,7 +104,6 @@ export default class ReportsTable extends React.Component {
 		);
 	}
 
-
 	getReportLinkCell( report, metadata, isFailed, totalTests ) {
 		const linkUrl = `${ configData.dataSourceURL }/reports/${ report.name }/report/index.html`;
 
@@ -212,7 +211,9 @@ export default class ReportsTable extends React.Component {
 			<Table size="sm" responsive="sm" borderless className="reportsTable">
 				{ this.getTableHeader() }
 				<tbody>
-					{ this.state.reports.map( ( report, id ) => <ReportRow key={ id } report={ report } id={ id } /> ) }
+					{ this.state.reports.map( ( report, id ) => (
+						<ReportRow key={ id } report={ report } id={ id } />
+					) ) }
 				</tbody>
 				<tfoot>
 					<tr>

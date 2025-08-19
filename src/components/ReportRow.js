@@ -4,11 +4,11 @@ import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-so
 import moment from 'moment';
 import configData from '../config.json';
 
-const ReportRow = ({ report, id }) => {
+const ReportRow = ( { report, id } ) => {
 	const { statistic, metadata, history } = report;
 	const isFailed = statistic.total !== statistic.passed + statistic.skipped;
 
-	const getReportLinkCell = (reportData, metadataData, isFailedData, totalTests) => {
+	const getReportLinkCell = ( reportData, metadataData, isFailedData, totalTests ) => {
 		const linkUrl = `${ configData.dataSourceURL }/reports/${ reportData.name }/report/index.html`;
 
 		const reportKey = reportData.name;
@@ -63,20 +63,26 @@ const ReportRow = ({ report, id }) => {
 		);
 	};
 
-	const getTestResultsCell = (statisticData) => {
-		const counts = [ 'failed', 'passed', 'total' ].map( ( label, index ) => {
-			const count = label === 'failed' ? statisticData[ label ] + statisticData.broken : statisticData[ label ];
-			return (
-				<span key={ index } className={ `label label-status-${ label }` }>
-					{ label } { count }
+	const getTestResultsCell = statisticData => {
+		const counts = [ 'failed', 'passed', 'total' ]
+			.map( ( label, index ) => {
+				const count =
+					label === 'failed'
+						? statisticData[ label ] + statisticData.broken
+						: statisticData[ label ];
+				return { label, count, index };
+			} )
+			.filter( item => item.count > 0 )
+			.map( item => (
+				<span key={ item.index } className={ `label label-status-${ item.label }` }>
+					{ item.label } { item.count }
 				</span>
-			);
-		} );
+			) );
 
 		return <div>{ counts }</div>;
 	};
 
-	const getTestResultsHistoryCell = (historyData) => {
+	const getTestResultsHistoryCell = historyData => {
 		const formattedHistory = historyData
 			.slice( -10 )
 			.split( '' )
@@ -91,7 +97,7 @@ const ReportRow = ({ report, id }) => {
 		return <div>{ formattedHistory }</div>;
 	};
 
-	const getMetadataCell = (reportData) => {
+	const getMetadataCell = reportData => {
 		const runUrl = `https://github.com/Automattic/jetpack/actions/runs/${ reportData.metadata.run_id }`;
 		return (
 			<ul className={ 'list-unstyled' }>
@@ -109,7 +115,7 @@ const ReportRow = ({ report, id }) => {
 			</ul>
 		);
 	};
-	
+
 	return (
 		<tr key={ id }>
 			<td className={ 'reportNameCell' }>
