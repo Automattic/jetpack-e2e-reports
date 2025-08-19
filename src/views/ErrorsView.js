@@ -23,7 +23,7 @@ export default class ErrorsView extends React.Component {
 		filters: {
 			selectedReport: 'trunk',
 		},
-		sort: { by: 'common', isAsc: false },
+		sort: { by: 'recent', isAsc: false },
 		isDataReady: false,
 	};
 
