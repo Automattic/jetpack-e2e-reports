@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import configData from '../config.json';
+import ReportRow from './ReportRow';
 
 export default class ReportsTable extends React.Component {
 	state = {
@@ -103,21 +104,6 @@ export default class ReportsTable extends React.Component {
 		);
 	}
 
-	getReportRow( report, id ) {
-		const { statistic, metadata, history } = report; //destructuring
-		const isFailed = statistic.total !== statistic.passed + statistic.skipped;
-		return (
-			<tr key={ id }>
-				<td className={ 'reportNameCell' }>
-					{ this.getReportLinkCell( report, metadata, isFailed, statistic.total ) }
-				</td>
-				<td>
-					{ this.getTestResultsCell( statistic ) } { this.getTestResultsHistoryCell( history ) }
-				</td>
-				<td>{ this.getMetadataCell( report ) }</td>
-			</tr>
-		);
-	}
 
 	getReportLinkCell( report, metadata, isFailed, totalTests ) {
 		const linkUrl = `${ configData.dataSourceURL }/reports/${ report.name }/report/index.html`;
@@ -226,7 +212,7 @@ export default class ReportsTable extends React.Component {
 			<Table size="sm" responsive="sm" borderless className="reportsTable">
 				{ this.getTableHeader() }
 				<tbody>
-					{ this.state.reports.map( ( report, id ) => this.getReportRow( report, id ) ) }
+					{ this.state.reports.map( ( report, id ) => <ReportRow key={ id } report={ report } id={ id } /> ) }
 				</tbody>
 				<tfoot>
 					<tr>
