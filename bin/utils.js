@@ -37,9 +37,9 @@ function cleanTrace( trace ) {
 		.join( '\n' )
 		.replace( /\n+/g, '\n' )
 		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
+		.replace( /Call log:(?:\n\s*-.+){3,}/g, 'Call log: [...]' )
 		.replace( /(https?:\/\/)?[^\s]+\.a8c-localtunnel\.cyou/g, 'SITE-URL' )
 		.replace( /(https?:\/\/)?[^\s]+\.trycloudflare\.com/g, 'SITE-URL' )
-		.replace( /Call log:(?:\n\s*-.+){3,}/g, 'Call log: [...]' )
 		.replace( /cookie: .*/gi, 'cookie: [...]' )
 		.replace(
 			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
