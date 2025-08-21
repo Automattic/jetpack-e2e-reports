@@ -44,6 +44,8 @@ const reportsToDelete = [];
 const reportsToClean = [];
 let testsToDelete = [];
 const reportAgeThresholdInDays = 30;
+const errorsAgeThresholdInDays = 30;
+const testsAgeThresholdInDays = 30;
 
 const plus = String.fromCodePoint( 0x2795 );
 const done = String.fromCodePoint( 0x2714 );
@@ -60,6 +62,9 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 	console.log( `Storage Only: ${ storageOnly }` );
 	console.log( `Report Name: ${ reportName || 'None (process all reports)' }` );
 	console.log( `Batch Size: ${ batchSize === 0 ? 'No limit' : batchSize }` );
+	console.log( `Report Age Threshold: ${ reportAgeThresholdInDays } days` );
+	console.log( `Tests Age Threshold: ${ testsAgeThresholdInDays } days` );
+	console.log( `Errors Age Threshold: ${ errorsAgeThresholdInDays } days` );
 	console.log( '====================================\n' );
 
 	// If a --report argument exists, clean up that single report and exit
@@ -252,7 +257,7 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 
 	console.group( '\n', 'Cleaning up tests data file' );
 	const testsJson = JSON.parse( ( await readS3Object( 'data/tests.json' ) ).toString() );
-	cleanOldResults( testsJson, 'tests', 60 );
+	cleanOldResults( testsJson, 'tests', testsAgeThresholdInDays );
 	cleanTestsSourceProperty( testsJson, 'tests' );
 	await s3client.send(
 		new PutObjectCommand( {
@@ -266,7 +271,7 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 
 	console.group( '\n', 'Cleaning up errors data file' );
 	const errorsJson = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
-	cleanOldResults( errorsJson, 'errors', 60 );
+	cleanOldResults( errorsJson, 'errors', errorsAgeThresholdInDays );
 
 	errorsJson.errors = errorsJson.errors.filter( e => {
 		if ( ! e.results || e.results.length === 0 ) {
