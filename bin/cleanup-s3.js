@@ -44,7 +44,7 @@ const reportsToDelete = [];
 const reportsToClean = [];
 let testsToDelete = [];
 const reportAgeThresholdInDays = 30;
-const errorsAgeThresholdInDays = 30;
+const errorsAgeThresholdInDays = 7;
 const testsAgeThresholdInDays = 30;
 
 const plus = String.fromCodePoint( 0x2795 );
