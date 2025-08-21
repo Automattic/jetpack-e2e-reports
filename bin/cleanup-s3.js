@@ -274,10 +274,22 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 	cleanOldResults( errorsJson, 'errors', errorsAgeThresholdInDays );
 
 	errorsJson.errors = errorsJson.errors.filter( e => {
+		// Remove errors without results
 		if ( ! e.results || e.results.length === 0 ) {
 			console.log( `Removing error with no results: ${ e.trace?.substring( 0, 50 ) }...` );
 			return false;
 		}
+		
+		// Remove errors with single result older than 3 days
+		if ( e.results.length === 1 ) {
+			const resultDate = moment( e.results[0].date );
+			const daysSinceResult = moment().diff( resultDate, 'days' );
+			if ( daysSinceResult > 3 ) {
+				console.log( `Removing error with single result older than 3 days: ${ e.trace?.substring( 0, 50 ) }...` );
+				return false;
+			}
+		}
+		
 		return true;
 	} );
 
