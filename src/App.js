@@ -24,7 +24,7 @@ function App() {
 								<Nav.Link href={ `${ basename }/#/stats` }>Stats</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/tests` }>Tests</Nav.Link>
 								<Nav.Link href={ `${ basename }/#/errors` }>Errors</Nav.Link>
-								<Nav.Link href={ `${ basename }/#/performance` }>Performance</Nav.Link>
+								{ /* <Nav.Link href={ `${ basename }/#/performance` }>Performance</Nav.Link> */ }
 							</Nav>
 						</Navbar.Collapse>
 					</Container>
