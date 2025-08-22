@@ -1,5 +1,6 @@
 const isDevelopment =
-	process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
+	process.env.NODE_ENV === 'development' ||
+	( typeof window !== 'undefined' && window.location.hostname === 'localhost' );
 
 const config = {
 	permanent: [
@@ -31,4 +32,10 @@ const config = {
 	reportDeepUrl: 'http://a8c-jetpack-e2e-reports.s3-website-us-east-1.amazonaws.com/reports',
 };
 
+// ES Module export for browser/React
 export default config;
+
+// CommonJS export for Node.js scripts
+if ( typeof module !== 'undefined' && module.exports ) {
+	module.exports = config;
+}

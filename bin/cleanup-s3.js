@@ -22,7 +22,7 @@ const {
 const { s3Params, s3client } = require( './s3-client' );
 const { Octokit } = require( '@octokit/rest' );
 const { PutObjectCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
-const config = require( '../src/config.json' );
+const config = require( '../src/config.js' );
 const moment = require( 'moment' );
 const octokit = new Octokit();
 

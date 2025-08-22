@@ -1,7 +1,7 @@
-const { dataSourceURL } = require( '../../src/config.json' );
+const { dataSourceURL } = require( '../../src/config.js' );
 const { fetchJsonData } = require( '../fetch-data' );
 const moment = require( 'moment' );
-const trunkReports = require( '../../src/config.json' ).trunkRuns;
+const trunkReports = require( '../../src/config.js' ).trunkRuns;
 
 async function weeklyReport() {
 	console.log( "'Running 'weekly_report' rule'" );

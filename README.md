@@ -27,7 +27,7 @@ You can refer to the [scripts docs](bin/readme.md) for more information.
 
 ## Permanent reports
 
-Most reports are only temporary, usually for a PR, and will be deleted after a while. But there are also permanent reports, that will never be deleted. These are configured in the [config](src/config.json) file. 
+Most reports are only temporary, usually for a PR, and will be deleted after a while. But there are also permanent reports, that will never be deleted. These are configured in the [config](src/config.js) file. 
 
 ## Trunk runs
 

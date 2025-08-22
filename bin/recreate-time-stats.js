@@ -7,8 +7,8 @@ const { sort, readS3Object, listS3Objects } = require( './utils' );
 const moment = require( 'moment' );
 const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
-const trunkReports = require( '../src/config.json' ).trunkRuns;
-const permanentReports = require( '../src/config.json' ).permanent;
+const trunkReports = require( '../src/config.js' ).trunkRuns;
+const permanentReports = require( '../src/config.js' ).permanent;
 const resultsTemplate = '{ "passed": 0, "failed": 0, "skipped": 0, "total": 0 }';
 
 ( async () => {

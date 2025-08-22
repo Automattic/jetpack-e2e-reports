@@ -1,4 +1,4 @@
-const { dataSourceURL } = require( '../../src/config.json' );
+const { dataSourceURL } = require( '../../src/config.js' );
 const { fetchJsonData } = require( '../fetch-data' );
 
 async function consecutiveFailures( reportName, threshold ) {

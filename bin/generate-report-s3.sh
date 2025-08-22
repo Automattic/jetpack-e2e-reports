@@ -45,7 +45,7 @@ for d in "$RESULTS_PATH"/*; do
 done
 
 s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
-REPORTS_BASE_URL=$(jq -r '.reportDeepUrl' "$SCRIPT_PATH/../src/config.json")
+REPORTS_BASE_URL=$(node "$SCRIPT_PATH/get-config-value.js" reportDeepUrl)
 
 echo "----------------------------------------"
 

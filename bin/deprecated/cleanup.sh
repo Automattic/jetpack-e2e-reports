@@ -28,11 +28,11 @@ script_path=$(
   pwd -P
 )
 
-mapfile -t permanentReports < <(jq -r '.permanent[]' "$script_path/../src/config.json")
+mapfile -t permanentReports < <(node "$script_path/../get-config-value.js" permanent lines)
 echo "Permanent reports: ${permanentReports[*]}"
 
 # Read the ignore list from config and append "docs" to each folder in list to have a complete path
-mapfile -t ignoreList < <(jq -r '.ignore[]' "$script_path/../src/config.json")
+mapfile -t ignoreList < <(node "$script_path/../get-config-value.js" ignore lines)
 ignoreList=( "${ignoreList[@]/#/docs/}" )
 echo "Ignore list: ${ignoreList[*]}"
 echo

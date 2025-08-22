@@ -42,7 +42,7 @@ for ( const dirName of getReportsDirs() ) {
 			e => e.trace === cleanError( testInfo.statusMessage, testInfo.statusTrace )
 		);
 
-		const trunkReports = require( '../src/config.json' ).trunkRuns;
+		const trunkReports = require( '../src/config.js' ).trunkRuns;
 
 		const result = {
 			time: testInfo.time.stop,

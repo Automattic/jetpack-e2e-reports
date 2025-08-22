@@ -8,7 +8,7 @@ const {
 } = require( '@aws-sdk/client-s3' );
 
 function getReportsDirs() {
-	const excluded = require( '../src/config.json' ).ignore;
+	const excluded = require( '../src/config.js' ).ignore;
 	console.log( `Excluded dirs: ${ excluded }` );
 
 	return fs
