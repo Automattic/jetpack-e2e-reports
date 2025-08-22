@@ -24,7 +24,7 @@ export default class TestsView extends React.Component {
 		},
 		availableReports: [],
 		filters: {
-			selectedReport: 'trunk',
+			selectedReport: 'total',
 			startDate: moment().subtract( 7, 'd' ).format( 'YYYY-MM-DD' ),
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
