@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { fetchJsonData } from '../utils/fetch';
 import { getAvailableReports } from '../utils/reports';
-import { batchStateUpdates } from '../utils/dataProcessing';
 import FilterReportDropdown from '../components/FilterReportDropdown';
 import StatBox from '../components/StatBox';
 import LoadingState from '../components/LoadingState';
@@ -10,65 +9,57 @@ import UpdatingMessage from '../components/UpdatingMessage';
 import config from '../config';
 import moment from 'moment';
 
-export default class Stats extends React.Component {
-	state = {
-		rawData: {
-			dailyData: [],
-			weeklyData: [],
-			monthlyData: [],
-			summaryData: {},
-		},
-		days: [],
-		weeks: [],
-		months: [],
-		summary: {},
-		availableReports: [],
-		filters: { selectedReport: 'trunk' },
-		isDataReady: false,
-		isProcessing: false,
-	};
+export default function Stats() {
+	const [ rawData, setRawData ] = useState( {
+		dailyData: [],
+		weeklyData: [],
+		monthlyData: [],
+		summaryData: {},
+	} );
+	const [ days, setDays ] = useState( [] );
+	const [ weeks, setWeeks ] = useState( [] );
+	const [ months, setMonths ] = useState( [] );
+	const [ summary, setSummary ] = useState( {} );
+	const [ availableReports, setAvailableReports ] = useState( [] );
+	const [ selectedReport, setSelectedReport ] = useState( 'trunk' );
+	const [ isDataReady, setIsDataReady ] = useState( false );
+	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	async componentDidMount() {
-		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
+	useEffect( () => {
+		const fetchData = async () => {
+			try {
+				const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
 
-		// Fetch all data concurrently for better performance
-		const [ dailyData, weeklyData, monthlyData ] = await Promise.all( [
-			fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
-			fetchJsonData( `${ config.dataSourceURL }/data/results-weekly.json` ),
-			fetchJsonData( `${ config.dataSourceURL }/data/results-monthly.json` ),
-		] );
+				// Fetch all data concurrently for better performance
+				const [ dailyData, weeklyData, monthlyData ] = await Promise.all( [
+					fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
+					fetchJsonData( `${ config.dataSourceURL }/data/results-weekly.json` ),
+					fetchJsonData( `${ config.dataSourceURL }/data/results-monthly.json` ),
+				] );
 
-		const rawData = { dailyData, weeklyData, monthlyData, summaryData };
+				const newRawData = { dailyData, weeklyData, monthlyData, summaryData };
 
-		// Extract available reports from summary data
-		const reports = getAvailableReports( summaryData );
+				// Extract available reports from summary data
+				const reports = getAvailableReports( summaryData );
 
-		// Batch all state updates to reduce re-renders
-		batchStateUpdates( this.setState.bind( this ), {
-			rawData,
-			availableReports: reports,
-			days: this.filterData( rawData.dailyData ),
-			weeks: this.filterData( rawData.weeklyData ),
-			months: this.filterData( rawData.monthlyData ),
-			summary: this.filterSummaryData( rawData.summaryData ),
-			isDataReady: true,
-		} );
-	}
+				setRawData( newRawData );
+				setAvailableReports( reports );
+				setIsDataReady( true );
+			} catch ( error ) {
+				console.error( 'Error fetching data:', error );
+			}
+		};
 
-	async componentDidUpdate( prevProps, prevState ) {
-		if ( this.state.filters !== prevState.filters ) {
-			this.setState( { isProcessing: true } );
-			await this.updateDataAsync();
-		}
-	}
+		fetchData();
+	}, [] );
 
-	filterData( rawData ) {
+	const filterData = useCallback( ( rawDataInput, selectedReportFilter ) => {
 		// Use efficient data processing instead of deep cloning
-		const selectedReport = this.state.filters.selectedReport || 'trunk';
+		const reportFilter = selectedReportFilter || 'trunk';
 
 		// Process entries in a single pass for better performance
-		const entries = rawData.map( entry => {
-			const reportData = entry[ selectedReport ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
+		const entries = rawDataInput.map( entry => {
+			const reportData = entry[ reportFilter ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
 			const total = reportData.total || 0;
 			const failed = reportData.failed || 0;
 
@@ -90,55 +81,68 @@ export default class Stats extends React.Component {
 		} );
 
 		return entries;
-	}
+	}, [] );
 
-	filterSummaryData( rawSummaryData ) {
-		// Use passed parameter to avoid accessing state during mount
-		const summaryDataSource = rawSummaryData || this.state.rawData.summaryData;
-		const selectedReport = this.state.filters.selectedReport || 'trunk';
+	const filterSummaryData = useCallback(
+		( rawSummaryData, selectedReportFilter ) => {
+			// Use passed parameter to avoid accessing state during mount
+			const summaryDataSource = rawSummaryData || rawData.summaryData;
+			const reportFilter = selectedReportFilter || 'trunk';
 
-		// Safety check to ensure data exists
-		if ( ! summaryDataSource?.stats ) {
-			return {};
-		}
+			// Safety check to ensure data exists
+			if ( ! summaryDataSource?.stats ) {
+				return {};
+			}
 
-		// Process summary data efficiently in a single pass
-		const processedSummary = {};
+			// Process summary data efficiently in a single pass
+			const processedSummary = {};
 
-		for ( const [ key, value ] of Object.entries( summaryDataSource.stats ) ) {
-			const reportData = value[ selectedReport ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
-			const total = reportData.total || 0;
-			const failed = reportData.failed || 0;
+			for ( const [ key, value ] of Object.entries( summaryDataSource.stats ) ) {
+				const reportData = value[ reportFilter ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
+				const total = reportData.total || 0;
+				const failed = reportData.failed || 0;
 
-			processedSummary[ key ] = {
-				passed: reportData.passed || 0,
-				failed,
-				skipped: reportData.skipped || 0,
-				total,
-				failureRate: total === 0 ? '0.00' : ( ( failed / total ) * 100 ).toFixed( 2 ),
-			};
-		}
+				processedSummary[ key ] = {
+					passed: reportData.passed || 0,
+					failed,
+					skipped: reportData.skipped || 0,
+					total,
+					failureRate: total === 0 ? '0.00' : ( ( failed / total ) * 100 ).toFixed( 2 ),
+				};
+			}
 
-		return processedSummary;
-	}
+			return processedSummary;
+		},
+		[ rawData.summaryData ]
+	);
 
-	updateDataAsync() {
-		return new Promise( resolve => {
+	// Update filtered data when selectedReport changes
+	useEffect( () => {
+		if ( isDataReady ) {
+			setIsProcessing( true );
+
+			// Use setTimeout to allow UI to update
 			setTimeout( () => {
-				// Batch all updates to reduce re-renders
-				batchStateUpdates( this.setState.bind( this ), {
-					days: this.filterData( this.state.rawData.dailyData ),
-					weeks: this.filterData( this.state.rawData.weeklyData ),
-					months: this.filterData( this.state.rawData.monthlyData ),
-					summary: this.filterSummaryData(),
-					isProcessing: false,
-				} );
-				resolve();
+				setDays( filterData( rawData.dailyData, selectedReport ) );
+				setWeeks( filterData( rawData.weeklyData, selectedReport ) );
+				setMonths( filterData( rawData.monthlyData, selectedReport ) );
+				setSummary( filterSummaryData( rawData.summaryData, selectedReport ) );
+				setIsProcessing( false );
 			}, 0 );
-		} );
-	}
+		}
+	}, [ selectedReport, isDataReady, rawData, filterData, filterSummaryData ] );
 
-	chartOptions( data ) {
+	// Initialize filtered data when raw data is loaded
+	useEffect( () => {
+		if ( isDataReady && rawData.dailyData.length > 0 ) {
+			setDays( filterData( rawData.dailyData, selectedReport ) );
+			setWeeks( filterData( rawData.weeklyData, selectedReport ) );
+			setMonths( filterData( rawData.monthlyData, selectedReport ) );
+			setSummary( filterSummaryData( rawData.summaryData, selectedReport ) );
+		}
+	}, [ isDataReady, rawData, selectedReport, filterData, filterSummaryData ] );
+
+	const chartOptions = useCallback( data => {
 		return {
 			title: {
 				text: '',
@@ -224,9 +228,7 @@ export default class Stats extends React.Component {
 					color: '#e38474',
 					symbol: 'roundRect',
 					symbolSize: 4,
-					data: data.map( function ( e ) {
-						return e.failedRate;
-					} ),
+					data: data.map( e => e.failedRate ),
 				},
 				{
 					name: 'passed tests',
@@ -236,9 +238,7 @@ export default class Stats extends React.Component {
 						focus: 'series',
 					},
 					color: 'rgba(115, 151, 75, 0.73)',
-					data: data.map( function ( e ) {
-						return e.passed;
-					} ),
+					data: data.map( e => e.passed ),
 				},
 				{
 					name: 'failed tests',
@@ -248,9 +248,7 @@ export default class Stats extends React.Component {
 						focus: 'series',
 					},
 					color: 'rgba(253, 90, 62, 0.71)',
-					data: data.map( function ( e ) {
-						return e.failed;
-					} ),
+					data: data.map( e => e.failed ),
 				},
 				{
 					name: 'skipped tests',
@@ -260,16 +258,14 @@ export default class Stats extends React.Component {
 						focus: 'series',
 					},
 					color: 'rgba(170, 170, 170, 0.73)',
-					data: data.map( function ( e ) {
-						return e.skipped;
-					} ),
+					data: data.map( e => e.skipped ),
 				},
 			],
 		};
-	}
+	}, [] );
 
-	dailyChartOptions() {
-		const options = this.chartOptions( this.state.days );
+	const dailyChartOptions = useMemo( () => {
+		const options = chartOptions( days );
 		options.title.text = 'Daily';
 		options.dataZoom[ 0 ].startValue = moment().subtract( 6, 'weeks' ).format( 'YYYY-MM-DD' );
 		options.xAxis[ 0 ].axisLabel.formatter = value => {
@@ -280,16 +276,16 @@ export default class Stats extends React.Component {
 		};
 
 		return options;
-	}
+	}, [ days, chartOptions ] );
 
-	weeklyChartOptions() {
-		const options = this.chartOptions( this.state.weeks );
+	const weeklyChartOptions = useMemo( () => {
+		const options = chartOptions( weeks );
 		options.title.text = 'Weekly';
 		return options;
-	}
+	}, [ weeks, chartOptions ] );
 
-	monthlyChartOptions() {
-		const options = this.chartOptions( this.state.months );
+	const monthlyChartOptions = useMemo( () => {
+		const options = chartOptions( months );
 		options.title.text = 'Monthly';
 		options.xAxis[ 0 ].axisLabel.formatter = value => {
 			return moment( value ).format( 'MMM YYYY' );
@@ -299,12 +295,10 @@ export default class Stats extends React.Component {
 		};
 
 		return options;
-	}
+	}, [ months, chartOptions ] );
 
-	dailyHeatMapOptions() {
-		const data = this.state.days.map( function ( e ) {
-			return [ e.date, e.failedRate ];
-		} );
+	const dailyHeatMapOptions = useMemo( () => {
+		const data = days.map( e => [ e.date, e.failedRate ] );
 		return {
 			title: {
 				text: 'Daily failure rate',
@@ -386,104 +380,90 @@ export default class Stats extends React.Component {
 				data,
 			},
 		};
-	}
+	}, [ days ] );
 
-	render() {
-		return (
-			<LoadingState isLoading={ ! this.state.isDataReady }>
-				<div>
-					<div className="row align-items-center">
-						<div className="col-auto filters">
-							<FilterReportDropdown
-								availableReports={ this.state.availableReports }
-								selectedReport={ this.state.filters.selectedReport }
-								onChange={ newValue => {
-									this.setState( prevState => ( {
-										filters: {
-											...prevState.filters,
-											selectedReport: newValue,
-										},
-									} ) );
-								} }
-							/>
-						</div>
-						<div className="col-auto filters">
-							<UpdatingMessage
-								isUpdating={ this.state.isProcessing }
-								updatingText="Updating charts..."
-							/>
-						</div>
+	return (
+		<LoadingState isLoading={ ! isDataReady }>
+			<div>
+				<div className="row align-items-center">
+					<div className="col-auto filters">
+						<FilterReportDropdown
+							availableReports={ availableReports }
+							selectedReport={ selectedReport }
+							onChange={ setSelectedReport }
+						/>
 					</div>
-					<hr />
-					<div className="row">
-						<div className="col-sm">
-							<span className="inner-title">Failure rate</span>
-						</div>
+					<div className="col-auto filters">
+						<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating charts..." />
 					</div>
-					<div className="row text-center">
-						<div className="col-sm">
-							<StatBox
-								value={
-									<>
-										{ this.state.summary[ '24h' ]?.failureRate || '0.00' }
-										<small>%</small>
-									</>
-								}
-								description="24h"
-							/>
-						</div>
-						<div className="col-sm">
-							<StatBox
-								value={
-									<>
-										{ this.state.summary[ '7d' ]?.failureRate || '0.00' }
-										<small>%</small>
-									</>
-								}
-								description="7d"
-							/>
-						</div>
-						<div className="col-sm">
-							<StatBox
-								value={
-									<>
-										{ this.state.summary[ '14d' ]?.failureRate || '0.00' }
-										<small>%</small>
-									</>
-								}
-								description="14d"
-							/>
-						</div>
-						<div className="col-sm">
-							<StatBox
-								value={
-									<>
-										{ this.state.summary[ '30d' ]?.failureRate || '0.00' }
-										<small>%</small>
-									</>
-								}
-								description="30d"
-							/>
-						</div>
-					</div>
-					<div className="row justify-content-end">
-						<div className="col-sm text-end">
-							<small>
-								updated { moment( this.state.rawData.summaryData.lastUpdate ).fromNow() }
-							</small>
-						</div>
-					</div>
-					<hr />
-					<ReactEcharts option={ this.dailyChartOptions() } />
-					<hr />
-					<ReactEcharts option={ this.dailyHeatMapOptions() } />
-					<hr />
-					<ReactEcharts option={ this.weeklyChartOptions() } />
-					<hr />
-					<ReactEcharts option={ this.monthlyChartOptions() } />
-					<hr />
 				</div>
-			</LoadingState>
-		);
-	}
+				<hr />
+				<div className="row">
+					<div className="col-sm">
+						<span className="inner-title">Failure rate</span>
+					</div>
+				</div>
+				<div className="row text-center">
+					<div className="col-sm">
+						<StatBox
+							value={
+								<>
+									{ summary[ '24h' ]?.failureRate || '0.00' }
+									<small>%</small>
+								</>
+							}
+							description="24h"
+						/>
+					</div>
+					<div className="col-sm">
+						<StatBox
+							value={
+								<>
+									{ summary[ '7d' ]?.failureRate || '0.00' }
+									<small>%</small>
+								</>
+							}
+							description="7d"
+						/>
+					</div>
+					<div className="col-sm">
+						<StatBox
+							value={
+								<>
+									{ summary[ '14d' ]?.failureRate || '0.00' }
+									<small>%</small>
+								</>
+							}
+							description="14d"
+						/>
+					</div>
+					<div className="col-sm">
+						<StatBox
+							value={
+								<>
+									{ summary[ '30d' ]?.failureRate || '0.00' }
+									<small>%</small>
+								</>
+							}
+							description="30d"
+						/>
+					</div>
+				</div>
+				<div className="row justify-content-end">
+					<div className="col-sm text-end">
+						<small>updated { moment( rawData.summaryData.lastUpdate ).fromNow() }</small>
+					</div>
+				</div>
+				<hr />
+				<ReactEcharts option={ dailyChartOptions } />
+				<hr />
+				<ReactEcharts option={ dailyHeatMapOptions } />
+				<hr />
+				<ReactEcharts option={ weeklyChartOptions } />
+				<hr />
+				<ReactEcharts option={ monthlyChartOptions } />
+				<hr />
+			</div>
+		</LoadingState>
+	);
 }

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { getAvailableReports } from '../utils/reports';
 import { calculateMaxDays } from '../utils/date';
-import { processTestData, batchStateUpdates } from '../utils/dataProcessing';
+import { processTestData } from '../utils/dataProcessing';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
@@ -13,75 +13,81 @@ import TestCard from '../components/TestCard';
 import LoadingState from '../components/LoadingState';
 import UpdatingMessage from '../components/UpdatingMessage';
 
-export default class TestsView extends React.Component {
-	state = {
-		rawData: {
-			testsData: {},
-			summaryData: {},
-		},
-		tests: {
-			list: [],
-			distinctTests: 0,
-			totalTestResults: 0,
-			failedResults: 0,
-			failedRate: 0,
-		},
-		availableReports: [],
-		filters: {
-			selectedReport: 'total',
-			startDate: null, // Will be set after data loads
-			endDate: moment().format( 'YYYY-MM-DD' ),
-		},
-		sort: { by: 'failedRate', isAsc: false },
-		isDataReady: false,
-		isProcessing: false,
-	};
+export default function TestsView() {
+	const [ rawData, setRawData ] = useState( {
+		testsData: {},
+		summaryData: {},
+	} );
+	const [ tests, setTests ] = useState( {
+		list: [],
+		distinctTests: 0,
+		totalTestResults: 0,
+		failedResults: 0,
+		failedRate: 0,
+	} );
+	const [ availableReports, setAvailableReports ] = useState( [] );
+	const [ filters, setFilters ] = useState( {
+		selectedReport: 'total',
+		startDate: null,
+		endDate: moment().format( 'YYYY-MM-DD' ),
+	} );
+	const [ sort, setSort ] = useState( { by: 'failedRate', isAsc: false } );
+	const [ isDataReady, setIsDataReady ] = useState( false );
+	const [ isProcessing, setIsProcessing ] = useState( false );
+	const [ error, setError ] = useState( null );
 
-	async componentDidMount() {
-		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
-		const testsData = await fetchJsonData( `${ config.dataSourceURL }/data/tests.json` );
+	useEffect( () => {
+		const fetchData = async () => {
+			try {
+				const [ summaryData, testsData ] = await Promise.all( [
+					fetchJsonData( `${ config.dataSourceURL }/data/summary.json` ),
+					fetchJsonData( `${ config.dataSourceURL }/data/tests.json` ),
+				] );
 
-		// Calculate the default start date based on available data
-		const maxDays = calculateMaxDays( testsData.oldestTimestamp ) || 7;
-		const defaultDays = Math.min( 7, maxDays );
-		const startDate = moment().subtract( defaultDays, 'd' ).format( 'YYYY-MM-DD' );
+				// Calculate the default start date based on available data
+				const maxDays = calculateMaxDays( testsData.oldestTimestamp ) || 7;
+				const defaultDays = Math.min( 7, maxDays );
+				const startDate = moment().subtract( defaultDays, 'd' ).format( 'YYYY-MM-DD' );
 
-		// Extract available reports from summary data
-		const reports = getAvailableReports( summaryData );
+				// Extract available reports from summary data
+				const reports = getAvailableReports( summaryData );
 
-		// Batch all state updates into a single setState call
-		batchStateUpdates( this.setState.bind( this ), {
-			rawData: {
-				testsData,
-				summaryData,
-			},
-			filters: {
-				...this.state.filters,
-				startDate,
-			},
-			availableReports: reports,
-			isDataReady: true,
-		} );
+				setRawData( { testsData, summaryData } );
+				setFilters( prev => ( { ...prev, startDate } ) );
+				setAvailableReports( reports );
+				setIsDataReady( true );
+			} catch ( err ) {
+				console.error( 'Error fetching data:', err );
+				setError( err.message );
+			}
+		};
 
-		this.setTestsData();
-	}
+		fetchData();
+	}, [] );
 
-	async componentDidUpdate( _, prevState ) {
-		if ( this.state.filters !== prevState.filters ) {
-			this.setState( { isProcessing: true } );
-			await this.setTestsDataAsync();
+	// Calculate max days based on oldest timestamp
+	const getMaxDays = useCallback( () => {
+		const oldestTimestamp = rawData.testsData.oldestTimestamp;
+		return calculateMaxDays( oldestTimestamp ) || 7;
+	}, [ rawData.testsData.oldestTimestamp ] );
+
+	// Process test data when filters change
+	const processedTestData = useMemo( () => {
+		if ( ! isDataReady || ! rawData.testsData.tests ) {
+			return {
+				list: [],
+				distinctTests: 0,
+				totalTestResults: 0,
+				failedResults: 0,
+				failedRate: 0,
+			};
 		}
 
-		if ( this.state.tests.list !== prevState.tests.list ) {
-			this.sortData( this.state.sort.by, this.state.sort.isAsc );
-		}
-	}
+		const processedTests = processTestData( rawData.testsData.tests, filters );
 
-	setTestsData() {
-		// Use optimized data processing instead of deep cloning
-		const processedTests = processTestData(
-			this.state.rawData.testsData.tests,
-			this.state.filters
+		// Apply default sorting (mimicking original behavior)
+		const sortedTests = [ ...processedTests ].sort( ( a, b ) =>
+			sort.isAsc ? a[ sort.by ] - b[ sort.by ] : b[ sort.by ] - a[ sort.by ]
 		);
 
 		// Calculate aggregate statistics
@@ -90,120 +96,117 @@ export default class TestsView extends React.Component {
 		const failedRate =
 			totalTestResults > 0 ? ( ( failedResults / totalTestResults ) * 100 ).toFixed( 2 ) : '0.00';
 
-		batchStateUpdates( this.setState.bind( this ), {
-			tests: {
-				list: processedTests,
-				distinctTests: processedTests.length,
-				totalTestResults,
-				failedResults,
-				failedRate,
-			},
-		} );
-	}
+		return {
+			list: sortedTests,
+			distinctTests: processedTests.length,
+			totalTestResults,
+			failedResults,
+			failedRate,
+		};
+	}, [ rawData.testsData.tests, filters, isDataReady, sort.by, sort.isAsc ] );
 
-	setTestsDataAsync() {
-		return new Promise( resolve => {
+	// Update tests when processed data changes
+	useEffect( () => {
+		if ( isDataReady ) {
+			setIsProcessing( true );
 			setTimeout( () => {
-				this.setTestsData();
-				this.setState( { isProcessing: false } );
-				resolve();
+				setTests( processedTestData );
+				setIsProcessing( false );
 			}, 0 );
+		}
+	}, [ processedTestData, isDataReady ] );
+
+	// Sort data function
+	const sortData = useCallback( ( by, isAsc ) => {
+		setTests( prevTests => {
+			const sortedList = [ ...prevTests.list ].sort( ( a, b ) =>
+				isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ]
+			);
+			return { ...prevTests, list: sortedList };
 		} );
-	}
+		setSort( { by, isAsc } );
+	}, [] );
 
-	getMaxDays() {
-		const oldestTimestamp = this.state.rawData.testsData.oldestTimestamp;
-		return calculateMaxDays( oldestTimestamp ) || 7;
-	}
-
-	sortData( by, isAsc ) {
-		this.state.tests.list.sort( ( a, b ) => ( isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ] ) );
-
-		this.setState( {
-			sort: { by, isAsc },
-		} );
-	}
-
-	render() {
+	if ( error ) {
 		return (
-			<LoadingState isLoading={ ! this.state.isDataReady } loadingText="Loading data...">
-				<div>
-					<div className="row align-items-center">
-						<div className="col-auto filters">
-							<FilterReportDropdown
-								availableReports={ this.state.availableReports }
-								selectedReport={ this.state.filters.selectedReport }
-								onChange={ newValue => {
-									this.setState( prevState => ( {
-										filters: {
-											...prevState.filters,
-											selectedReport: newValue,
-										},
-									} ) );
-								} }
-							/>
-						</div>
-						<div className="col-lg filters">
-							<FilterDaysSelector
-								defaultDays={ Math.min( 7, this.getMaxDays() ) }
-								min={ 1 }
-								max={ this.getMaxDays() }
-								step={ 1 }
-								onDateChange={ dates => {
-									this.setState( prevState => ( {
-										filters: {
-											...prevState.filters,
-											startDate: dates.startDate,
-											endDate: dates.endDate,
-										},
-									} ) );
-								} }
-							/>
-						</div>
-						<div className="col-sm filters">
-							<UpdatingMessage
-								isUpdating={ this.state.isProcessing }
-								updatingText="Updating results..."
-							/>
-						</div>
-					</div>
-					<hr />
-					<div className="row text-center">
-						<div className="col-sm">
-							<StatBox value={ this.state.tests.distinctTests } description="tests" />
-						</div>
-						<div className="col-sm">
-							<StatBox value={ this.state.tests.totalTestResults } description="results" />
-						</div>
-						<div className="col-sm">
-							<StatBox value={ this.state.tests.failedResults } description="failures" />
-						</div>
-						<div className="col-sm">
-							<StatBox value={ `${ this.state.tests.failedRate }%` } description="failure rate" />
-						</div>
-					</div>
-					<hr />
-					<div className="row">
-						<div className="col-md sort-buttons">
-							<SortButtons
-								sortOptions={ {
-									total: 'runs',
-									failedRate: 'failure rate',
-								} }
-								currentSortStateBy={ this.state.sort.by }
-								currentSortStateIsAsc={ this.state.sort.isAsc }
-								onSort={ this.sortData.bind( this ) }
-							/>
-						</div>
-					</div>
-					<hr />
-					<div>
-						{ this.state.tests.list.map( ( test, id ) => (
-							<TestCard key={ id } test={ test } reportDeepUrl={ config.reportDeepUrl } />
-						) ) }
-					</div>
-				</div>
-			</LoadingState>
+			<div className="alert alert-danger">
+				<h4>Error loading test data</h4>
+				<p>{ error }</p>
+			</div>
 		);
 	}
+
+	return (
+		<LoadingState isLoading={ ! isDataReady } loadingText="Loading data...">
+			<div>
+				<div className="row align-items-center">
+					<div className="col-auto filters">
+						<FilterReportDropdown
+							availableReports={ availableReports }
+							selectedReport={ filters.selectedReport }
+							onChange={ newValue => {
+								setFilters( prev => ( {
+									...prev,
+									selectedReport: newValue,
+								} ) );
+							} }
+						/>
+					</div>
+					<div className="col-lg filters">
+						<FilterDaysSelector
+							defaultDays={ Math.min( 7, getMaxDays() ) }
+							min={ 1 }
+							max={ getMaxDays() }
+							step={ 1 }
+							onDateChange={ dates => {
+								setFilters( prev => ( {
+									...prev,
+									startDate: dates.startDate,
+									endDate: dates.endDate,
+								} ) );
+							} }
+						/>
+					</div>
+					<div className="col-sm filters">
+						<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating results..." />
+					</div>
+				</div>
+				<hr />
+				<div className="row text-center">
+					<div className="col-sm">
+						<StatBox value={ tests.distinctTests } description="tests" />
+					</div>
+					<div className="col-sm">
+						<StatBox value={ tests.totalTestResults } description="results" />
+					</div>
+					<div className="col-sm">
+						<StatBox value={ tests.failedResults } description="failures" />
+					</div>
+					<div className="col-sm">
+						<StatBox value={ `${ tests.failedRate }%` } description="failure rate" />
+					</div>
+				</div>
+				<hr />
+				<div className="row">
+					<div className="col-md sort-buttons">
+						<SortButtons
+							sortOptions={ {
+								total: 'runs',
+								failedRate: 'failure rate',
+							} }
+							currentSortStateBy={ sort.by }
+							currentSortStateIsAsc={ sort.isAsc }
+							onSort={ sortData }
+						/>
+					</div>
+				</div>
+				<hr />
+				<div>
+					{ tests.list.map( ( test, id ) => (
+						<TestCard key={ id } test={ test } reportDeepUrl={ config.reportDeepUrl } />
+					) ) }
+				</div>
+			</div>
+		</LoadingState>
+	);
 }

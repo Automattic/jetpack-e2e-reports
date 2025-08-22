@@ -1,46 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import config from '../config';
 import ReactEcharts from 'echarts-for-react';
+import { fetchJsonData } from '../utils/fetch';
 
-export default class Performance extends React.Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			selected: 'type',
-			rawData: [],
-			isDataFetched: false,
-			metrics: [
-				'serverResponse',
-				'firstPaint',
-				'domContentLoaded',
-				'loaded',
-				'firstContentfulPaint',
-				'firstBlock',
-				'type',
-				'focus',
-				'listViewOpen',
-				'inserterOpen',
-				'inserterHover',
-				'inserterSearch',
-			],
+export default function Performance() {
+	const [ selected, setSelected ] = useState( 'type' );
+	const [ rawData, setRawData ] = useState( [] );
+	const [ isDataFetched, setIsDataFetched ] = useState( false );
+	const [ error, setError ] = useState( null );
+
+	useEffect( () => {
+		const fetchData = async () => {
+			try {
+				const data = await fetchJsonData( `${ config.dataSourceURL }/data/perf-metrics.json` );
+				setRawData( data );
+				setIsDataFetched( true );
+			} catch ( err ) {
+				console.error( 'Error fetching performance data:', err );
+				setError( err.message );
+			}
 		};
-	}
 
-	calcPercent( base, comp ) {
+		fetchData();
+	}, [] );
+
+	const calcPercent = useCallback( ( base, comp ) => {
 		return Math.round( ( comp / base - 1 ) * 100 * 100 ) / 100;
-	}
+	}, [] );
 
-	prettyTitle( title ) {
+	const prettyTitle = useCallback( title => {
 		return title.replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toUpperCase();
-	}
+	}, [] );
 
-	prepareChartData( jsonData ) {
+	const chartData = useMemo( () => {
+		if ( ! isDataFetched || rawData.length === 0 ) {
+			return {};
+		}
+
 		const result = {};
-		const metrics = Object.keys( jsonData[ jsonData.length - 1 ].baseAvg );
+		const availableMetrics = Object.keys( rawData[ rawData.length - 1 ].baseAvg );
 
-		jsonData.forEach( obj => {
-			metrics.forEach( metric => {
+		rawData.forEach( obj => {
+			availableMetrics.forEach( metric => {
 				if ( ! result[ metric ] ) {
 					result[ metric ] = [];
 				}
@@ -56,7 +58,7 @@ export default class Performance extends React.Component {
 
 		const out = {};
 
-		metrics.forEach( metric => {
+		availableMetrics.forEach( metric => {
 			const dates = [ ...new Set( result[ metric ].map( entry => entry.date ) ) ];
 			const entries = dates.reduce( ( acc, date ) => {
 				const byDate = result[ metric ].filter( e => e.date === date );
@@ -74,191 +76,191 @@ export default class Performance extends React.Component {
 		} );
 
 		return out;
-	}
+	}, [ rawData, isDataFetched ] );
 
-	async componentDidMount() {
-		await fetch( `${ config.dataSourceURL }/data/perf-metrics.json`, {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		} )
-			.then( response => response.json() )
-			.then( jsonData => {
-				this.setState( {
-					rawData: jsonData,
-					isDataFetched: true,
-				} );
-			} )
-			.catch( console.log );
-	}
-
-	renderChart( type, chartData ) {
-		const chartOptions = {
-			grid: {
-				left: 60,
-				right: 0,
-			},
-			title: {
-				text: this.prettyTitle( type ),
-				textStyle: {
-					color: '#cccccc',
-					fontSize: '0.9rem',
+	const renderChart = useCallback(
+		( type, chartDataForType ) => {
+			const chartOptions = {
+				grid: {
+					left: 60,
+					right: 0,
 				},
-			},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'cross',
+				title: {
+					text: prettyTitle( type ),
+					textStyle: {
+						color: '#cccccc',
+						fontSize: '0.9rem',
+					},
 				},
-			},
-			xAxis: [
-				{
-					type: 'category',
-					data: chartData.map( function ( e ) {
-						return e.date;
-					} ),
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						type: 'cross',
+					},
 				},
-			],
-			yAxis: [
-				{
-					type: 'value',
-					splitLine: {
-						lineStyle: {
-							type: 'dotted',
-							color: '#6b6d76',
+				xAxis: [
+					{
+						type: 'category',
+						data: chartDataForType.map( function ( e ) {
+							return e.date;
+						} ),
+					},
+				],
+				yAxis: [
+					{
+						type: 'value',
+						splitLine: {
+							lineStyle: {
+								type: 'dotted',
+								color: '#6b6d76',
+							},
 						},
 					},
-				},
-				{
-					type: 'value',
-					splitLine: {
-						lineStyle: {
-							type: 'dashed',
-							color: 'rgba(107,109,118,0.47)',
+					{
+						type: 'value',
+						splitLine: {
+							lineStyle: {
+								type: 'dashed',
+								color: 'rgba(107,109,118,0.47)',
+							},
+						},
+						min: 0,
+						axisLabel: {
+							formatter: '{value} %',
 						},
 					},
-					min: 0,
-					axisLabel: {
-						formatter: '{value} %',
+				],
+				dataZoom: [
+					{
+						type: 'inside',
 					},
-				},
-			],
-			dataZoom: [
-				{
-					type: 'inside',
-				},
-				{
-					start: 50,
-					end: 100,
-				},
-			],
-			series: [
-				{
-					name: 'base',
-					type: 'line',
-					emphasis: {
-						focus: 'series',
+					{
+						start: 50,
+						end: 100,
 					},
-					color: 'rgb(99,100,138)',
-					data: chartData.map( function ( e ) {
-						return e.base;
-					} ),
-				},
-				{
-					name: 'jetpack',
-					type: 'line',
-					emphasis: {
-						focus: 'series',
+				],
+				series: [
+					{
+						name: 'base',
+						type: 'line',
+						emphasis: {
+							focus: 'series',
+						},
+						color: 'rgb(99,100,138)',
+						data: chartDataForType.map( function ( e ) {
+							return e.base;
+						} ),
 					},
-					color: 'rgb(99,150,138)',
-					data: chartData.map( function ( e ) {
-						return e.jetpack;
-					} ),
-				},
-			],
-		};
+					{
+						name: 'jetpack',
+						type: 'line',
+						emphasis: {
+							focus: 'series',
+						},
+						color: 'rgb(99,150,138)',
+						data: chartDataForType.map( function ( e ) {
+							return e.jetpack;
+						} ),
+					},
+				],
+			};
 
-		return <ReactEcharts option={ chartOptions } style={ { height: '400px', width: '100%' } } />;
-	}
+			return <ReactEcharts option={ chartOptions } style={ { height: '400px', width: '100%' } } />;
+		},
+		[ prettyTitle ]
+	);
 
-	onSelect( type ) {
-		this.setState( { selected: type } );
-	}
+	const onSelect = useCallback( type => {
+		setSelected( type );
+	}, [] );
 
-	renderTypeInfo( type, last, prev ) {
-		const diffPercent = this.calcPercent( prev, last );
+	const renderTypeInfo = useCallback(
+		( type, last, prev ) => {
+			const diffPercent = calcPercent( prev, last );
 
-		return (
-			<Row style={ { justifyContent: 'space-between' } }>
-				<div style={ { display: 'flex' } }>
-					<h5>
-						{ type }: { last } ms.
-					</h5>
-					&nbsp;from: { prev }ms.
-				</div>
-				<span>&nbsp;VS previous: { diffPercent }ms.</span>
-			</Row>
-		);
-	}
-
-	renderContainer( type, data ) {
-		const last = data.at( -1 );
-		const prev = data.at( -2 );
-
-		return (
-			<Container className="perf-button" onClick={ () => this.onSelect( type ) }>
-				<Row>
-					<h4>
-						{ this.state.selected === type ? (
-							<u>{ this.prettyTitle( type ) }</u>
-						) : (
-							this.prettyTitle( type )
-						) }
-					</h4>
+			return (
+				<Row style={ { justifyContent: 'space-between' } }>
+					<div style={ { display: 'flex' } }>
+						<h5>
+							{ type }: { last } ms.
+						</h5>
+						&nbsp;from: { prev }ms.
+					</div>
+					<span>&nbsp;VS previous: { diffPercent }ms.</span>
 				</Row>
-				<Row>&nbsp;</Row>
-				{ this.renderTypeInfo( 'Base', last.base, prev.base ) }
-				{ this.renderTypeInfo( 'Jetpack', last.jetpack, prev.jetpack ) }
-			</Container>
-		);
-	}
+			);
+		},
+		[ calcPercent ]
+	);
 
-	renderButtons( chartData ) {
+	const renderContainer = useCallback(
+		( type, data ) => {
+			const last = data.at( -1 );
+			const prev = data.at( -2 );
+
+			return (
+				<Container className="perf-button" onClick={ () => onSelect( type ) }>
+					<Row>
+						<h4>{ selected === type ? <u>{ prettyTitle( type ) }</u> : prettyTitle( type ) }</h4>
+					</Row>
+					<Row>&nbsp;</Row>
+					{ renderTypeInfo( 'Base', last.base, prev.base ) }
+					{ renderTypeInfo( 'Jetpack', last.jetpack, prev.jetpack ) }
+				</Container>
+			);
+		},
+		[ selected, onSelect, prettyTitle, renderTypeInfo ]
+	);
+
+	const renderButtons = useCallback(
+		chartDataObj => {
+			return (
+				<Container fluid>
+					<Row>
+						<Col sm>{ renderContainer( 'type', chartDataObj.type ) }</Col>
+						<Col sm>{ renderContainer( 'loaded', chartDataObj.loaded ) }</Col>
+						<Col sm>{ renderContainer( 'focus', chartDataObj.focus ) }</Col>
+					</Row>
+					<Row>
+						<Col sm>{ renderContainer( 'inserterOpen', chartDataObj.inserterOpen ) }</Col>
+						<Col sm>{ renderContainer( 'inserterHover', chartDataObj.inserterHover ) }</Col>
+						<Col sm>{ renderContainer( 'inserterSearch', chartDataObj.inserterSearch ) }</Col>
+					</Row>
+				</Container>
+			);
+		},
+		[ renderContainer ]
+	);
+
+	if ( error ) {
 		return (
-			<Container fluid>
-				<Row>
-					<Col sm>{ this.renderContainer( 'type', chartData.type ) }</Col>
-					<Col sm>{ this.renderContainer( 'loaded', chartData.loaded ) }</Col>
-					<Col sm>{ this.renderContainer( 'focus', chartData.focus ) }</Col>
-				</Row>
-				<Row>
-					<Col sm>{ this.renderContainer( 'inserterOpen', chartData.inserterOpen ) }</Col>
-					<Col sm>{ this.renderContainer( 'inserterHover', chartData.inserterHover ) }</Col>
-					<Col sm>{ this.renderContainer( 'inserterSearch', chartData.inserterSearch ) }</Col>
-				</Row>
-			</Container>
-		);
-	}
-
-	render() {
-		if ( ! this.state.isDataFetched ) {
-			return null;
-		}
-
-		const chartData = this.prepareChartData( this.state.rawData );
-
-		const type = this.state.selected;
-		return (
-			<div>
-				<h4>Editor Performance Metrics</h4>
-				<p>
-					This examines block editor performance with and without Jetpack using the Gutenberg
-					performance tests.
-				</p>
-				{ this.renderButtons( chartData ) }
-				{ this.renderChart( type, chartData[ type ] ) }
+			<div className="alert alert-danger">
+				<h4>Error loading performance data</h4>
+				<p>{ error }</p>
 			</div>
 		);
 	}
+
+	if ( ! isDataFetched ) {
+		return (
+			<div className="d-flex justify-content-center">
+				<div className="spinner-border" role="status">
+					<span className="sr-only">Loading...</span>
+				</div>
+			</div>
+		);
+	}
+
+	const type = selected;
+	return (
+		<div>
+			<h4>Editor Performance Metrics</h4>
+			<p>
+				This examines block editor performance with and without Jetpack using the Gutenberg
+				performance tests.
+			</p>
+			{ renderButtons( chartData ) }
+			{ renderChart( type, chartData[ type ] ) }
+		</div>
+	);
 }

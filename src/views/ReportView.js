@@ -1,72 +1,83 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import configData from '../config';
 import ReportsTable from '../components/ReportsTable';
 
-export default class Reports extends React.Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			reports: [],
-			pinnedReports: [],
-			docsSize: undefined,
-			reportsCount: undefined,
-			isDataFetched: false,
-		};
-	}
+export default function Reports() {
+	const [ reports, setReports ] = useState( [] );
+	const [ pinnedReports, setPinnedReports ] = useState( [] );
+	const [ reportsCount, setReportsCount ] = useState( undefined );
+	const [ isDataFetched, setIsDataFetched ] = useState( false );
+	const [ error, setError ] = useState( null );
 
-	componentDidMount() {
-		fetch( `${ configData.dataSourceURL }/data/reports.json`, {
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		} )
-			.then( response => response.json() )
-			.then( jsonData => {
-				const prReports = { reports: [] };
-				const pinnedReports = { reports: [] };
+	useEffect( () => {
+		const fetchReports = async () => {
+			try {
+				const response = await fetch( `${ configData.dataSourceURL }/data/reports.json`, {
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+					},
+				} );
+
+				if ( ! response.ok ) {
+					throw new Error( `Failed to fetch reports: ${ response.status }` );
+				}
+
+				const jsonData = await response.json();
+				const prReports = [];
+				const pinnedReportsData = [];
 
 				for ( const report of jsonData.reports ) {
 					if ( configData.permanent.includes( report.name ) ) {
-						pinnedReports.reports.push( report );
+						pinnedReportsData.push( report );
 					} else {
-						prReports.reports.push( report );
+						prReports.push( report );
 					}
 				}
 
-				this.setState( {
-					reports: prReports.reports,
-					pinnedReports: pinnedReports.reports,
-					docsSize: jsonData.docsSize,
-					reportsCount: jsonData.reportsCount,
-					isDataFetched: true,
-				} );
-			} )
-			.catch( console.log );
-	}
+				setReports( prReports );
+				setPinnedReports( pinnedReportsData );
+				setReportsCount( jsonData.reportsCount );
+				setIsDataFetched( true );
+			} catch ( err ) {
+				console.error( 'Error fetching reports:', err );
+				setError( err.message );
+			}
+		};
 
-	render() {
-		if ( ! this.state.isDataFetched ) {
-			return null;
-		}
+		fetchReports();
+	}, [] );
+
+	if ( error ) {
 		return (
-			<div>
-				<div className={ 'reports-header' }>{ this.state.reportsCount } reports</div>
-				<ReportsTable
-					reports={ this.state.pinnedReports }
-					options={ {
-						reportCount: false,
-						sortButtons: false,
-					} }
-				/>
-				<ReportsTable
-					reports={ this.state.reports }
-					options={ {
-						reportCount: false,
-						sortButtons: true,
-					} }
-				/>
+			<div className="alert alert-danger">
+				<h4>Error loading reports</h4>
+				<p>{ error }</p>
 			</div>
 		);
 	}
+
+	if ( ! isDataFetched ) {
+		return null;
+	}
+
+	return (
+		<div>
+			<div className="reports-header">{ reportsCount } reports</div>
+			<ReportsTable
+				reports={ pinnedReports }
+				options={ {
+					reportCount: false,
+					sortButtons: false,
+				} }
+			/>
+			<ReportsTable
+				reports={ reports }
+				options={ {
+					reportCount: false,
+					sortButtons: true,
+				} }
+			/>
+		</div>
+	);
 }
