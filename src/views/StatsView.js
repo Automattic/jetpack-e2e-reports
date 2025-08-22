@@ -384,86 +384,102 @@ export default function Stats() {
 
 	return (
 		<LoadingState isLoading={ ! isDataReady }>
-			<div>
-				<div className="row align-items-center">
-					<div className="col-auto filters">
-						<FilterReportDropdown
-							availableReports={ availableReports }
-							selectedReport={ selectedReport }
-							onChange={ setSelectedReport }
-						/>
+			<article>
+				<section aria-label="Statistics filters and controls">
+					<div className="row align-items-center">
+						<div className="col-auto filters">
+							<FilterReportDropdown
+								availableReports={ availableReports }
+								selectedReport={ selectedReport }
+								onChange={ setSelectedReport }
+							/>
+						</div>
+						<div className="col-auto filters">
+							<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating charts..." />
+						</div>
 					</div>
-					<div className="col-auto filters">
-						<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating charts..." />
-					</div>
-				</div>
+				</section>
 				<hr />
-				<div className="row">
-					<div className="col-sm">
-						<span className="inner-title">Failure rate</span>
+				<section aria-label="Failure rate statistics">
+					<header>
+						<div className="row">
+							<div className="col-sm">
+								<h2 className="inner-title">Failure rate</h2>
+							</div>
+						</div>
+					</header>
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ summary[ '24h' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="24h"
+							/>
+						</div>
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ summary[ '7d' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="7d"
+							/>
+						</div>
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ summary[ '14d' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="14d"
+							/>
+						</div>
+						<div className="col-sm">
+							<StatBox
+								value={
+									<>
+										{ summary[ '30d' ]?.failureRate || '0.00' }
+										<small>%</small>
+									</>
+								}
+								description="30d"
+							/>
+						</div>
 					</div>
-				</div>
-				<div className="row text-center">
-					<div className="col-sm">
-						<StatBox
-							value={
-								<>
-									{ summary[ '24h' ]?.failureRate || '0.00' }
-									<small>%</small>
-								</>
-							}
-							description="24h"
-						/>
-					</div>
-					<div className="col-sm">
-						<StatBox
-							value={
-								<>
-									{ summary[ '7d' ]?.failureRate || '0.00' }
-									<small>%</small>
-								</>
-							}
-							description="7d"
-						/>
-					</div>
-					<div className="col-sm">
-						<StatBox
-							value={
-								<>
-									{ summary[ '14d' ]?.failureRate || '0.00' }
-									<small>%</small>
-								</>
-							}
-							description="14d"
-						/>
-					</div>
-					<div className="col-sm">
-						<StatBox
-							value={
-								<>
-									{ summary[ '30d' ]?.failureRate || '0.00' }
-									<small>%</small>
-								</>
-							}
-							description="30d"
-						/>
-					</div>
-				</div>
-				<div className="row justify-content-end">
-					<div className="col-sm text-end">
-						<small>updated { moment( rawData.summaryData.lastUpdate ).fromNow() }</small>
-					</div>
-				</div>
+					<footer>
+						<div className="row justify-content-end">
+							<div className="col-sm text-end">
+								<small>updated { moment( rawData.summaryData.lastUpdate ).fromNow() }</small>
+							</div>
+						</div>
+					</footer>
+				</section>
 				<hr />
-				<ReactEcharts option={ dailyChartOptions } />
+				<section aria-label="Daily failure rate chart">
+					<ReactEcharts option={ dailyChartOptions } />
+				</section>
 				<hr />
-				<ReactEcharts option={ dailyHeatMapOptions } />
+				<section aria-label="Daily failure rate heat map">
+					<ReactEcharts option={ dailyHeatMapOptions } />
+				</section>
 				<hr />
-				<ReactEcharts option={ weeklyChartOptions } />
+				<section aria-label="Weekly failure rate chart">
+					<ReactEcharts option={ weeklyChartOptions } />
+				</section>
 				<hr />
-				<ReactEcharts option={ monthlyChartOptions } />
+				<section aria-label="Monthly failure rate chart">
+					<ReactEcharts option={ monthlyChartOptions } />
+				</section>
 				<hr />
-			</div>
+			</article>
 		</LoadingState>
 	);
 }

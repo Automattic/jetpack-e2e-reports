@@ -18,7 +18,7 @@ function App() {
 
 	return (
 		<Container fluid className="App">
-			<div className="App-content">
+			<main className="App-content">
 				<Navbar
 					variant="dark"
 					expand="md"
@@ -137,7 +137,7 @@ function App() {
 						</Suspense>
 					</ErrorBoundary>
 				</HashRouter>
-			</div>
+			</main>
 			<footer className="App-footer" role="contentinfo" aria-label="Site footer">
 				<div>
 					<a

@@ -62,22 +62,28 @@ export default function Reports() {
 	}
 
 	return (
-		<div>
-			<div className="reports-header">{ reportsCount } reports</div>
-			<ReportsTable
-				reports={ pinnedReports }
-				options={ {
-					reportCount: false,
-					sortButtons: false,
-				} }
-			/>
-			<ReportsTable
-				reports={ reports }
-				options={ {
-					reportCount: false,
-					sortButtons: true,
-				} }
-			/>
-		</div>
+		<article>
+			<header className="reports-header">
+				<span>{ reportsCount } reports</span>
+			</header>
+			<section aria-label="Pinned reports">
+				<ReportsTable
+					reports={ pinnedReports }
+					options={ {
+						reportCount: false,
+						sortButtons: false,
+					} }
+				/>
+			</section>
+			<section aria-label="All reports">
+				<ReportsTable
+					reports={ reports }
+					options={ {
+						reportCount: false,
+						sortButtons: true,
+					} }
+				/>
+			</section>
+		</article>
 	);
 }

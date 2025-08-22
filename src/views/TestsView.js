@@ -138,75 +138,81 @@ export default function TestsView() {
 
 	return (
 		<LoadingState isLoading={ ! isDataReady } loadingText="Loading data...">
-			<div>
-				<div className="row align-items-center">
-					<div className="col-auto filters">
-						<FilterReportDropdown
-							availableReports={ availableReports }
-							selectedReport={ filters.selectedReport }
-							onChange={ newValue => {
-								setFilters( prev => ( {
-									...prev,
-									selectedReport: newValue,
-								} ) );
-							} }
-						/>
+			<article>
+				<section aria-label="Test filters and controls">
+					<div className="row align-items-center">
+						<div className="col-auto filters">
+							<FilterReportDropdown
+								availableReports={ availableReports }
+								selectedReport={ filters.selectedReport }
+								onChange={ newValue => {
+									setFilters( prev => ( {
+										...prev,
+										selectedReport: newValue,
+									} ) );
+								} }
+							/>
+						</div>
+						<div className="col-lg filters">
+							<FilterDaysSelector
+								defaultDays={ Math.min( 7, getMaxDays() ) }
+								min={ 1 }
+								max={ getMaxDays() }
+								step={ 1 }
+								onDateChange={ dates => {
+									setFilters( prev => ( {
+										...prev,
+										startDate: dates.startDate,
+										endDate: dates.endDate,
+									} ) );
+								} }
+							/>
+						</div>
+						<div className="col-sm filters">
+							<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating results..." />
+						</div>
 					</div>
-					<div className="col-lg filters">
-						<FilterDaysSelector
-							defaultDays={ Math.min( 7, getMaxDays() ) }
-							min={ 1 }
-							max={ getMaxDays() }
-							step={ 1 }
-							onDateChange={ dates => {
-								setFilters( prev => ( {
-									...prev,
-									startDate: dates.startDate,
-									endDate: dates.endDate,
-								} ) );
-							} }
-						/>
-					</div>
-					<div className="col-sm filters">
-						<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating results..." />
-					</div>
-				</div>
+				</section>
 				<hr />
-				<div className="row text-center">
-					<div className="col-sm">
-						<StatBox value={ tests.distinctTests } description="tests" />
+				<section aria-label="Test statistics summary">
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox value={ tests.distinctTests } description="tests" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ tests.totalTestResults } description="results" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ tests.failedResults } description="failures" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ `${ tests.failedRate }%` } description="failure rate" />
+						</div>
 					</div>
-					<div className="col-sm">
-						<StatBox value={ tests.totalTestResults } description="results" />
-					</div>
-					<div className="col-sm">
-						<StatBox value={ tests.failedResults } description="failures" />
-					</div>
-					<div className="col-sm">
-						<StatBox value={ `${ tests.failedRate }%` } description="failure rate" />
-					</div>
-				</div>
+				</section>
 				<hr />
-				<div className="row">
-					<div className="col-md sort-buttons">
-						<SortButtons
-							sortOptions={ {
-								total: 'runs',
-								failedRate: 'failure rate',
-							} }
-							currentSortStateBy={ sort.by }
-							currentSortStateIsAsc={ sort.isAsc }
-							onSort={ sortData }
-						/>
+				<section aria-label="Sort controls">
+					<div className="row">
+						<div className="col-md sort-buttons">
+							<SortButtons
+								sortOptions={ {
+									total: 'runs',
+									failedRate: 'failure rate',
+								} }
+								currentSortStateBy={ sort.by }
+								currentSortStateIsAsc={ sort.isAsc }
+								onSort={ sortData }
+							/>
+						</div>
 					</div>
-				</div>
+				</section>
 				<hr />
-				<div>
+				<section aria-label="Test results">
 					{ tests.list.map( ( test, id ) => (
 						<TestCard key={ id } test={ test } reportDeepUrl={ config.reportDeepUrl } />
 					) ) }
-				</div>
-			</div>
+				</section>
+			</article>
 		</LoadingState>
 	);
 }

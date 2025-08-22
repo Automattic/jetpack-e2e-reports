@@ -213,67 +213,77 @@ export default function ErrorsView() {
 
 	return (
 		<LoadingState isLoading={ ! isDataReady }>
-			<div>
-				<div className="row align-items-center">
-					<div className="col-auto filters">
-						<FilterReportDropdown
-							availableReports={ availableReports }
-							selectedReport={ filters.selectedReport }
-							onChange={ newValue => {
-								setFilters( prevState => ( {
-									...prevState,
-									selectedReport: newValue,
-								} ) );
-							} }
-						/>
+			<article>
+				<section aria-label="Error filters and controls">
+					<div className="row align-items-center">
+						<div className="col-auto filters">
+							<FilterReportDropdown
+								availableReports={ availableReports }
+								selectedReport={ filters.selectedReport }
+								onChange={ newValue => {
+									setFilters( prevState => ( {
+										...prevState,
+										selectedReport: newValue,
+									} ) );
+								} }
+							/>
+						</div>
+						<div className="col-lg filters">
+							<FilterDaysSelector
+								defaultDays={ Math.min( 7, getMaxDays() ) }
+								min={ 1 }
+								max={ getMaxDays() }
+								onDateChange={ dates =>
+									setFilters( prevState => ( {
+										...prevState,
+										startDate: dates.startDate,
+										endDate: dates.endDate,
+									} ) )
+								}
+							/>
+						</div>
+						<div className="col-sm filters">
+							<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating results..." />
+						</div>
 					</div>
-					<div className="col-lg filters">
-						<FilterDaysSelector
-							defaultDays={ Math.min( 7, getMaxDays() ) }
-							min={ 1 }
-							max={ getMaxDays() }
-							onDateChange={ dates =>
-								setFilters( prevState => ( {
-									...prevState,
-									startDate: dates.startDate,
-									endDate: dates.endDate,
-								} ) )
-							}
-						/>
-					</div>
-					<div className="col-sm filters">
-						<UpdatingMessage isUpdating={ isProcessing } updatingText="Updating results..." />
-					</div>
-				</div>
+				</section>
 				<hr />
-				<div className="row text-center">
-					<div className="col-sm">
-						<StatBox value={ errors.totalErrors } description="total errors" />
+				<section aria-label="Error statistics summary">
+					<div className="row text-center">
+						<div className="col-sm">
+							<StatBox value={ errors.totalErrors } description="total errors" />
+						</div>
+						<div className="col-sm">
+							<StatBox value={ errors.distinctErrors } description="distinct errors" />
+						</div>
 					</div>
-					<div className="col-sm">
-						<StatBox value={ errors.distinctErrors } description="distinct errors" />
-					</div>
-				</div>
+				</section>
 				<hr />
-				<div className="row">
-					<div className="col sort-buttons">
-						<SortButtons
-							sortOptions={ {
-								recent: 'most recent',
-								common: 'most common',
-							} }
-							currentSortStateBy={ sort.by }
-							currentSortStateIsAsc={ sort.isAsc }
-							onSort={ sortData }
-						/>
+				<section aria-label="Sort controls">
+					<div className="row">
+						<div className="col sort-buttons">
+							<SortButtons
+								sortOptions={ {
+									recent: 'most recent',
+									common: 'most common',
+								} }
+								currentSortStateBy={ sort.by }
+								currentSortStateIsAsc={ sort.isAsc }
+								onSort={ sortData }
+							/>
+						</div>
 					</div>
-				</div>
+				</section>
 				<hr />
-				<div>{ errors.list.map( ( errorItem, id ) => getErrorContent( errorItem, id ) ) }</div>
-				<div className="row">
-					<div className="text-right col small">updated { lastUpdate }</div>
-				</div>
-			</div>
+				<section aria-label="Error details">
+					{ errors.list.map( ( errorItem, id ) => getErrorContent( errorItem, id ) ) }
+				</section>
+				<footer>
+					<div className="row">
+						<div className="text-right col small">updated { lastUpdate }</div>
+					</div>
+				</footer>
+			</article>
 		</LoadingState>
 	);
 }
