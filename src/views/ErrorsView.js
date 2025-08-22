@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { getAvailableReports } from '../utils/reports';
+import { calculateMaxDays } from '../utils/date';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
@@ -25,7 +26,7 @@ export default class ErrorsView extends React.Component {
 		availableReports: [],
 		filters: {
 			selectedReport: 'trunk',
-			startDate: moment().subtract( 7, 'd' ).format( 'YYYY-MM-DD' ),
+			startDate: null, // Will be set after data loads
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
 		sort: { by: 'recent', isAsc: false },
@@ -35,11 +36,21 @@ export default class ErrorsView extends React.Component {
 
 	async componentDidMount() {
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
+		const errorsData = await fetchJsonData( `${ config.dataSourceURL }/data/errors.json` );
+
+		// Calculate the default start date based on available data
+		const maxDays = calculateMaxDays( errorsData.oldestTimestamp ) || 7;
+		const defaultDays = Math.min( 7, maxDays );
+		const startDate = moment().subtract( defaultDays, 'd' ).format( 'YYYY-MM-DD' );
 
 		this.setState( {
 			rawData: {
-				errorsData: await fetchJsonData( `${ config.dataSourceURL }/data/errors.json` ),
+				errorsData,
 				summaryData,
+			},
+			filters: {
+				...this.state.filters,
+				startDate,
 			},
 		} );
 
@@ -54,7 +65,7 @@ export default class ErrorsView extends React.Component {
 		} );
 	}
 
-	async componentDidUpdate( prevProps, prevState ) {
+	async componentDidUpdate( _, prevState ) {
 		if (
 			this.state.filters.selectedReport !== prevState.filters.selectedReport ||
 			this.state.filters.startDate !== prevState.filters.startDate ||
@@ -146,6 +157,11 @@ export default class ErrorsView extends React.Component {
 				resolve();
 			}, 0 );
 		} );
+	}
+
+	getMaxDays() {
+		const oldestTimestamp = this.state.rawData.errorsData.oldestTimestamp;
+		return calculateMaxDays( oldestTimestamp ) || 7;
 	}
 
 	sortData( by, isAsc ) {
@@ -254,9 +270,9 @@ export default class ErrorsView extends React.Component {
 						</div>
 						<div className="col-auto filters">
 							<FilterDaysSelector
-								defaultDays={ 7 }
+								defaultDays={ Math.min( 7, this.getMaxDays() ) }
 								min={ 1 }
-								max={ 10 }
+								max={ this.getMaxDays() }
 								onDateChange={ dates =>
 									this.setState( prevState => ( {
 										filters: {

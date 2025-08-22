@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { getAvailableReports } from '../utils/reports';
+import { calculateMaxDays } from '../utils/date';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
@@ -27,7 +28,7 @@ export default class TestsView extends React.Component {
 		availableReports: [],
 		filters: {
 			selectedReport: 'total',
-			startDate: moment().subtract( 7, 'd' ).format( 'YYYY-MM-DD' ),
+			startDate: null, // Will be set after data loads
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
 		sort: { by: 'failedRate', isAsc: false },
@@ -37,11 +38,21 @@ export default class TestsView extends React.Component {
 
 	async componentDidMount() {
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
+		const testsData = await fetchJsonData( `${ config.dataSourceURL }/data/tests.json` );
+
+		// Calculate the default start date based on available data
+		const maxDays = calculateMaxDays( testsData.oldestTimestamp ) || 7;
+		const defaultDays = Math.min( 7, maxDays );
+		const startDate = moment().subtract( defaultDays, 'd' ).format( 'YYYY-MM-DD' );
 
 		this.setState( {
 			rawData: {
-				testsData: await fetchJsonData( `${ config.dataSourceURL }/data/tests.json` ),
+				testsData,
 				summaryData,
+			},
+			filters: {
+				...this.state.filters,
+				startDate,
 			},
 		} );
 
@@ -145,6 +156,11 @@ export default class TestsView extends React.Component {
 		} );
 	}
 
+	getMaxDays() {
+		const oldestTimestamp = this.state.rawData.testsData.oldestTimestamp;
+		return calculateMaxDays( oldestTimestamp ) || 7;
+	}
+
 	sortData( by, isAsc ) {
 		this.state.tests.list.sort( ( a, b ) => ( isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ] ) );
 
@@ -174,9 +190,9 @@ export default class TestsView extends React.Component {
 						</div>
 						<div className="col-auto filters">
 							<FilterDaysSelector
-								defaultDays={ 7 }
+								defaultDays={ Math.min( 7, this.getMaxDays() ) }
 								min={ 1 }
-								max={ 30 }
+								max={ this.getMaxDays() }
 								step={ 1 }
 								onDateChange={ dates => {
 									this.setState( prevState => ( {
