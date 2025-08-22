@@ -4,6 +4,7 @@ import React, { Suspense } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import LoadingState from './components/LoadingState';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy load components for better performance
 const ReportView = React.lazy( () => import( './views/ReportView' ) );
@@ -34,17 +35,19 @@ function App() {
 					</Container>
 				</Navbar>
 				<HashRouter>
-					<Suspense fallback={ <LoadingState isLoading={ true } loadingText="Loading..." /> }>
-						<Routes>
-							<Route exact path="/" element={ <ReportView /> } />
-							<Route exact path="/reports" element={ <ReportView /> } />
-							<Route exact path="/tests" element={ <TestsView /> } />
-							<Route exact path="/errors" element={ <ErrorsView /> } />
-							<Route exact path="/performance" element={ <PerformanceView /> } />
-							<Route exact path="/charts" element={ <StatsView /> } />
-							<Route exact path="/stats" element={ <StatsView /> } />
-						</Routes>
-					</Suspense>
+					<ErrorBoundary>
+						<Suspense fallback={ <LoadingState isLoading={ true } loadingText="Loading..." /> }>
+							<Routes>
+								<Route exact path="/" element={ <ErrorBoundary><ReportView /></ErrorBoundary> } />
+								<Route exact path="/reports" element={ <ErrorBoundary><ReportView /></ErrorBoundary> } />
+								<Route exact path="/tests" element={ <ErrorBoundary><TestsView /></ErrorBoundary> } />
+								<Route exact path="/errors" element={ <ErrorBoundary><ErrorsView /></ErrorBoundary> } />
+								<Route exact path="/performance" element={ <ErrorBoundary><PerformanceView /></ErrorBoundary> } />
+								<Route exact path="/charts" element={ <ErrorBoundary><StatsView /></ErrorBoundary> } />
+								<Route exact path="/stats" element={ <ErrorBoundary><StatsView /></ErrorBoundary> } />
+							</Routes>
+						</Suspense>
+					</ErrorBoundary>
 				</HashRouter>
 			</div>
 			<footer className="App-footer">

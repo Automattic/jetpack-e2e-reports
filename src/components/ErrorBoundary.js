@@ -1,0 +1,51 @@
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+	constructor( props ) {
+		super( props );
+		this.state = { hasError: false, error: null, errorInfo: null };
+	}
+
+	static getDerivedStateFromError() {
+		return { hasError: true };
+	}
+
+	componentDidCatch( error, errorInfo ) {
+		console.error( 'ErrorBoundary caught an error:', error, errorInfo );
+		this.setState( {
+			error,
+			errorInfo,
+		} );
+	}
+
+	render() {
+		if ( this.state.hasError ) {
+			return (
+				<div className="error-container">
+					<h2>Something went wrong</h2>
+					<p>An unexpected error occurred while rendering this component.</p>
+					{ this.props.showDetails && (
+						<details>
+							<summary>Error Details</summary>
+							<div className="error-container-trace">
+								{ this.state.error && this.state.error.toString() }
+								<br />
+								{ this.state.errorInfo.componentStack }
+							</div>
+						</details>
+					) }
+					<button
+						className="btn btn-primary"
+						onClick={ () => this.setState( { hasError: false, error: null, errorInfo: null } ) }
+					>
+						Try again
+					</button>
+				</div>
+			);
+		}
+
+		return this.props.children;
+	}
+}
+
+export default ErrorBoundary;
