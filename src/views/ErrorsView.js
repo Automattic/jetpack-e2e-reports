@@ -268,7 +268,7 @@ export default class ErrorsView extends React.Component {
 								} }
 							/>
 						</div>
-						<div className="col-auto filters">
+						<div className="col-lg filters">
 							<FilterDaysSelector
 								defaultDays={ Math.min( 7, this.getMaxDays() ) }
 								min={ 1 }
@@ -284,7 +284,7 @@ export default class ErrorsView extends React.Component {
 								}
 							/>
 						</div>
-						<div className="col-auto filters">
+						<div className="col-sm filters">
 							<UpdatingMessage
 								isUpdating={ this.state.isProcessing }
 								updatingText="Updating results..."
