@@ -58,7 +58,6 @@ export default class TestsView extends React.Component {
 
 	async componentDidUpdate( _, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
-			console.log( this.state.filters );
 			this.setState( { isProcessing: true } );
 			await this.setTestsDataAsync();
 		}

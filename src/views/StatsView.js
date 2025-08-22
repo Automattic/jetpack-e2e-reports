@@ -29,7 +29,6 @@ export default class Stats extends React.Component {
 	};
 
 	async componentDidMount() {
-		console.log( 'Fetching initial data...' );
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
 
 		this.setState( {
@@ -63,7 +62,6 @@ export default class Stats extends React.Component {
 	}
 
 	filterData( rawData ) {
-		console.log( 'Filtering data for report:', this.state.filters.selectedReport );
 		// make a copy of raw data object
 		// we don't modify the original data
 		let entries = JSON.parse( JSON.stringify( rawData ) );
