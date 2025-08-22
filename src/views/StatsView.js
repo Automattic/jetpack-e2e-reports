@@ -5,7 +5,7 @@ import { sortArray } from '../utils/sort';
 import FilterReportDropdown from '../components/FilterReportDropdown';
 import StatBox from '../components/StatBox';
 import LoadingState from '../components/LoadingState';
-import config from '../config.json';
+import config from '../config';
 import moment from 'moment';
 
 export default class Stats extends React.Component {

@@ -1,5 +1,5 @@
 import React from 'react';
-import configData from '../config.json';
+import configData from '../config';
 import ReportsTable from '../components/ReportsTable';
 
 export default class Reports extends React.Component {

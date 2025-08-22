@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
-import config from '../config.json';
+import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
 import FilterDaysSelector from '../components/FilterDaysSelector';
