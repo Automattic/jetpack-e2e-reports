@@ -9,6 +9,7 @@ import FilterDaysSelector from '../components/FilterDaysSelector';
 import StatBox from '../components/StatBox';
 import ErrorCard from '../components/ErrorCard';
 import LoadingState from '../components/LoadingState';
+import UpdatingMessage from '../components/UpdatingMessage';
 
 export default class ErrorsView extends React.Component {
 	state = {
@@ -29,6 +30,7 @@ export default class ErrorsView extends React.Component {
 		},
 		sort: { by: 'recent', isAsc: false },
 		isDataReady: false,
+		isProcessing: false,
 	};
 
 	async componentDidMount() {
@@ -52,13 +54,14 @@ export default class ErrorsView extends React.Component {
 		} );
 	}
 
-	componentDidUpdate( prevProps, prevState ) {
+	async componentDidUpdate( prevProps, prevState ) {
 		if (
 			this.state.filters.selectedReport !== prevState.filters.selectedReport ||
 			this.state.filters.startDate !== prevState.filters.startDate ||
 			this.state.filters.endDate !== prevState.filters.endDate
 		) {
-			this.setErrorsData();
+			this.setState( { isProcessing: true } );
+			await this.setErrorsDataAsync();
 		}
 
 		if ( this.state.errors.list !== prevState.errors.list ) {
@@ -132,6 +135,16 @@ export default class ErrorsView extends React.Component {
 				distinctErrors: errors.length,
 				totalErrors: allErrors.length,
 			},
+		} );
+	}
+
+	setErrorsDataAsync() {
+		return new Promise( resolve => {
+			setTimeout( () => {
+				this.setErrorsData();
+				this.setState( { isProcessing: false } );
+				resolve();
+			}, 0 );
 		} );
 	}
 
@@ -224,7 +237,7 @@ export default class ErrorsView extends React.Component {
 		return (
 			<LoadingState isLoading={ ! this.state.isDataReady }>
 				<div>
-					<div className="row">
+					<div className="row align-items-center">
 						<div className="col-auto filters">
 							<FilterReportDropdown
 								availableReports={ this.state.availableReports }
@@ -253,6 +266,12 @@ export default class ErrorsView extends React.Component {
 										},
 									} ) )
 								}
+							/>
+						</div>
+						<div className="col-auto filters">
+							<UpdatingMessage
+								isUpdating={ this.state.isProcessing }
+								updatingText="Updating results..."
 							/>
 						</div>
 					</div>

@@ -6,6 +6,7 @@ import { getAvailableReports } from '../utils/reports';
 import FilterReportDropdown from '../components/FilterReportDropdown';
 import StatBox from '../components/StatBox';
 import LoadingState from '../components/LoadingState';
+import UpdatingMessage from '../components/UpdatingMessage';
 import config from '../config';
 import moment from 'moment';
 
@@ -24,6 +25,7 @@ export default class Stats extends React.Component {
 		availableReports: [],
 		filters: { selectedReport: 'trunk' },
 		isDataReady: false,
+		isProcessing: false,
 	};
 
 	async componentDidMount() {
@@ -53,12 +55,10 @@ export default class Stats extends React.Component {
 		} );
 	}
 
-	componentDidUpdate( prevProps, prevState ) {
+	async componentDidUpdate( prevProps, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
-			this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
-			this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
-			this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
-			this.setState( { summary: this.filterSummaryData() } );
+			this.setState( { isProcessing: true } );
+			await this.updateDataAsync();
 		}
 	}
 
@@ -123,6 +123,19 @@ export default class Stats extends React.Component {
 		} );
 
 		return summaryData;
+	}
+
+	updateDataAsync() {
+		return new Promise( resolve => {
+			setTimeout( () => {
+				this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
+				this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
+				this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
+				this.setState( { summary: this.filterSummaryData() } );
+				this.setState( { isProcessing: false } );
+				resolve();
+			}, 0 );
+		} );
 	}
 
 	chartOptions( data ) {
@@ -379,8 +392,8 @@ export default class Stats extends React.Component {
 		return (
 			<LoadingState isLoading={ ! this.state.isDataReady }>
 				<div>
-					<div className="row">
-						<div className="col-sm filters">
+					<div className="row align-items-center">
+						<div className="col-auto filters">
 							<FilterReportDropdown
 								availableReports={ this.state.availableReports }
 								selectedReport={ this.state.filters.selectedReport }
@@ -392,6 +405,12 @@ export default class Stats extends React.Component {
 										},
 									} ) );
 								} }
+							/>
+						</div>
+						<div className="col-auto filters">
+							<UpdatingMessage
+								isUpdating={ this.state.isProcessing }
+								updatingText="Updating charts..."
 							/>
 						</div>
 					</div>

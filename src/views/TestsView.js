@@ -9,6 +9,7 @@ import FilterDaysSelector from '../components/FilterDaysSelector';
 import StatBox from '../components/StatBox';
 import TestCard from '../components/TestCard';
 import LoadingState from '../components/LoadingState';
+import UpdatingMessage from '../components/UpdatingMessage';
 
 export default class TestsView extends React.Component {
 	state = {
@@ -31,6 +32,7 @@ export default class TestsView extends React.Component {
 		},
 		sort: { by: 'failedRate', isAsc: false },
 		isDataReady: false,
+		isProcessing: false,
 	};
 
 	async componentDidMount() {
@@ -54,10 +56,11 @@ export default class TestsView extends React.Component {
 		} );
 	}
 
-	componentDidUpdate( _, prevState ) {
+	async componentDidUpdate( _, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
 			console.log( this.state.filters );
-			this.setTestsData();
+			this.setState( { isProcessing: true } );
+			await this.setTestsDataAsync();
 		}
 
 		if ( this.state.tests.list !== prevState.tests.list ) {
@@ -133,6 +136,16 @@ export default class TestsView extends React.Component {
 		} );
 	}
 
+	setTestsDataAsync() {
+		return new Promise( resolve => {
+			setTimeout( () => {
+				this.setTestsData();
+				this.setState( { isProcessing: false } );
+				resolve();
+			}, 0 );
+		} );
+	}
+
 	sortData( by, isAsc ) {
 		this.state.tests.list.sort( ( a, b ) => ( isAsc ? a[ by ] - b[ by ] : b[ by ] - a[ by ] ) );
 
@@ -143,7 +156,7 @@ export default class TestsView extends React.Component {
 
 	render() {
 		return (
-			<LoadingState isLoading={ ! this.state.isDataReady }>
+			<LoadingState isLoading={ ! this.state.isDataReady } loadingText="Loading data...">
 				<div>
 					<div className="row align-items-center">
 						<div className="col-auto filters">
@@ -175,6 +188,12 @@ export default class TestsView extends React.Component {
 										},
 									} ) );
 								} }
+							/>
+						</div>
+						<div className="col-auto filters">
+							<UpdatingMessage
+								isUpdating={ this.state.isProcessing }
+								updatingText="Updating results..."
 							/>
 						</div>
 					</div>
