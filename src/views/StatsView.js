@@ -82,8 +82,8 @@ export default class Stats extends React.Component {
 			};
 		} );
 
-		// Sort in place for better performance
-		entries.sort( ( a, b ) => new Date( b.date ) - new Date( a.date ) );
+		// Sort in ascending order (oldest to newest) to match original behavior
+		entries.sort( ( a, b ) => new Date( a.date ) - new Date( b.date ) );
 
 		return entries;
 	}
