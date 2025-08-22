@@ -129,6 +129,12 @@ export default function FilterDaysSelector( {
 					{ Array.from( { length: Math.floor( ( max - min ) / step ) + 1 }, ( _, i ) => {
 						const value = min + i * step;
 						const tickPercentage = ( ( value - min ) / ( max - min ) ) * 100;
+
+						// Skip first and last ticker marks
+						if ( value === min || value === max ) {
+							return null;
+						}
+
 						return (
 							<div
 								key={ value }
