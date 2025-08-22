@@ -4,13 +4,12 @@ import { fetchJsonData } from '../utils/fetch';
 import config from '../config.json';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
-import FilterDateFields from '../components/FilterDateFields';
+import FilterDaysSelector from '../components/FilterDaysSelector';
 import StatBox from '../components/StatBox';
-import StatusBadge from '../components/StatusBadge';
-import TestResultTimeline from '../components/TestResultTimeline';
+import TestCard from '../components/TestCard';
 import LoadingState from '../components/LoadingState';
 
-export default class Tests extends React.Component {
+export default class TestsView extends React.Component {
 	state = {
 		rawData: {
 			testsData: {},
@@ -26,7 +25,7 @@ export default class Tests extends React.Component {
 		availableReports: [],
 		filters: {
 			selectedReport: 'trunk',
-			startDate: moment().subtract( 14, 'd' ).format( 'YYYY-MM-DD' ),
+			startDate: moment().subtract( 7, 'd' ).format( 'YYYY-MM-DD' ),
 			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
 		sort: { by: 'failedRate', isAsc: false },
@@ -57,11 +56,9 @@ export default class Tests extends React.Component {
 		this.setState( {
 			isDataReady: true,
 		} );
-
-		this.setDatePickersValues( this.state.filters.startDate, this.state.filters.endDate );
 	}
 
-	componentDidUpdate( prevProps, prevState ) {
+	componentDidUpdate( _, prevState ) {
 		if ( this.state.filters !== prevState.filters ) {
 			console.log( this.state.filters );
 			this.setTestsData();
@@ -74,7 +71,7 @@ export default class Tests extends React.Component {
 
 	setTestsData() {
 		// make a copy of raw data object to process
-		// wwe don't modify the original data
+		// we don't modify the original data
 		let tests = JSON.parse( JSON.stringify( this.state.rawData.testsData.tests ) );
 
 		if ( this.state.filters.startDate && this.state.filters.endDate ) {
@@ -148,58 +145,6 @@ export default class Tests extends React.Component {
 		} );
 	}
 
-	getTotalsBadges( test ) {
-		const badges = [ 'failed', 'passed', 'skipped', 'total' ].map( ( label, id ) => {
-			const count = test[ label ];
-
-			// hide statuses with no results
-			const classHide = count === 0 ? 'hide' : '';
-
-			let rate = (
-				( count / ( test.total - ( label === 'skipped' ? 0 : test.skipped ) ) ) *
-				100
-			).toFixed( 1 );
-
-			if ( label === 'total' ) {
-				rate = '';
-			} else {
-				rate = isNaN( rate ) ? '' : `${ rate }%`;
-			}
-
-			return (
-				<li key={ id }>
-					<StatusBadge
-						status={ label }
-						content={ `${ count } ${ label }` }
-						badge={ rate }
-						className={ `label-fill ${ classHide }` }
-					/>
-				</li>
-			);
-		} );
-
-		return <ul className="list-unstyled">{ badges }</ul>;
-	}
-
-	getResultsLine( test ) {
-		return <TestResultTimeline results={ test.results } reportDeepUrl={ config.reportDeepUrl } />;
-	}
-
-	getTestContent( test, id ) {
-		return (
-			<div key={ id } className="test-container">
-				<div className="row">
-					<div className="col-sm-auto">
-						<h1>{ test.name }</h1>
-					</div>
-				</div>
-				<div className="row">
-					<div className="col-sm-auto">{ this.getTotalsBadges( test ) }</div>
-					<div className="col">{ this.getResultsLine( test ) }</div>
-				</div>
-			</div>
-		);
-	}
 
 	render() {
 		return (
@@ -220,8 +165,12 @@ export default class Tests extends React.Component {
 								} }
 							/>
 						</div>
-						<div className="col-auto">
-							<FilterDateFields
+						<div className="col-auto filters">
+							<FilterDaysSelector
+								defaultDays={ 7 }
+								min={ 1 }
+								max={ 30 }
+								step={ 1 }
 								onDateChange={ dates => {
 									this.setState( prevState => ( {
 										filters: {
@@ -265,7 +214,9 @@ export default class Tests extends React.Component {
 					</div>
 					<hr />
 					<div>
-						{ this.state.tests.list.map( ( test, id ) => this.getTestContent( test, id ) ) }
+						{ this.state.tests.list.map( ( test, id ) => (
+							<TestCard key={ id } test={ test } reportDeepUrl={ config.reportDeepUrl } />
+						) ) }
 					</div>
 				</div>
 			</LoadingState>

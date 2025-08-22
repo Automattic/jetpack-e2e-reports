@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-const TestResultTimeline = ( { results, reportDeepUrl, limit = 150 } ) => {
+const TestResultTimeline = ( { results, reportDeepUrl, limit = 500 } ) => {
 	const badges = results.slice( -limit ).map( ( result, id ) => {
 		let classHasSource = 'no-source';
 		let url;
@@ -35,7 +35,7 @@ const TestResultTimeline = ( { results, reportDeepUrl, limit = 150 } ) => {
 		);
 	} );
 
-	return <div>{ badges }</div>;
+	return <div className='test-result-timeline'>{ badges }</div>;
 };
 
 export default TestResultTimeline;

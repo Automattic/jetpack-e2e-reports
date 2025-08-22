@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import configData from '../config.json';
+import StatusBadge from './StatusBadge';
 
 const ReportRow = ( { report, id } ) => {
 	const { statistic, metadata, history } = report;
@@ -74,9 +75,11 @@ const ReportRow = ( { report, id } ) => {
 			} )
 			.filter( item => item.count > 0 )
 			.map( item => (
-				<span key={ item.index } className={ `label label-status-${ item.label }` }>
-					{ item.label } { item.count }
-				</span>
+				<StatusBadge
+					key={ item.index }
+					status={ item.label }
+					content={ `${ item.label } ${ item.count }` }
+				/>
 			) );
 
 		return <div>{ counts }</div>;

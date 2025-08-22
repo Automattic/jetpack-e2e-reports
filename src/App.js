@@ -3,7 +3,7 @@ import './App.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import ReportView from './views/ReportView';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import TestView from './views/TestView';
+import TestsView from './views/TestsView';
 import StatsView from './views/StatsView';
 import ErrorsView from './views/ErrorsView';
 import PerformanceView from './views/PerformanceView';
@@ -33,7 +33,7 @@ function App() {
 					<Routes>
 						<Route exact path="/" element={ <ReportView /> } />
 						<Route exact path="/reports" element={ <ReportView /> } />
-						<Route exact path="/tests" element={ <TestView /> } />
+						<Route exact path="/tests" element={ <TestsView /> } />
 						<Route exact path="/errors" element={ <ErrorsView /> } />
 						<Route exact path="/performance" element={ <PerformanceView /> } />
 						<Route exact path="/charts" element={ <StatsView /> } />
