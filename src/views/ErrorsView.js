@@ -3,6 +3,7 @@ import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { getAvailableReports } from '../utils/reports';
 import { calculateMaxDays } from '../utils/date';
+import { processErrorData, batchStateUpdates } from '../utils/dataProcessing';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
@@ -43,7 +44,11 @@ export default class ErrorsView extends React.Component {
 		const defaultDays = Math.min( 7, maxDays );
 		const startDate = moment().subtract( defaultDays, 'd' ).format( 'YYYY-MM-DD' );
 
-		this.setState( {
+		// Extract available reports from summary data
+		const reports = getAvailableReports( summaryData );
+
+		// Batch all state updates into a single setState call
+		batchStateUpdates( this.setState.bind( this ), {
 			rawData: {
 				errorsData,
 				summaryData,
@@ -52,17 +57,11 @@ export default class ErrorsView extends React.Component {
 				...this.state.filters,
 				startDate,
 			},
-		} );
-
-		// Extract available reports from summary data
-		const reports = getAvailableReports( summaryData );
-		this.setState( { availableReports: reports } );
-
-		this.setErrorsData();
-
-		this.setState( {
+			availableReports: reports,
 			isDataReady: true,
 		} );
+
+		this.setErrorsData();
 	}
 
 	async componentDidUpdate( _, prevState ) {
@@ -81,70 +80,20 @@ export default class ErrorsView extends React.Component {
 	}
 
 	setErrorsData() {
-		// make a copy of raw data errors object to process
-		// wwe don't modify the original data
-		let errors = JSON.parse( JSON.stringify( this.state.rawData.errorsData.errors ) );
+		// Use optimized data processing instead of deep cloning
+		const processedErrors = processErrorData(
+			this.state.rawData.errorsData.errors,
+			this.state.filters
+		);
 
-		// Filter by selected report
-		if ( this.state.filters.selectedReport === 'trunk' ) {
-			// Use config.trunkRuns for trunk filter
-			errors.forEach( e => {
-				e.results = e.results.filter( r => config.trunkRuns.includes( r.report ) );
-			} );
-		} else if ( this.state.filters.selectedReport === 'total' ) {
-			// For 'total', don't filter - include all reports
-		} else {
-			// Filter by specific report name
-			errors.forEach( e => {
-				e.results = e.results.filter( r => r.report === this.state.filters.selectedReport );
-			} );
-		}
+		// Calculate aggregate statistics
+		const totalErrors = processedErrors.reduce( ( sum, error ) => sum + error.total, 0 );
 
-		// Filter by date range
-		if ( this.state.filters.startDate && this.state.filters.endDate ) {
-			errors.forEach( e => {
-				e.results = e.results.filter( r =>
-					moment( r.time ).isBetween(
-						moment( this.state.filters.startDate, 'YYYY-MM-DD' ),
-						moment( this.state.filters.endDate, 'YYYY-MM-DD' ),
-						'd',
-						'[]'
-					)
-				);
-			} );
-		}
-
-		// filter out errors with 0 occurrences
-		errors = errors.filter( e => e.results.length > 0 );
-
-		// calculate some stats for each error
-		for ( const error of errors ) {
-			error.total = error.results.length;
-			const times = error.results.map( r => r.time );
-			error.newest = Math.max( ...times );
-			error.oldest = Math.min( ...times );
-
-			const testsNames = [ ...new Set( error.results.map( r => r.test ) ) ];
-
-			error.tests = [];
-
-			for ( const testName of testsNames ) {
-				const resultsForTest = error.results.filter( r => r.test === testName );
-
-				error.tests.push( {
-					name: testName,
-					times: resultsForTest.map( r => r.time ),
-				} );
-			}
-		}
-
-		const allErrors = errors.map( e => e.results ).flat();
-
-		this.setState( {
+		batchStateUpdates( this.setState.bind( this ), {
 			errors: {
-				list: errors,
-				distinctErrors: errors.length,
-				totalErrors: allErrors.length,
+				list: processedErrors,
+				distinctErrors: processedErrors.length,
+				totalErrors,
 			},
 		} );
 	}

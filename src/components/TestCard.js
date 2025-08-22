@@ -1,8 +1,9 @@
+import React from 'react';
 import StatusBadge from './StatusBadge';
 import TestResultTimeline from './TestResultTimeline';
 
-const TestCard = ( { test, reportDeepUrl } ) => {
-	const getTotalsBadges = () => {
+const TestCard = React.memo( ( { test, reportDeepUrl } ) => {
+	const getTotalsBadges = React.useMemo( () => {
 		const badges = [];
 
 		// Show passed only if it's 100%
@@ -27,7 +28,7 @@ const TestCard = ( { test, reportDeepUrl } ) => {
 		}
 
 		return badges;
-	};
+	}, [ test.passed, test.failed, test.skipped, test.total ] );
 
 	return (
 		<div className="test-container">
@@ -46,13 +47,13 @@ const TestCard = ( { test, reportDeepUrl } ) => {
 						return <div className="test-name">{ test.name }</div>;
 					} )() }
 				</div>
-				<div className="col-auto">{ getTotalsBadges() }</div>
+				<div className="col-auto">{ getTotalsBadges }</div>
 			</div>
 			<div className="row">
 				<TestResultTimeline results={ test.results } reportDeepUrl={ reportDeepUrl } />
 			</div>
 		</div>
 	);
-};
+} );
 
 export default TestCard;

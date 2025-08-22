@@ -1,12 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import React, { Suspense } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import ReportView from './views/ReportView';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import TestsView from './views/TestsView';
-import StatsView from './views/StatsView';
-import ErrorsView from './views/ErrorsView';
-import PerformanceView from './views/PerformanceView';
+import LoadingState from './components/LoadingState';
+
+// Lazy load components for better performance
+const ReportView = React.lazy( () => import( './views/ReportView' ) );
+const TestsView = React.lazy( () => import( './views/TestsView' ) );
+const StatsView = React.lazy( () => import( './views/StatsView' ) );
+const ErrorsView = React.lazy( () => import( './views/ErrorsView' ) );
+const PerformanceView = React.lazy( () => import( './views/PerformanceView' ) );
 
 function App() {
 	const basename = '/jetpack-e2e-reports';
@@ -30,15 +34,17 @@ function App() {
 					</Container>
 				</Navbar>
 				<HashRouter>
-					<Routes>
-						<Route exact path="/" element={ <ReportView /> } />
-						<Route exact path="/reports" element={ <ReportView /> } />
-						<Route exact path="/tests" element={ <TestsView /> } />
-						<Route exact path="/errors" element={ <ErrorsView /> } />
-						<Route exact path="/performance" element={ <PerformanceView /> } />
-						<Route exact path="/charts" element={ <StatsView /> } />
-						<Route exact path="/stats" element={ <StatsView /> } />
-					</Routes>
+					<Suspense fallback={ <LoadingState isLoading={ true } loadingText="Loading..." /> }>
+						<Routes>
+							<Route exact path="/" element={ <ReportView /> } />
+							<Route exact path="/reports" element={ <ReportView /> } />
+							<Route exact path="/tests" element={ <TestsView /> } />
+							<Route exact path="/errors" element={ <ErrorsView /> } />
+							<Route exact path="/performance" element={ <PerformanceView /> } />
+							<Route exact path="/charts" element={ <StatsView /> } />
+							<Route exact path="/stats" element={ <StatsView /> } />
+						</Routes>
+					</Suspense>
 				</HashRouter>
 			</div>
 			<footer className="App-footer">

@@ -3,6 +3,7 @@ import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
 import { getAvailableReports } from '../utils/reports';
 import { calculateMaxDays } from '../utils/date';
+import { processTestData, batchStateUpdates } from '../utils/dataProcessing';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
@@ -45,7 +46,11 @@ export default class TestsView extends React.Component {
 		const defaultDays = Math.min( 7, maxDays );
 		const startDate = moment().subtract( defaultDays, 'd' ).format( 'YYYY-MM-DD' );
 
-		this.setState( {
+		// Extract available reports from summary data
+		const reports = getAvailableReports( summaryData );
+
+		// Batch all state updates into a single setState call
+		batchStateUpdates( this.setState.bind( this ), {
 			rawData: {
 				testsData,
 				summaryData,
@@ -54,17 +59,11 @@ export default class TestsView extends React.Component {
 				...this.state.filters,
 				startDate,
 			},
-		} );
-
-		// Extract available reports from summary data
-		const reports = getAvailableReports( summaryData );
-		this.setState( { availableReports: reports } );
-
-		this.setTestsData();
-
-		this.setState( {
+			availableReports: reports,
 			isDataReady: true,
 		} );
+
+		this.setTestsData();
 	}
 
 	async componentDidUpdate( _, prevState ) {
@@ -79,66 +78,22 @@ export default class TestsView extends React.Component {
 	}
 
 	setTestsData() {
-		// make a copy of raw data object to process
-		// we don't modify the original data
-		let tests = JSON.parse( JSON.stringify( this.state.rawData.testsData.tests ) );
+		// Use optimized data processing instead of deep cloning
+		const processedTests = processTestData(
+			this.state.rawData.testsData.tests,
+			this.state.filters
+		);
 
-		if ( this.state.filters.startDate && this.state.filters.endDate ) {
-			tests.forEach( t => {
-				t.results = t.results.filter( r =>
-					moment( r.time ).isBetween(
-						moment( this.state.filters.startDate, 'YYYY-MM-DD' ),
-						moment( this.state.filters.endDate, 'YYYY-MM-DD' ),
-						'd',
-						'[]'
-					)
-				);
-			} );
-		}
+		// Calculate aggregate statistics
+		const totalTestResults = processedTests.reduce( ( sum, test ) => sum + test.total, 0 );
+		const failedResults = processedTests.reduce( ( sum, test ) => sum + test.failed, 0 );
+		const failedRate =
+			totalTestResults > 0 ? ( ( failedResults / totalTestResults ) * 100 ).toFixed( 2 ) : '0.00';
 
-		// Filter by selected report
-		if ( this.state.filters.selectedReport === 'trunk' ) {
-			// Use config.trunkRuns for trunk filter
-			tests.forEach( t => {
-				t.results = t.results.filter( r => config.trunkRuns.includes( r.report ) );
-			} );
-		} else if ( this.state.filters.selectedReport === 'total' ) {
-			// For 'total', don't filter - include all reports
-		} else {
-			// Filter by specific report name
-			tests.forEach( t => {
-				t.results = t.results.filter( r => r.report === this.state.filters.selectedReport );
-			} );
-		}
-
-		// filter out tests with 0 results
-		tests = tests.filter( e => e.results.length > 0 );
-
-		for ( const test of tests ) {
-			test.total = 0;
-			for ( const status of [ 'passed', 'failed', 'skipped' ] ) {
-				test[ status ] = test.results.filter( t => t.status === status ).length;
-				test.total += test[ status ];
-			}
-			test.failedRate = ( ( test.failed / test.total ) * 100 ).toFixed( 2 );
-
-			test.results.sort( ( a, b ) => {
-				return a.time - b.time;
-			} );
-		}
-
-		let totalTestResults = 0;
-		let failedResults = 0;
-		tests.forEach( t => {
-			totalTestResults += t.total;
-			failedResults += t.failed;
-		} );
-		const failedRate = ( ( failedResults / totalTestResults ) * 100 ).toFixed( 2 );
-
-		this.setState( {
+		batchStateUpdates( this.setState.bind( this ), {
 			tests: {
-				list: tests,
-				distinctTests: tests.length,
+				list: processedTests,
+				distinctTests: processedTests.length,
 				totalTestResults,
 				failedResults,
 				failedRate,

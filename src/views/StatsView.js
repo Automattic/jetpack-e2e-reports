@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { fetchJsonData } from '../utils/fetch';
-import { sortArray } from '../utils/sort';
 import { getAvailableReports } from '../utils/reports';
+import { batchStateUpdates } from '../utils/dataProcessing';
 import FilterReportDropdown from '../components/FilterReportDropdown';
 import StatBox from '../components/StatBox';
 import LoadingState from '../components/LoadingState';
@@ -31,25 +31,26 @@ export default class Stats extends React.Component {
 	async componentDidMount() {
 		const summaryData = await fetchJsonData( `${ config.dataSourceURL }/data/summary.json` );
 
-		this.setState( {
-			rawData: {
-				dailyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
-				weeklyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-weekly.json` ),
-				monthlyData: await fetchJsonData( `${ config.dataSourceURL }/data/results-monthly.json` ),
-				summaryData,
-			},
-		} );
+		// Fetch all data concurrently for better performance
+		const [ dailyData, weeklyData, monthlyData ] = await Promise.all( [
+			fetchJsonData( `${ config.dataSourceURL }/data/results-daily.json` ),
+			fetchJsonData( `${ config.dataSourceURL }/data/results-weekly.json` ),
+			fetchJsonData( `${ config.dataSourceURL }/data/results-monthly.json` ),
+		] );
+
+		const rawData = { dailyData, weeklyData, monthlyData, summaryData };
 
 		// Extract available reports from summary data
 		const reports = getAvailableReports( summaryData );
-		this.setState( { availableReports: reports } );
 
-		this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
-		this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
-		this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
-		this.setState( { summary: this.filterSummaryData() } );
-
-		this.setState( {
+		// Batch all state updates to reduce re-renders
+		batchStateUpdates( this.setState.bind( this ), {
+			rawData,
+			availableReports: reports,
+			days: this.filterData( rawData.dailyData ),
+			weeks: this.filterData( rawData.weeklyData ),
+			months: this.filterData( rawData.monthlyData ),
+			summary: this.filterSummaryData( rawData.summaryData ),
 			isDataReady: true,
 		} );
 	}
@@ -62,75 +63,72 @@ export default class Stats extends React.Component {
 	}
 
 	filterData( rawData ) {
-		// make a copy of raw data object
-		// we don't modify the original data
-		let entries = JSON.parse( JSON.stringify( rawData ) );
+		// Use efficient data processing instead of deep cloning
 		const selectedReport = this.state.filters.selectedReport || 'trunk';
 
-		entries = entries.map( entry => {
-			const newObj = entry[ selectedReport ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
-			newObj.date = entry.date;
-			return newObj;
+		// Process entries in a single pass for better performance
+		const entries = rawData.map( entry => {
+			const reportData = entry[ selectedReport ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
+			const total = reportData.total || 0;
+			const failed = reportData.failed || 0;
+
+			return {
+				date: entry.date,
+				passed: reportData.passed || 0,
+				failed,
+				skipped: reportData.skipped || 0,
+				total,
+				failedRate: total === 0 ? '0.00' : ( ( failed / total ) * 100 ).toFixed( 2 ),
+			};
 		} );
 
-		entries.forEach( day => {
-			// Ensure all required properties exist with default values
-			day.passed = day.passed || 0;
-			day.failed = day.failed || 0;
-			day.skipped = day.skipped || 0;
-			day.total = day.total || 0;
-			day.failedRate = day.total === 0 ? '0.00' : ( ( day.failed / day.total ) * 100 ).toFixed( 2 );
-		} );
-
-		sortArray( entries, 'date', false );
+		// Sort in place for better performance
+		entries.sort( ( a, b ) => new Date( b.date ) - new Date( a.date ) );
 
 		return entries;
 	}
 
-	filterSummaryData() {
-		// make a copy of raw data object
-		// we don't modify the original data
-		const summaryData = {};
+	filterSummaryData( rawSummaryData ) {
+		// Use passed parameter to avoid accessing state during mount
+		const summaryDataSource = rawSummaryData || this.state.rawData.summaryData;
 		const selectedReport = this.state.filters.selectedReport || 'trunk';
 
 		// Safety check to ensure data exists
-		if ( ! this.state.rawData.summaryData.stats ) {
-			return summaryData;
+		if ( ! summaryDataSource?.stats ) {
+			return {};
 		}
 
-		Object.keys( this.state.rawData.summaryData.stats ).forEach( key => {
-			const reportData = this.state.rawData.summaryData.stats[ key ][ selectedReport ] || {
-				passed: 0,
-				failed: 0,
-				skipped: 0,
-				total: 0,
+		// Process summary data efficiently in a single pass
+		const processedSummary = {};
+
+		for ( const [ key, value ] of Object.entries( summaryDataSource.stats ) ) {
+			const reportData = value[ selectedReport ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
+			const total = reportData.total || 0;
+			const failed = reportData.failed || 0;
+
+			processedSummary[ key ] = {
+				passed: reportData.passed || 0,
+				failed,
+				skipped: reportData.skipped || 0,
+				total,
+				failureRate: total === 0 ? '0.00' : ( ( failed / total ) * 100 ).toFixed( 2 ),
 			};
-			summaryData[ key ] = { ...reportData };
-		} );
+		}
 
-		Object.keys( summaryData ).forEach( key => {
-			// Ensure all required properties exist with default values
-			summaryData[ key ].passed = summaryData[ key ].passed || 0;
-			summaryData[ key ].failed = summaryData[ key ].failed || 0;
-			summaryData[ key ].skipped = summaryData[ key ].skipped || 0;
-			summaryData[ key ].total = summaryData[ key ].total || 0;
-			summaryData[ key ].failureRate =
-				summaryData[ key ].total === 0
-					? '0.00'
-					: ( ( summaryData[ key ].failed / summaryData[ key ].total ) * 100 ).toFixed( 2 );
-		} );
-
-		return summaryData;
+		return processedSummary;
 	}
 
 	updateDataAsync() {
 		return new Promise( resolve => {
 			setTimeout( () => {
-				this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );
-				this.setState( { weeks: this.filterData( this.state.rawData.weeklyData ) } );
-				this.setState( { months: this.filterData( this.state.rawData.monthlyData ) } );
-				this.setState( { summary: this.filterSummaryData() } );
-				this.setState( { isProcessing: false } );
+				// Batch all updates to reduce re-renders
+				batchStateUpdates( this.setState.bind( this ), {
+					days: this.filterData( this.state.rawData.dailyData ),
+					weeks: this.filterData( this.state.rawData.weeklyData ),
+					months: this.filterData( this.state.rawData.monthlyData ),
+					summary: this.filterSummaryData(),
+					isProcessing: false,
+				} );
 				resolve();
 			}, 0 );
 		} );
