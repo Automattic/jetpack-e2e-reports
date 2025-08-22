@@ -1,5 +1,5 @@
 import { Table, Button } from 'react-bootstrap';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import ReportRow from './ReportRow';
 
 export default function ReportsTable( { reports, options = {}, reportCount } ) {
@@ -107,11 +107,6 @@ export default function ReportsTable( { reports, options = {}, reportCount } ) {
 					<ReportRow key={ id } report={ report } id={ id } />
 				) ) }
 			</tbody>
-			<tfoot>
-				<tr>
-					<td colSpan={ 3 } />
-				</tr>
-			</tfoot>
 		</Table>
 	);
 }
