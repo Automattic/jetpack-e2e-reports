@@ -109,5 +109,16 @@ async function updateErrorsData( reportPath ) {
 		json.errors = json.errors.slice( -500 );
 	}
 
+	// Calculate oldest timestamp across all errors
+	let oldestTimestamp = json.oldestTimestamp || null;
+	for ( const error of json.errors ) {
+		for ( const result of error.results ) {
+			if ( oldestTimestamp === null || result.time < oldestTimestamp ) {
+				oldestTimestamp = result.time;
+			}
+		}
+	}
+
+	json.oldestTimestamp = oldestTimestamp;
 	json.lastUpdate = new Date().toISOString();
 }

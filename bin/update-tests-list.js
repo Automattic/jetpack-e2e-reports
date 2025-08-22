@@ -66,6 +66,16 @@ async function addTestsToList( reportPath, dataFile ) {
 		}
 	}
 
+	// Calculate oldest timestamp across all tests
+	let oldestTimestamp = json.oldestTimestamp || null;
+	for ( const test of json.tests ) {
+		for ( const result of test.results ) {
+			if ( oldestTimestamp === null || result.time < oldestTimestamp ) {
+				oldestTimestamp = result.time;
+			}
+		}
+	}
+	json.oldestTimestamp = oldestTimestamp;
 	json.lastUpdate = new Date().toISOString();
 
 	// Upload the report to S3
