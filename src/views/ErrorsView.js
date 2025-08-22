@@ -5,6 +5,7 @@ import { getAvailableReports } from '../utils/reports';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
+import FilterDaysSelector from '../components/FilterDaysSelector';
 import StatBox from '../components/StatBox';
 import ErrorCard from '../components/ErrorCard';
 import LoadingState from '../components/LoadingState';
@@ -23,6 +24,8 @@ export default class ErrorsView extends React.Component {
 		availableReports: [],
 		filters: {
 			selectedReport: 'trunk',
+			startDate: moment().subtract( 7, 'd' ).format( 'YYYY-MM-DD' ),
+			endDate: moment().format( 'YYYY-MM-DD' ),
 		},
 		sort: { by: 'recent', isAsc: false },
 		isDataReady: false,
@@ -47,11 +50,14 @@ export default class ErrorsView extends React.Component {
 		this.setState( {
 			isDataReady: true,
 		} );
-		this.setDatePickersValues( this.state.filters.startDate, this.state.filters.endDate );
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
-		if ( this.state.filters !== prevState.filters ) {
+		if (
+			this.state.filters.selectedReport !== prevState.filters.selectedReport ||
+			this.state.filters.startDate !== prevState.filters.startDate ||
+			this.state.filters.endDate !== prevState.filters.endDate
+		) {
 			this.setErrorsData();
 		}
 
@@ -77,6 +83,20 @@ export default class ErrorsView extends React.Component {
 			// Filter by specific report name
 			errors.forEach( e => {
 				e.results = e.results.filter( r => r.report === this.state.filters.selectedReport );
+			} );
+		}
+
+		// Filter by date range
+		if ( this.state.filters.startDate && this.state.filters.endDate ) {
+			errors.forEach( e => {
+				e.results = e.results.filter( r =>
+					moment( r.time ).isBetween(
+						moment( this.state.filters.startDate, 'YYYY-MM-DD' ),
+						moment( this.state.filters.endDate, 'YYYY-MM-DD' ),
+						'd',
+						'[]'
+					)
+				);
 			} );
 		}
 
@@ -217,6 +237,22 @@ export default class ErrorsView extends React.Component {
 										},
 									} ) );
 								} }
+							/>
+						</div>
+						<div className="col-auto filters">
+							<FilterDaysSelector
+								defaultDays={ 7 }
+								min={ 1 }
+								max={ 10 }
+								onDateChange={ dates =>
+									this.setState( prevState => ( {
+										filters: {
+											...prevState.filters,
+											startDate: dates.startDate,
+											endDate: dates.endDate,
+										},
+									} ) )
+								}
 							/>
 						</div>
 					</div>
