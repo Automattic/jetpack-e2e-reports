@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { fetchJsonData } from '../utils/fetch';
+import { getAvailableReports } from '../utils/reports';
 import config from '../config';
 import SortButtons from '../components/SortButtons';
 import FilterReportDropdown from '../components/FilterReportDropdown';
@@ -43,12 +44,7 @@ export default class TestsView extends React.Component {
 		} );
 
 		// Extract available reports from summary data
-		const reports = [];
-		if ( summaryData.stats && summaryData.stats[ '24h' ] ) {
-			Object.keys( summaryData.stats[ '24h' ] ).forEach( key => {
-				reports.push( key );
-			} );
-		}
+		const reports = getAvailableReports( summaryData );
 		this.setState( { availableReports: reports } );
 
 		this.setTestsData();
@@ -144,7 +140,6 @@ export default class TestsView extends React.Component {
 			sort: { by, isAsc },
 		} );
 	}
-
 
 	render() {
 		return (

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { fetchJsonData } from '../utils/fetch';
 import { sortArray } from '../utils/sort';
+import { getAvailableReports } from '../utils/reports';
 import FilterReportDropdown from '../components/FilterReportDropdown';
 import StatBox from '../components/StatBox';
 import LoadingState from '../components/LoadingState';
@@ -39,12 +40,7 @@ export default class Stats extends React.Component {
 		} );
 
 		// Extract available reports from summary data
-		const reports = [];
-		if ( summaryData.stats && summaryData.stats[ '24h' ] ) {
-			Object.keys( summaryData.stats[ '24h' ] ).forEach( key => {
-				reports.push( key );
-			} );
-		}
+		const reports = getAvailableReports( summaryData );
 		this.setState( { availableReports: reports } );
 
 		this.setState( { days: this.filterData( this.state.rawData.dailyData ) } );

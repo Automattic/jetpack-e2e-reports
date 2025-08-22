@@ -23,7 +23,7 @@ export default class FilterDaysSelector extends React.Component {
 	updateDates = days => {
 		const startDate = moment().subtract( days, 'd' ).format( 'YYYY-MM-DD' );
 		const endDate = moment().format( 'YYYY-MM-DD' );
-		
+
 		if ( this.props.onDateChange ) {
 			this.props.onDateChange( {
 				startDate,
@@ -59,11 +59,7 @@ export default class FilterDaysSelector extends React.Component {
 				>
 					<FontAwesomeIcon icon={ faMinus } />
 				</Button>
-				<Button
-					variant="dark"
-					className="filter-btn filter-btn-days"
-					disabled
-				>
+				<Button variant="dark" className="filter-btn filter-btn-days" disabled>
 					{ days } { days === 1 ? 'DAY' : 'DAYS' }
 				</Button>
 				<Button

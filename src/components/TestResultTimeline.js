@@ -35,7 +35,7 @@ const TestResultTimeline = ( { results, reportDeepUrl, limit = 500 } ) => {
 		);
 	} );
 
-	return <div className='test-result-timeline'>{ badges }</div>;
+	return <div className="test-result-timeline">{ badges }</div>;
 };
 
 export default TestResultTimeline;

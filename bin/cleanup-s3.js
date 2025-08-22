@@ -279,17 +279,19 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 			console.log( `Removing error with no results: ${ e.trace?.substring( 0, 50 ) }...` );
 			return false;
 		}
-		
+
 		// Remove errors with single result older than 3 days
 		if ( e.results.length === 1 ) {
-			const resultDate = moment( e.results[0].date );
+			const resultDate = moment( e.results[ 0 ].date );
 			const daysSinceResult = moment().diff( resultDate, 'days' );
 			if ( daysSinceResult > 3 ) {
-				console.log( `Removing error with single result older than 3 days: ${ e.trace?.substring( 0, 50 ) }...` );
+				console.log(
+					`Removing error with single result older than 3 days: ${ e.trace?.substring( 0, 50 ) }...`
+				);
 				return false;
 			}
 		}
-		
+
 		return true;
 	} );
 
