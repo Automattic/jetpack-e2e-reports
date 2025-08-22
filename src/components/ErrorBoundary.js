@@ -21,13 +21,13 @@ class ErrorBoundary extends React.Component {
 	render() {
 		if ( this.state.hasError ) {
 			return (
-				<div className="error-container">
+				<div className="error-container" role="alert" aria-live="assertive">
 					<h2>Something went wrong</h2>
 					<p>An unexpected error occurred while rendering this component.</p>
 					{ this.props.showDetails && (
 						<details>
 							<summary>Error Details</summary>
-							<div className="error-container-trace">
+							<div className="error-container-trace" role="region" aria-label="Error stack trace">
 								{ this.state.error && this.state.error.toString() }
 								<br />
 								{ this.state.errorInfo.componentStack }
@@ -37,6 +37,13 @@ class ErrorBoundary extends React.Component {
 					<button
 						className="btn btn-primary"
 						onClick={ () => this.setState( { hasError: false, error: null, errorInfo: null } ) }
+						onKeyDown={ e => {
+							if ( e.key === 'Enter' || e.key === ' ' ) {
+								e.preventDefault();
+								this.setState( { hasError: false, error: null, errorInfo: null } );
+							}
+						} }
+						aria-label="Try to reload the component"
 					>
 						Try again
 					</button>

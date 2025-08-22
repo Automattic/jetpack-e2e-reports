@@ -62,6 +62,12 @@ export default function ReportsTable( { reports, options = {}, reportCount } ) {
 
 		if ( options.sortButtons ) {
 			sortButtons = Object.keys( head ).map( ( key, index ) => {
+				const isActive = sort.by === key;
+				const sortDirection = sort.isAsc ? 'ascending' : 'descending';
+				const ariaLabel = `Sort by ${ head[ key ] }${
+					isActive ? `, currently sorted ${ sortDirection }` : ''
+				}`;
+
 				return (
 					<Button
 						variant="dark"
@@ -70,9 +76,17 @@ export default function ReportsTable( { reports, options = {}, reportCount } ) {
 						onClick={ () => {
 							sortTable( key, ! sort.isAsc );
 						} }
+						onKeyDown={ e => {
+							if ( e.key === 'Enter' || e.key === ' ' ) {
+								e.preventDefault();
+								sortTable( key, ! sort.isAsc );
+							}
+						} }
+						aria-label={ ariaLabel }
+						aria-pressed={ isActive }
 					>
 						{ head[ key ].toUpperCase() }
-						{ <span className={ sort.by === key ? klass : '' } /> }
+						{ <span className={ isActive ? klass : '' } aria-hidden="true" /> }
 					</Button>
 				);
 			} );
@@ -100,7 +114,14 @@ export default function ReportsTable( { reports, options = {}, reportCount } ) {
 	const tableHeader = useMemo( () => getTableHeader(), [ getTableHeader ] );
 
 	return (
-		<Table size="sm" responsive="sm" borderless className="reportsTable">
+		<Table
+			size="sm"
+			responsive="sm"
+			borderless
+			className="reportsTable"
+			role="table"
+			aria-label="Test reports table"
+		>
 			{ tableHeader }
 			<tbody>
 				{ sortedReports.map( ( report, id ) => (

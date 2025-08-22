@@ -18,7 +18,7 @@ const DateFilterFields = ( { onDateChange } ) => {
 
 	return (
 		<div className="col filters">
-			<InputGroup>
+			<InputGroup role="group" aria-label="Date range filter controls">
 				{ [
 					[ 'today', 0 ],
 					[ 'last 7 days', 7 ],
@@ -38,6 +38,13 @@ const DateFilterFields = ( { onDateChange } ) => {
 								endDate: getValidDate( 'endDate', moment().format( dateFormat ) ),
 							} );
 						} }
+						onKeyDown={ evt => {
+							if ( evt.key === 'Enter' || evt.key === ' ' ) {
+								evt.preventDefault();
+								evt.target.click();
+							}
+						} }
+						aria-label={ `Filter to show results from ${ e[ 0 ] }` }
 					>
 						{ e[ 0 ] }
 					</Button>
@@ -46,6 +53,7 @@ const DateFilterFields = ( { onDateChange } ) => {
 					type="date"
 					id="startDate"
 					max={ moment().format( dateFormat ) }
+					aria-label="Start date for filter range"
 					onChange={ () => {
 						const endDateElement = document.getElementById( 'endDate' );
 						const minDate = getValidDate( 'startDate', '2021-10-01' );
@@ -63,6 +71,7 @@ const DateFilterFields = ( { onDateChange } ) => {
 					type="date"
 					id="endDate"
 					max={ moment().format( 'YYYY-MM-DD' ) }
+					aria-label="End date for filter range"
 				/>
 				<Button
 					variant="dark"
@@ -73,6 +82,13 @@ const DateFilterFields = ( { onDateChange } ) => {
 							endDate: getValidDate( 'endDate', moment().format( dateFormat ) ),
 						} );
 					} }
+					onKeyDown={ evt => {
+						if ( evt.key === 'Enter' || evt.key === ' ' ) {
+							evt.preventDefault();
+							evt.target.click();
+						}
+					} }
+					aria-label="Apply selected date range filter"
 				>
 					Apply
 				</Button>

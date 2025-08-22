@@ -199,7 +199,22 @@ export default function Performance() {
 			const prev = data.at( -2 );
 
 			return (
-				<Container className="perf-button" onClick={ () => onSelect( type ) }>
+				<Container
+					className="perf-button"
+					onClick={ () => onSelect( type ) }
+					onKeyDown={ e => {
+						if ( e.key === 'Enter' || e.key === ' ' ) {
+							e.preventDefault();
+							onSelect( type );
+						}
+					} }
+					tabIndex={ 0 }
+					role="button"
+					aria-label={ `View ${ prettyTitle( type ) } performance metrics${
+						selected === type ? ' (currently selected)' : ''
+					}` }
+					aria-pressed={ selected === type }
+				>
 					<Row>
 						<h4>{ selected === type ? <u>{ prettyTitle( type ) }</u> : prettyTitle( type ) }</h4>
 					</Row>
@@ -243,9 +258,9 @@ export default function Performance() {
 
 	if ( ! isDataFetched ) {
 		return (
-			<div className="d-flex justify-content-center">
-				<div className="spinner-border" role="status">
-					<span className="sr-only">Loading...</span>
+			<div className="d-flex justify-content-center" role="status" aria-live="polite">
+				<div className="spinner-border" role="status" aria-label="Loading performance data">
+					<span className="visually-hidden">Loading performance data...</span>
 				</div>
 			</div>
 		);
