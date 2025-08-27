@@ -25,7 +25,7 @@ export default function ErrorsView() {
 	} );
 	const [ availableReports, setAvailableReports ] = useState( [] );
 	const [ filters, setFilters ] = useState( {
-		selectedReport: 'trunk',
+		selectedReport: 'total',
 		startDate: null,
 		endDate: moment().format( 'YYYY-MM-DD' ),
 	} );

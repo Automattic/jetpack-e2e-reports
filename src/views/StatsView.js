@@ -21,7 +21,7 @@ export default function Stats() {
 	const [ months, setMonths ] = useState( [] );
 	const [ summary, setSummary ] = useState( {} );
 	const [ availableReports, setAvailableReports ] = useState( [] );
-	const [ selectedReport, setSelectedReport ] = useState( 'trunk' );
+	const [ selectedReport, setSelectedReport ] = useState( 'total' );
 	const [ isDataReady, setIsDataReady ] = useState( false );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
@@ -54,14 +54,13 @@ export default function Stats() {
 	}, [] );
 
 	const filterData = useCallback( ( rawDataInput, selectedReportFilter ) => {
-		// Use efficient data processing instead of deep cloning
-		const reportFilter = selectedReportFilter || 'trunk';
+		const reportFilter = selectedReportFilter || 'total';
 
 		// Process entries in a single pass for better performance
 		const entries = rawDataInput.map( entry => {
 			const reportData = entry[ reportFilter ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
 			const total = reportData.total || 0;
-			const failed = reportData.failed || 0;
+			const failed = reportData.failed || 0;	
 
 			return {
 				date: entry.date,
@@ -87,7 +86,7 @@ export default function Stats() {
 		( rawSummaryData, selectedReportFilter ) => {
 			// Use passed parameter to avoid accessing state during mount
 			const summaryDataSource = rawSummaryData || rawData.summaryData;
-			const reportFilter = selectedReportFilter || 'trunk';
+			const reportFilter = selectedReportFilter || 'total';
 
 			// Safety check to ensure data exists
 			if ( ! summaryDataSource?.stats ) {
