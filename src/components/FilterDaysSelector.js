@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import moment from 'moment';
 
 export default function FilterDaysSelector( {
@@ -14,12 +14,10 @@ export default function FilterDaysSelector( {
 	const updateDates = useCallback(
 		daysValue => {
 			const startDate = moment().subtract( daysValue, 'd' ).format( 'YYYY-MM-DD' );
-			const endDate = moment().format( 'YYYY-MM-DD' );
 
 			if ( onDateChange ) {
 				onDateChange( {
 					startDate,
-					endDate,
 					days: daysValue,
 				} );
 			}

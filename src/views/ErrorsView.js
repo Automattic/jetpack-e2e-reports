@@ -27,7 +27,6 @@ export default function ErrorsView() {
 	const [ filters, setFilters ] = useState( {
 		selectedReport: 'total',
 		startDate: null,
-		endDate: moment().format( 'YYYY-MM-DD' ),
 	} );
 	const [ sort, setSort ] = useState( { by: 'recent', isAsc: false } );
 	const [ isDataReady, setIsDataReady ] = useState( false );
@@ -237,7 +236,6 @@ export default function ErrorsView() {
 									setFilters( prevState => ( {
 										...prevState,
 										startDate: dates.startDate,
-										endDate: dates.endDate,
 									} ) )
 								}
 							/>

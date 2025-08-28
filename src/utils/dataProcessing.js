@@ -24,18 +24,17 @@ export function deepClone( obj ) {
 export function processTestData( tests, filters ) {
 	if ( ! tests || ! Array.isArray( tests ) ) return [];
 
-	const { startDate, endDate, selectedReport } = filters;
+	const { startDate, selectedReport } = filters;
 
 	return tests
 		.map( test => ( {
 			...test,
 			results: test.results.filter( result => {
 				// Date filtering
-				if ( startDate && endDate ) {
+				if ( startDate ) {
 					const resultTime = new Date( result.time );
 					const start = new Date( startDate );
-					const end = new Date( endDate );
-					if ( resultTime < start || resultTime > end ) return false;
+					if ( resultTime < start ) return false;
 				}
 
 				// Report filtering
@@ -84,7 +83,7 @@ export function processTestData( tests, filters ) {
 export function processErrorData( errors, filters ) {
 	if ( ! errors || ! Array.isArray( errors ) ) return [];
 
-	const { startDate, endDate, selectedReport } = filters;
+	const { startDate, selectedReport } = filters;
 
 	return errors
 		.map( error => ( {
@@ -99,11 +98,10 @@ export function processErrorData( errors, filters ) {
 				}
 
 				// Date filtering
-				if ( startDate && endDate ) {
+				if ( startDate ) {
 					const resultTime = new Date( result.time );
 					const start = new Date( startDate );
-					const end = new Date( endDate );
-					if ( resultTime < start || resultTime > end ) return false;
+					if ( resultTime < start ) return false;
 				}
 
 				return true;

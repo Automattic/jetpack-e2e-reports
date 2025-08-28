@@ -29,7 +29,6 @@ export default function TestsView() {
 	const [ filters, setFilters ] = useState( {
 		selectedReport: 'total',
 		startDate: null,
-		endDate: moment().format( 'YYYY-MM-DD' ),
 	} );
 	const [ sort, setSort ] = useState( { by: 'failedRate', isAsc: false } );
 	const [ isDataReady, setIsDataReady ] = useState( false );
@@ -163,7 +162,6 @@ export default function TestsView() {
 									setFilters( prev => ( {
 										...prev,
 										startDate: dates.startDate,
-										endDate: dates.endDate,
 									} ) );
 								} }
 							/>
