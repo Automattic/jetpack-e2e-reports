@@ -28,46 +28,6 @@ function getFilesFromDir( dirPath, fileExtension = '' ) {
 		.map( dirent => dirent.name );
 }
 
-function cleanTrace( trace ) {
-	return trace
-		.split( '\n' )
-		.filter( line => ! line.includes( '=====' ) )
-		.filter( line => ! line.includes( 'Playwright logs' ) )
-		.filter( line => ! line.includes( '/node_modules/' ) )
-		.filter( line => ! line.includes( 'node:' ) )
-		.filter( line => ! line.includes( 'runMicrotasks' ) )
-		.join( '\n' )
-		.replace( /\n+/g, '\n' )
-		.replace( /at .+/gs, trace.match( /at .+/ ) ) // keep only the first "at" line
-		.replace( /Call log:(?:\n\s*-.+){3,}/g, 'Call log: [...]' )
-		.replace( /(https?:\/\/)?[^\s]+\.a8c-localtunnel\.cyou/g, 'SITE-URL' )
-		.replace( /(https?:\/\/)?[^\s]+\.trycloudflare\.com/g, 'SITE-URL' )
-		.replace( /cookie: .*/gi, 'cookie: [...]' )
-		.replace(
-			/waiting for selector "\.wp-block-jetpack-.+ \.components-sandbox" to be visible/g,
-			'waiting for selector ".wp-block-jetpack-BLOCK .components-sandbox" to be visible'
-		)
-		.replace(
-			/waiting for selector "#block-.* a\[href\*=\'calypso-marketing-connections\'\]" to be visible/g,
-			'waiting for selector "#block-... a[href*=\'calypso-marketing-connections\']" to be visible'
-		)
-		.replace( /partner_id=\S+/g, 'partner_id=***' )
-		.replace( /partner_secret=\S+/g, 'partner_secret=***' )
-		.replace(
-			/ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs,
-			'ms exceeded.\n    at SearchHomepage.waitForLoadState'
-		); // remove multiple possible events that can happen before timeout
-}
-
-function cleanError( message, trace ) {
-	if ( trace ) {
-		return trace.includes( message )
-			? cleanTrace( trace )
-			: cleanTrace( `${ message }\n${ trace }` );
-	}
-	return 'undefined';
-}
-
 function getTestInfoFromTestCaseFile( reportName, fileName ) {
 	const filePath = `./docs/${ reportName }/report/data/test-cases/${ fileName }`;
 	return JSON.parse( fs.readFileSync( filePath ).toString() );
@@ -255,8 +215,6 @@ module.exports = {
 	getReportsDirs,
 	getFilesFromDir,
 	getTestInfoFromTestCaseFile,
-	cleanTrace,
-	cleanError,
 	writeJson,
 	readJson,
 	sort,

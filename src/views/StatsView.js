@@ -60,7 +60,7 @@ export default function Stats() {
 		const entries = rawDataInput.map( entry => {
 			const reportData = entry[ reportFilter ] || { passed: 0, failed: 0, skipped: 0, total: 0 };
 			const total = reportData.total || 0;
-			const failed = reportData.failed || 0;	
+			const failed = reportData.failed || 0;
 
 			return {
 				date: entry.date,
