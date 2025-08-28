@@ -10,7 +10,7 @@ const { PutObjectCommand } = require( '@aws-sdk/client-s3' );
 const { s3Params, s3client } = require( './s3-client' );
 const moment = require( 'moment' );
 
-async function addTestsToList( reportPath, dataFile ) {
+async function addTestsToList( reportPath, dataFile, withSource = true ) {
 	// Get the existing tests list
 	console.log();
 	const s3Data = await readS3Object( dataFile );
@@ -30,7 +30,7 @@ async function addTestsToList( reportPath, dataFile ) {
 			time: testInfo.time.stop,
 			report: reportId,
 			status: testInfo.status === 'broken' ? 'failed' : testInfo.status,
-			source: testInfo.source,
+			...( withSource && { source: testInfo.source } ),
 		};
 
 		const existingTests = json.tests.filter( t => t.name === testInfo.fullName );
