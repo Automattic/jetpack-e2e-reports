@@ -1,9 +1,5 @@
 const moment = require( 'moment' );
 
-const DAYS_TO_KEEP_TEST_RESULT_FOR_ERROR = 30;
-const DAYS_SINCE_LAST_OCCURENCE_TO_KEEP_ERROR = 7;
-const DAYS_TO_KEEP_ERRORS_WITH_SINGLE_RESULT = 3;
-
 function cleanTrace( trace ) {
 	return trace
 		.split( '\n' )
@@ -45,6 +41,10 @@ function cleanError( message, trace ) {
 }
 
 async function cleanupErrors( jsonData ) {
+	const DAYS_TO_KEEP_TEST_RESULT_FOR_ERROR = 30;
+	const DAYS_SINCE_LAST_OCCURENCE_TO_KEEP_ERROR = 5;
+	const DAYS_TO_KEEP_ERRORS_WITH_SINGLE_RESULT = 3;
+
 	// First, update latestOccurrence for all errors based on actual result times
 	jsonData.errors.forEach( e => {
 		if ( e.results && e.results.length > 0 ) {
@@ -132,17 +132,17 @@ async function cleanupErrors( jsonData ) {
 		jsonData.errors = jsonData.errors.slice( -500 );
 	}
 
-	// Calculate oldest timestamp across all errors
-	let oldestTimestamp = jsonData.oldestTimestamp || null;
-	for ( const error of jsonData.errors ) {
-		for ( const result of error.results ) {
-			if ( oldestTimestamp === null || result.time < oldestTimestamp ) {
-				oldestTimestamp = result.time;
-			}
-		}
-	}
+	// Calculate oldest timestamp across all errors using min
+	console.log( `Current oldestTimestamp: ${ jsonData.oldestTimestamp }: ${ moment( jsonData.oldestTimestamp ).fromNow() }` );
+	const allTimestamps = jsonData.errors.flatMap( error => 
+		error.results.map( result => result.time )
+	);
+	const oldestTimestamp = allTimestamps.length > 0 
+		? Math.min( ...allTimestamps )
+		: null;
 
 	jsonData.oldestTimestamp = oldestTimestamp;
+	console.log( `New oldestTimestamp: ${ jsonData.oldestTimestamp }: ${ moment( jsonData.oldestTimestamp ).fromNow() }` );
 	jsonData.lastUpdate = new Date().toISOString();
 	return jsonData;
 }
