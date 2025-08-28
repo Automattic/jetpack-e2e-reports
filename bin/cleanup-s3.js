@@ -45,7 +45,6 @@ const reportsToDelete = [];
 const reportsToClean = [];
 let testsToDelete = [];
 const reportAgeThresholdInDays = 30;
-const errorsAgeThresholdInDays = 7;
 const testsAgeThresholdInDays = 30;
 
 const plus = String.fromCodePoint( 0x2795 );
@@ -65,7 +64,7 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 	console.log( `Batch Size: ${ batchSize === 0 ? 'No limit' : batchSize }` );
 	console.log( `Report Age Threshold: ${ reportAgeThresholdInDays } days` );
 	console.log( `Tests Age Threshold: ${ testsAgeThresholdInDays } days` );
-	console.log( `Errors Age Threshold: ${ errorsAgeThresholdInDays } days` );
+
 	console.log( '====================================\n' );
 
 	// If a --report argument exists, clean up that single report and exit
@@ -272,30 +271,6 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 
 	console.group( '\n', 'Cleaning up errors data file' );
 	const errorsJson = JSON.parse( ( await readS3Object( 'data/errors.json' ) ).toString() );
-	cleanOldResults( errorsJson, 'errors', errorsAgeThresholdInDays );
-
-	errorsJson.errors = errorsJson.errors.filter( e => {
-		// Remove errors without results
-		if ( ! e.results || e.results.length === 0 ) {
-			console.log( `Removing error with no results: ${ e.trace?.substring( 0, 50 ) }...` );
-			return false;
-		}
-
-		// Remove errors with single result older than 3 days
-		if ( e.results.length === 1 ) {
-			const resultDate = moment( e.results[ 0 ].date );
-			const daysSinceResult = moment().diff( resultDate, 'days' );
-			if ( daysSinceResult > 3 ) {
-				console.log(
-					`Removing error with single result older than 3 days: ${ e.trace?.substring( 0, 50 ) }...`
-				);
-				return false;
-			}
-		}
-
-		return true;
-	} );
-
 	cleanTestsSourceProperty( errorsJson, 'errors' );
 
 	await s3client.send(
