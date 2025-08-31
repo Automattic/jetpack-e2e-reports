@@ -6,9 +6,9 @@
  */
 export function getAvailableReports( summaryData ) {
 	const reports = [];
-	if ( summaryData.stats && summaryData.stats[ '24h' ] ) {
-		Object.keys( summaryData.stats[ '24h' ] ).forEach( key => {
-			const reportData = summaryData.stats[ '24h' ][ key ];
+	if ( summaryData.stats && summaryData.stats[ '30d' ] ) {
+		Object.keys( summaryData.stats[ '30d' ] ).forEach( key => {
+			const reportData = summaryData.stats[ '30d' ][ key ];
 			if ( reportData && reportData.total > 0 ) {
 				reports.push( key );
 			}

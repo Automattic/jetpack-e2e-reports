@@ -133,16 +133,22 @@ async function cleanupErrors( jsonData ) {
 	}
 
 	// Calculate oldest timestamp across all errors using min
-	console.log( `Current oldestTimestamp: ${ jsonData.oldestTimestamp }: ${ moment( jsonData.oldestTimestamp ).fromNow() }` );
-	const allTimestamps = jsonData.errors.flatMap( error => 
+	console.log(
+		`Current oldestTimestamp: ${ jsonData.oldestTimestamp }: ${ moment(
+			jsonData.oldestTimestamp
+		).fromNow() }`
+	);
+	const allTimestamps = jsonData.errors.flatMap( error =>
 		error.results.map( result => result.time )
 	);
-	const oldestTimestamp = allTimestamps.length > 0 
-		? Math.min( ...allTimestamps )
-		: null;
+	const oldestTimestamp = allTimestamps.length > 0 ? Math.min( ...allTimestamps ) : null;
 
 	jsonData.oldestTimestamp = oldestTimestamp;
-	console.log( `New oldestTimestamp: ${ jsonData.oldestTimestamp }: ${ moment( jsonData.oldestTimestamp ).fromNow() }` );
+	console.log(
+		`New oldestTimestamp: ${ jsonData.oldestTimestamp }: ${ moment(
+			jsonData.oldestTimestamp
+		).fromNow() }`
+	);
 	jsonData.lastUpdate = new Date().toISOString();
 	return jsonData;
 }
