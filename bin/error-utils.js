@@ -28,7 +28,11 @@ function cleanTrace( trace ) {
 		.replace(
 			/ms exceeded\.\n.*at SearchHomepage.waitForLoadState/gs,
 			'ms exceeded.\n    at SearchHomepage.waitForLoadState'
-		); // remove multiple possible events that can happen before timeout
+		) // remove multiple possible events that can happen before timeout
+		.replace(
+			/Received string:\s*"<!DOCTYPE html><html[\s\S]*$/g,
+			'Received string:    "<!DOCTYPE html><html..."'
+		);
 }
 
 function cleanError( message, trace ) {
