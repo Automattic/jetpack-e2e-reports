@@ -205,10 +205,27 @@ function getLocalReportsPaths() {
 		throw 'LOCAL_REPORTS_PATH env variable is not set';
 	}
 
+	if ( ! fs.existsSync( reportsPath ) ) {
+		return [];
+	}
+
 	return fs
 		.readdirSync( reportsPath, { withFileTypes: true } )
-		.filter( d => d.isDirectory() )
-		.map( d => path.join( reportsPath, d.name ) );
+		.filter( dirent => {
+			if ( ! dirent.isDirectory() ) {
+				return false;
+			}
+
+			// Validate directory name to prevent path traversal
+			// Only allow alphanumeric, hyphens, and underscores
+			if ( ! /^[A-Za-z0-9_-]+$/.test( dirent.name ) ) {
+				console.warn( `Skipping invalid directory name: ${ dirent.name }` );
+				return false;
+			}
+
+			return true;
+		} )
+		.map( dirent => path.join( reportsPath, dirent.name ) );
 }
 
 module.exports = {
