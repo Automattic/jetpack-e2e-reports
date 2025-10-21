@@ -1,19 +1,32 @@
 #!/bin/bash
 
-set -eo pipefail
+set -euo pipefail
 
-if [[ -z "$RUN_ID" ]]; then
+# Validate inputs
+if [[ -z "${RUN_ID:-}" ]]; then
 	echo "::error::RUN_ID must be set"
 	exit 1
 fi
 
-if [[ -z "$REPOSITORY" ]]; then
+if [[ -z "${REPOSITORY:-}" ]]; then
 	echo "::error::REPOSITORY must be set in the form 'organisation/repository'"
 	exit 1
 fi
 
+# Validate RUN_ID is numeric
+if [[ ! "$RUN_ID" =~ ^[0-9]+$ ]]; then
+	echo "::error::RUN_ID must be numeric"
+	exit 1
+fi
+
+# Validate REPOSITORY format
+if [[ ! "$REPOSITORY" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+	echo "::error::REPOSITORY must be in format 'owner/repo'"
+	exit 1
+fi
+
 get_artifacts_count() {
-  curl -s https://api.github.com/repos/Automattic/jetpack/actions/runs/$RUN_ID/artifacts | jq '.total_count'
+  curl -s "https://api.github.com/repos/${REPOSITORY}/actions/runs/${RUN_ID}/artifacts" | jq '.total_count'
 }
 
 ARTEFACTS_COUNT=$( get_artifacts_count )
