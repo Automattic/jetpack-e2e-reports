@@ -5,13 +5,13 @@
 # - RESULTS_PATH: Path to the test output directory
 # - REPORTS_PATH: The local path where the reports will be generated. Multiple reports can be generated in this directory, e.g. 'reports/atomic', 'reports/jetpack-production'
 
-set -eo pipefail
+set -euo pipefail
 
 # Test Allure installation
 allure --version
 
 # Check that Allure results directory exists
-if [[ -z "$RESULTS_PATH" ]]; then
+if [[ -z "${RESULTS_PATH:-}" ]]; then
   echo "::error::RESULTS_PATH must be set"
   exit 1
 elif [[ ! -d "$RESULTS_PATH" ]]; then
@@ -19,8 +19,14 @@ elif [[ ! -d "$RESULTS_PATH" ]]; then
   exit 1
 fi
 
-if [[ -z "$LOCAL_REPORTS_PATH" ]]; then
+if [[ -z "${LOCAL_REPORTS_PATH:-}" ]]; then
   echo "::error::'LOCAL_REPORTS_PATH' is not defined"
+  exit 1
+fi
+
+# Validate that RESULTS_PATH doesn't contain path traversal
+if [[ "$RESULTS_PATH" == *".."* ]]; then
+  echo "::error::RESULTS_PATH contains invalid path traversal"
   exit 1
 fi
 
@@ -34,7 +40,26 @@ echo "----------------------------------------"
 
 for d in "$RESULTS_PATH"/*; do
   echo "Checking for report metadata in $d"
-  REPORT_ID=$(jq -r '.suite' "$d/report-metadata.json")
+
+  # Ensure report-metadata.json exists
+  if [[ ! -f "$d/report-metadata.json" ]]; then
+    echo "::warning::No report-metadata.json found in $d, skipping"
+    continue
+  fi
+
+  REPORT_ID=$(jq -r '.suite // ""' "$d/report-metadata.json")
+
+  # Validate REPORT_ID
+  if [[ -z "$REPORT_ID" ]]; then
+    echo "::error::Empty report ID from $d/report-metadata.json"
+    exit 1
+  fi
+
+  if [[ ! "$REPORT_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
+    echo "::error::Invalid report ID: '$REPORT_ID'"
+    exit 1
+  fi
+
   echo "Found report id: $REPORT_ID"
   RESULTS_DIR="$LOCAL_REPORTS_PATH/$REPORT_ID/results"
   echo "Creating '$RESULTS_DIR' results dir if it doesn't already exist"
@@ -51,6 +76,13 @@ echo "----------------------------------------"
 
 for d in "$LOCAL_REPORTS_PATH"/*; do
   REPORT_ID=$(basename "$d")
+
+  # Validate REPORT_ID to prevent path traversal
+  if [[ ! "$REPORT_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
+    echo "::error::Invalid report ID from path: '$REPORT_ID'"
+    exit 1
+  fi
+
   echo "Creating report '$REPORT_ID'"
   RESULTS_PATH="$d/results"
   REPORT_PATH="$d/report"
@@ -83,8 +115,14 @@ for d in "$LOCAL_REPORTS_PATH"/*; do
 
   echo "Writing metadata to file"
 
-  if [ "$CLIENT_PAYLOAD" == "" ]; then
-    CLIENT_PAYLOAD={}
+  # Validate CLIENT_PAYLOAD is valid JSON if not empty
+  if [[ -n "${CLIENT_PAYLOAD:-}" ]]; then
+    if ! echo "$CLIENT_PAYLOAD" | jq empty 2>/dev/null; then
+      echo "::error::CLIENT_PAYLOAD is not valid JSON"
+      exit 1
+    fi
+  else
+    CLIENT_PAYLOAD='{}'
   fi
 
   echo "$CLIENT_PAYLOAD" | jq --arg updateDate "$(date +"%Y-%m-%dT%H:%M:%S%z")" '. + {"updated_on":$updateDate}' >"$d/metadata.json"
