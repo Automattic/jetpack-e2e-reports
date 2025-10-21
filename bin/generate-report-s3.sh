@@ -24,9 +24,13 @@ if [[ -z "${LOCAL_REPORTS_PATH:-}" ]]; then
   exit 1
 fi
 
-# Validate that RESULTS_PATH doesn't contain path traversal
-if [[ "$RESULTS_PATH" == *".."* ]]; then
-  echo "::error::RESULTS_PATH contains invalid path traversal"
+# Resolve RESULTS_PATH to absolute path and validate it's within workspace
+RESULTS_PATH_ABS=$(cd "$RESULTS_PATH" && pwd -P)
+WORKSPACE_PATH=$(pwd -P)
+
+# Ensure RESULTS_PATH doesn't escape the workspace (GitHub Actions workspace)
+if [[ "$RESULTS_PATH_ABS" != "$WORKSPACE_PATH"* ]] && [[ "$RESULTS_PATH_ABS" != "$(dirname "$WORKSPACE_PATH")"* ]]; then
+  echo "::error::RESULTS_PATH resolves outside workspace: $RESULTS_PATH_ABS"
   exit 1
 fi
 
