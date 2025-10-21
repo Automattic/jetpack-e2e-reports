@@ -11,17 +11,15 @@ on:
         required: true
         default: '{"branch": "test/test-branch","pr_number": "99999","pr_title": "This is a test PR.","report_name": "","repository": "Automattic/jetpack","run_id": "2259156708","run_number": "12345"}'
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   report:
     name: "Create test report"
     runs-on: ubuntu-latest
     env:
-      PR_NUMBER: ${{ github.event.client_payload.pr_number }}
-      RUN_ID: ${{ github.event.client_payload.run_id }}
-      REPOSITORY: ${{ github.event.client_payload.repository }}
-      BRANCH: ${{ github.event.client_payload.branch }}
-      REPORT_NAME: ${{ github.event.client_payload.report_name }}
-      CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
       LOCAL_REPORTS_PATH: reports
     outputs:
       matrix: ${{ steps.reports-matrix.outputs.matrix }}
@@ -32,6 +30,38 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set environment variables safely
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          # Use jq to safely extract values from client_payload
+          echo "PR_NUMBER=$(echo '$PAYLOAD' | jq -r '.pr_number // ""')" >> $GITHUB_ENV
+          echo "RUN_ID=$(echo '$PAYLOAD' | jq -r '.run_id // ""')" >> $GITHUB_ENV
+          echo "REPOSITORY=$(echo '$PAYLOAD' | jq -r '.repository // ""')" >> $GITHUB_ENV
+          echo "BRANCH=$(echo '$PAYLOAD' | jq -r '.branch // ""')" >> $GITHUB_ENV
+          echo "REPORT_NAME=$(echo '$PAYLOAD' | jq -r '.report_name // ""')" >> $GITHUB_ENV
+
+      - name: Set client payload
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          # Store the entire payload as JSON for later use
+          echo 'CLIENT_PAYLOAD<<EOF' >> $GITHUB_ENV
+          echo '$PAYLOAD' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Validate inputs
+        run: ./bin/validate-inputs.sh
+
+      - name: Validate repository source
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          # Only allow repository_dispatch from Automattic organization
+          if [[ ! "$REPOSITORY" =~ ^Automattic/.+ ]]; then
+            echo "::error::Repository '$REPOSITORY' is not in Automattic organization"
+            exit 1
+          fi
 
       - name: Parse event information
         run: ./bin/set-event-data.sh
@@ -115,7 +145,14 @@ jobs:
         run: npm install
 
       - name: Set rule name
-        run: echo "RULE_NAME=consecutive_failures_${REPORT_NAME//-/_}" >> $GITHUB_ENV
+        env:
+          MATRIX_REPORT: ${{ matrix.report }}
+        run: |
+          # Sanitize report name by removing all non-alphanumeric except underscore and hyphen
+          SANITIZED=$(echo "$MATRIX_REPORT" | tr -cd '[:alnum:]-_')
+          # Replace hyphens with underscores
+          RULE_NAME="consecutive_failures_${SANITIZED//-/_}"
+          echo "RULE_NAME=$RULE_NAME" >> "$GITHUB_ENV"
 
       - name: Run ${{ env.RULE_NAME }} rule
         with:
