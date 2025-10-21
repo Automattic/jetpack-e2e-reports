@@ -36,19 +36,14 @@ jobs:
           PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
           # Use jq to safely extract values from client_payload
-          echo "PR_NUMBER=$(echo '$PAYLOAD' | jq -r '.pr_number // ""')" >> $GITHUB_ENV
-          echo "RUN_ID=$(echo '$PAYLOAD' | jq -r '.run_id // ""')" >> $GITHUB_ENV
-          echo "REPOSITORY=$(echo '$PAYLOAD' | jq -r '.repository // ""')" >> $GITHUB_ENV
-          echo "BRANCH=$(echo '$PAYLOAD' | jq -r '.branch // ""')" >> $GITHUB_ENV
-          echo "REPORT_NAME=$(echo '$PAYLOAD' | jq -r '.report_name // ""')" >> $GITHUB_ENV
-
-      - name: Set client payload
-        env:
-          PAYLOAD: ${{ toJson(github.event.client_payload) }}
-        run: |
+          echo "PR_NUMBER=$(echo "$PAYLOAD" | jq -r '.pr_number // ""')" >> $GITHUB_ENV
+          echo "RUN_ID=$(echo "$PAYLOAD" | jq -r '.run_id // ""')" >> $GITHUB_ENV
+          echo "REPOSITORY=$(echo "$PAYLOAD" | jq -r '.repository // ""')" >> $GITHUB_ENV
+          echo "BRANCH=$(echo "$PAYLOAD" | jq -r '.branch // ""')" >> $GITHUB_ENV
+          echo "REPORT_NAME=$(echo "$PAYLOAD" | jq -r '.report_name // ""')" >> $GITHUB_ENV
           # Store the entire payload as JSON for later use
           echo 'CLIENT_PAYLOAD<<EOF' >> $GITHUB_ENV
-          echo '$PAYLOAD' >> $GITHUB_ENV
+          echo "$PAYLOAD" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
       - name: Validate inputs

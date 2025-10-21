@@ -14,33 +14,54 @@ on:
         description: 'Repository'
         required: true
         default: 'automattic/jetpack'
+
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   report:
     name: "Create new test report"
     runs-on: ubuntu-latest
-    env:
-      RUN_ID: ${{ github.event.client_payload.run_id }}
-      REPOSITORY: ${{ github.event.client_payload.repository }}
-      CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
 
     steps:
       - name: Setup Node
         uses: actions/setup-node@v4
 
-      - name: Event information
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
 
           if [ "$GITHUB_EVENT_NAME" == workflow_dispatch ]; then
+            # For manual dispatch, use inputs directly (these are trusted)
             echo "RUN_ID=${{ github.event.inputs.runId }}" >> $GITHUB_ENV
             echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
           else
+            # For repository_dispatch, use jq to safely parse
             echo "Received event '${{ github.event.action }}'"
-            echo $CLIENT_PAYLOAD
+            echo "RUN_ID=$(echo "$PAYLOAD" | jq -r '.run_id // ""')" >> $GITHUB_ENV
+            echo "REPOSITORY=$(echo "$PAYLOAD" | jq -r '.repository // ""')" >> $GITHUB_ENV
+            echo 'CLIENT_PAYLOAD<<EOF' >> $GITHUB_ENV
+            echo "$PAYLOAD" >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
           fi
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Validate inputs
+        run: ./bin/validate-inputs.sh
+
+      - name: Validate repository source
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          # Only allow repository_dispatch from Automattic organization
+          if [[ ! "$REPOSITORY" =~ ^Automattic/.+ ]]; then
+            echo "::error::Repository '$REPOSITORY' is not in Automattic organization"
+            exit 1
+          fi
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
