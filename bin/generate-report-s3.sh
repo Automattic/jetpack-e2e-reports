@@ -24,6 +24,11 @@ if [[ -z "${LOCAL_REPORTS_PATH:-}" ]]; then
   exit 1
 fi
 
+SCRIPT_PATH=$(
+  cd "$(dirname "${BASH_SOURCE[0]}")" || return
+  pwd -P
+)
+
 # Resolve RESULTS_PATH to absolute path and validate it's within workspace
 RESULTS_PATH_ABS=$(cd "$RESULTS_PATH" && pwd -P)
 WORKSPACE_PATH=$(pwd -P)
@@ -35,11 +40,6 @@ if [[ "$RESULTS_PATH_ABS" != "$WORKSPACE_PATH"* ]] && [[ "$RESULTS_PATH_ABS" != 
   echo "::error::RESULTS_PATH resolves outside workspace: $RESULTS_PATH_ABS"
   exit 1
 fi
-
-SCRIPT_PATH=$(
-  cd "$(dirname "${BASH_SOURCE[0]}")" || return
-  pwd -P
-)
 
 echo
 echo "----------------------------------------"
