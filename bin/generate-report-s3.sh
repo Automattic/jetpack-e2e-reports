@@ -27,6 +27,8 @@ fi
 # Resolve RESULTS_PATH to absolute path and validate it's within workspace
 RESULTS_PATH_ABS=$(cd "$RESULTS_PATH" && pwd -P)
 WORKSPACE_PATH=$(pwd -P)
+s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
+REPORTS_BASE_URL=$(node "$SCRIPT_PATH/get-config-value.js" reportDeepUrl)
 
 # Ensure RESULTS_PATH doesn't escape the workspace (GitHub Actions workspace)
 if [[ "$RESULTS_PATH_ABS" != "$WORKSPACE_PATH"* ]] && [[ "$RESULTS_PATH_ABS" != "$(dirname "$WORKSPACE_PATH")"* ]]; then
@@ -104,9 +106,6 @@ for d in "$RESULTS_PATH"/*; do
     echo "No CTRF reports found in $d"
   fi
 done
-
-s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
-REPORTS_BASE_URL=$(node "$SCRIPT_PATH/get-config-value.js" reportDeepUrl)
 
 echo "----------------------------------------"
 
