@@ -71,6 +71,38 @@ for d in "$RESULTS_PATH"/*; do
   echo "Copy results from '$d/allure-results' to '$RESULTS_DIR'"
   cp -R "$d/allure-results/." "$RESULTS_DIR" || true
   echo
+
+  # Check for results.xml and upload to S3 with timestamp
+  echo "Checking for results.xml in $d"
+  if [[ -f "$d/results.xml" ]]; then
+    echo "Found results.xml, uploading to S3 with timestamp"
+    TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+    RESULTS_XML_NAME="results_${TIMESTAMP}.xml"
+    DESTINATION_PATH="$s3_reports_path/junit/queue/$RESULTS_XML_NAME"
+    echo "Uploading $d/results.xml to $DESTINATION_PATH"
+    aws s3 cp "$d/results.xml" "$DESTINATION_PATH"
+    echo "Upload complete: $RESULTS_XML_NAME"
+  else
+    echo "No results.xml found in $d"
+  fi
+
+  # Check for CTRF reports and upload to S3 with timestamp
+  echo "Checking for CTRF reports in $d"
+  CTRF_FILES=$(find "$d" -maxdepth 1 -name "ctrf-report-*.json" -print)
+  if [[ -n "$CTRF_FILES" ]]; then
+    echo "Found CTRF reports, uploading to S3"
+    while IFS= read -r ctrf_file; do
+      if [[ -f "$ctrf_file" ]]; then
+        CTRF_FILENAME=$(basename "$ctrf_file")
+        DESTINATION_PATH="$s3_reports_path/ctrf/$CTRF_FILENAME"
+        echo "Uploading $ctrf_file to $DESTINATION_PATH"
+        aws s3 cp "$ctrf_file" "$DESTINATION_PATH"
+        echo "Upload complete: $CTRF_FILENAME"
+      fi
+    done <<< "$CTRF_FILES"
+  else
+    echo "No CTRF reports found in $d"
+  fi
 done
 
 s3_reports_path="s3://a8c-jetpack-e2e-reports/reports"
@@ -113,38 +145,6 @@ for d in "$LOCAL_REPORTS_PATH"/*; do
   cat "$REPORT_PATH/widgets/summary.json" | jq --arg name "Test results for '$REPORT_ID'" '.reportName|=$name' >"$REPORT_PATH/widgets/summary.tmp"
   mv "$REPORT_PATH/widgets/summary.tmp" "$REPORT_PATH/widgets/summary.json"
   cat "$REPORT_PATH/widgets/summary.json"
-
-  # Check for results.xml and upload to S3 with timestamp
-  echo "Checking for results.xml in $d"
-  if [[ -f "$d/results.xml" ]]; then
-    echo "Found results.xml, uploading to S3 with timestamp"
-    TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-    RESULTS_XML_NAME="results_${TIMESTAMP}.xml"
-    DESTINATION_PATH="$s3_reports_path/junit/queue/$RESULTS_XML_NAME"
-    echo "Uploading $d/results.xml to $DESTINATION_PATH"
-    aws s3 cp "$d/results.xml" "$DESTINATION_PATH"
-    echo "Upload complete: $RESULTS_XML_NAME"
-  else
-    echo "No results.xml found in $d"
-  fi
-
-  # Check for CTRF reports and upload to S3 with timestamp
-  echo "Checking for CTRF reports in $d"
-  CTRF_FILES=$(find "$d" -maxdepth 1 -name "ctrf-report-*.json" -print)
-  if [[ -n "$CTRF_FILES" ]]; then
-    echo "Found CTRF reports, uploading to S3"
-    while IFS= read -r ctrf_file; do
-      if [[ -f "$ctrf_file" ]]; then
-        CTRF_FILENAME=$(basename "$ctrf_file")
-        DESTINATION_PATH="$s3_reports_path/ctrf/$CTRF_FILENAME"
-        echo "Uploading $ctrf_file to $DESTINATION_PATH"
-        aws s3 cp "$ctrf_file" "$DESTINATION_PATH"
-        echo "Upload complete: $CTRF_FILENAME"
-      fi
-    done <<< "$CTRF_FILES"
-  else
-    echo "No CTRF reports found in $d"
-  fi
 
   echo "Cleaning up: remove results dir $RESULTS_PATH"
   rm -rf "$RESULTS_PATH"
