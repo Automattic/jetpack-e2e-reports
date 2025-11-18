@@ -13,6 +13,8 @@ const config = {
 		'jetpack-search-plugin',
 		'jetpack-videopress-plugin',
 		'jetpack-protect-plugin',
+		'ctrf',
+		'junit',
 	],
 	trunkRuns: [
 		'master',

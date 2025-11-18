@@ -21,7 +21,7 @@ const {
 } = require( './utils' );
 const { s3Params, s3client } = require( './s3-client' );
 const { Octokit } = require( '@octokit/rest' );
-const { PutObjectCommand, DeleteObjectCommand } = require( '@aws-sdk/client-s3' );
+const { PutObjectCommand, DeleteObjectCommand, ListObjectsCommand } = require( '@aws-sdk/client-s3' );
 const configModule = require( '../src/config.js' );
 const config = configModule.default || configModule;
 const moment = require( 'moment' );
@@ -46,6 +46,10 @@ const reportsToClean = [];
 let testsToDelete = [];
 const reportAgeThresholdInDays = 30;
 const testsAgeThresholdInDays = 30;
+const daysToKeepFiles = {
+	junit: 7,
+	ctrf: 2,
+};
 
 const plus = String.fromCodePoint( 0x2795 );
 const done = String.fromCodePoint( 0x2714 );
@@ -284,6 +288,139 @@ const trash = String.fromCodePoint( 0x1f5d1 );
 	console.groupEnd();
 
 	console.groupEnd();
+
+	// region Clean junit queue and processed folders
+	console.group( '\n', 'Cleaning junit queue and processed folders' );
+	const junitFolders = [ 'reports/junit/queue/', 'reports/junit/processed/' ];
+
+	for ( const folder of junitFolders ) {
+		console.log( `\nChecking ${ folder }` );
+
+		try {
+			// Collect all files with pagination
+			const allFiles = [];
+			let truncated = true;
+			let marker;
+			let pageCount = 0;
+
+			while ( truncated ) {
+				pageCount++;
+				console.log( `Fetching page ${ pageCount } for ${ folder }` );
+
+				const listCmd = new ListObjectsCommand( {
+					Bucket: s3Params.Bucket,
+					Prefix: folder,
+					Marker: marker,
+				} );
+				const listResponse = await s3client.send( listCmd );
+
+				if ( listResponse.Contents && listResponse.Contents.length > 0 ) {
+					allFiles.push( ...listResponse.Contents );
+				}
+
+				truncated = listResponse.IsTruncated;
+				if ( truncated ) {
+					marker = listResponse.Contents[ listResponse.Contents.length - 1 ].Key;
+				}
+			}
+
+			if ( allFiles.length === 0 ) {
+				console.log( `No files found in ${ folder }` );
+				continue;
+			}
+
+			console.log( `Found ${ allFiles.length } files in ${ folder }` );
+
+			// Sort by LastModified date ascending (oldest first)
+			allFiles.sort( ( a, b ) => a.LastModified - b.LastModified );
+
+			let removedCount = 0;
+			for ( const file of allFiles ) {
+				const fileKey = file.Key;
+				const lastModified = file.LastModified;
+
+				if ( isOld( lastModified, daysToKeepFiles.junit, 'days' ) ) {
+					console.log( `Removing old file: ${ fileKey }` );
+					await s3client.send(
+						new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: fileKey } )
+					);
+					removedCount++;
+				}
+			}
+
+			console.log( `${ done } Removed ${ removedCount } files from ${ folder }` );
+		} catch ( err ) {
+			console.error( `Error processing folder ${ folder }: ${ err.message }` );
+		}
+	}
+
+	console.groupEnd();
+	// endregion
+
+	// region Clean ctrf folder
+	console.group( '\n', 'Cleaning ctrf folder' );
+	const ctrfFolder = 'reports/ctrf/';
+
+	console.log( `\nChecking ${ ctrfFolder }` );
+
+	try {
+		// Collect all files with pagination
+		const allFiles = [];
+		let truncated = true;
+		let marker;
+		let pageCount = 0;
+
+		while ( truncated ) {
+			pageCount++;
+			console.log( `Fetching page ${ pageCount } for ${ ctrfFolder }` );
+
+			const listCmd = new ListObjectsCommand( {
+				Bucket: s3Params.Bucket,
+				Prefix: ctrfFolder,
+				Marker: marker,
+			} );
+			const listResponse = await s3client.send( listCmd );
+
+			if ( listResponse.Contents && listResponse.Contents.length > 0 ) {
+				allFiles.push( ...listResponse.Contents );
+			}
+
+			truncated = listResponse.IsTruncated;
+			if ( truncated ) {
+				marker = listResponse.Contents[ listResponse.Contents.length - 1 ].Key;
+			}
+		}
+
+		if ( allFiles.length === 0 ) {
+			console.log( `No files found in ${ ctrfFolder }` );
+		} else {
+			console.log( `Found ${ allFiles.length } files in ${ ctrfFolder }` );
+
+			// Sort by LastModified date ascending (oldest first)
+			allFiles.sort( ( a, b ) => a.LastModified - b.LastModified );
+
+			let removedCount = 0;
+			for ( const file of allFiles ) {
+				const fileKey = file.Key;
+				const lastModified = file.LastModified;
+
+				if ( isOld( lastModified, daysToKeepFiles.ctrf, 'days' ) ) {
+					console.log( `Removing old file: ${ fileKey }` );
+					await s3client.send(
+						new DeleteObjectCommand( { Bucket: s3Params.Bucket, Key: fileKey } )
+					);
+					removedCount++;
+				}
+			}
+
+			console.log( `${ done } Removed ${ removedCount } files from ${ ctrfFolder }` );
+		}
+	} catch ( err ) {
+		console.error( `Error processing folder ${ ctrfFolder }: ${ err.message }` );
+	}
+
+	console.groupEnd();
+	// endregion
 } )();
 
 async function checkReportAge( report ) {
@@ -456,4 +593,12 @@ function printProgress( line, i, total, interval = 50 ) {
 	if ( i % interval === 0 || progress === 100 ) {
 		process.stdout.write( `${ line }: ${ progress }%\r` );
 	}
+}
+
+function isOld( date, threshold, timeUnit = 'days' ) {
+	const duration = moment
+		.duration( moment.utc().diff( moment.utc( date ) ) )
+		.as( timeUnit )
+		.toFixed( 1 );
+	return duration > threshold;
 }
