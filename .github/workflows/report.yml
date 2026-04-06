@@ -33,7 +33,8 @@ jobs:
 
       - name: Set environment variables safely
         env:
-          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+          # inputs.client_payload for workflow_dispatch, event.client_payload for repository_dispatch
+          PAYLOAD: ${{ github.event.inputs.client_payload || toJson(github.event.client_payload) }}
         run: |
           # Use jq to safely extract values from client_payload
           echo "PR_NUMBER=$(echo "$PAYLOAD" | jq -r '.pr_number // ""')" >> $GITHUB_ENV
@@ -82,12 +83,14 @@ jobs:
         run: ./bin/wait-for-artifacts.sh
 
       - name: Download artifacts
-        uses: dawidd6/action-download-artifact@23e7b2e9aa32a408a649c4fca36dee127ff5d325 # v11
+        uses: dawidd6/action-download-artifact@8305c0f1062bb0d184d09ef4493ecb9288447732 # v20
         with:
           repo: Automattic/jetpack
           workflow: e2e-tests.yml
           workflow_conclusion: "completed"
           run_id: ${{ env.RUN_ID }}
+          name: test-output-*
+          name_is_regexp: true
           path: ../downloads
 
       - name: Generate test report
