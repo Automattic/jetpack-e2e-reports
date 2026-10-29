@@ -1,28 +1,12 @@
 import React from 'react';
 import moment from 'moment';
 
-const TestResultTimeline = ( { results, reportDeepUrl, limit = 500 } ) => {
+const TestResultTimeline = ( { results, limit = 500 } ) => {
 	const badges = results.slice( -limit ).map( ( result, id ) => {
-		let classHasSource = 'no-source';
-		let url;
-
-		if ( result.source ) {
-			classHasSource = '';
-			url = `${ reportDeepUrl }/${ result.report }/report/#testresult/${ result.source.replace(
-				/.json/,
-				''
-			) }`;
-		}
-
 		return (
 			<span
 				key={ id }
-				onClick={ () => {
-					if ( url ) {
-						window.open( url, '_blank' );
-					}
-				} }
-				className={ `has-tooltip label label-small label-status-${ result.status } ${ classHasSource }` }
+				className={ `has-tooltip label label-small label-status-${ result.status }` }
 				aria-hidden="true"
 			>
 				&nbsp;

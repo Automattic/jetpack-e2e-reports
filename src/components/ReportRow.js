@@ -2,7 +2,6 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCodeBranch, faQuestion, faTimes } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
-import configData from '../config';
 import StatusBadge from './StatusBadge';
 
 const ReportRow = ( { report, id } ) => {
@@ -10,8 +9,6 @@ const ReportRow = ( { report, id } ) => {
 	const isFailed = statistic.total !== statistic.passed + statistic.skipped;
 
 	const getReportLinkCell = ( reportData, metadataData, isFailedData, totalTests ) => {
-		const linkUrl = `${ configData.dataSourceURL }/reports/${ reportData.name }/report/index.html`;
-
 		const reportKey = reportData.name;
 		let reportTitle = reportData.name;
 
@@ -35,10 +32,7 @@ const ReportRow = ( { report, id } ) => {
 				<li>
 					<FontAwesomeIcon className={ statusClassName } icon={ statusIcon } />
 					&nbsp;
-					<a href={ linkUrl } className="report-link" target="_blank" rel="noreferrer">
-						{ reportTitle }
-						<br />
-					</a>
+					<strong>{ reportTitle }</strong>
 				</li>
 				<li>
 					<small>

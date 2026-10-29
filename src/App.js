@@ -1,10 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { Suspense } from 'react';
-import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Navbar, Container, Nav, Alert } from 'react-bootstrap';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import LoadingState from './components/LoadingState';
 import ErrorBoundary from './components/ErrorBoundary';
+import config from './config';
 
 // Lazy load components for better performance
 const ReportView = React.lazy( () => import( './views/ReportView' ) );
@@ -66,6 +67,10 @@ function App() {
 						</Navbar.Collapse>
 					</Container>
 				</Navbar>
+				<Alert variant="warning" className="mt-3">
+					This dashboard is archived. It shows a snapshot of the data from { config.archivedDate }{ ' ' }
+					and is no longer updated. Full test reports are no longer available.
+				</Alert>
 				<HashRouter>
 					<ErrorBoundary>
 						<Suspense fallback={ <LoadingState isLoading={ true } loadingText="Loading..." /> }>
