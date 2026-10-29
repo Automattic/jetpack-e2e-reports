@@ -207,7 +207,7 @@ export default function TestsView() {
 				<hr />
 				<section aria-label="Test results">
 					{ tests.list.map( ( test, id ) => (
-						<TestCard key={ id } test={ test } reportDeepUrl={ config.reportDeepUrl } />
+						<TestCard key={ id } test={ test } />
 					) ) }
 				</section>
 			</article>

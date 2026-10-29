@@ -1,6 +1,6 @@
 const configModule = require( '../../src/config.js' );
 const config = configModule.default || configModule;
-const { dataSourceURL } = config;
+const { s3URL: dataSourceURL } = config;
 const { fetchJsonData } = require( '../fetch-data' );
 
 async function consecutiveFailures( reportName, threshold ) {
