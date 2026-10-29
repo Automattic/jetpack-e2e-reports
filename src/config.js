@@ -1,7 +1,3 @@
-const isDevelopment =
-	process.env.NODE_ENV === 'development' ||
-	( typeof window !== 'undefined' && window.location.hostname === 'localhost' );
-
 const config = {
 	permanent: [
 		'atomic',
@@ -30,7 +26,9 @@ const config = {
 		'jetpack-protect-plugin',
 	],
 	ignore: [ 'static', 'e2e', 'data' ],
-	dataSourceURL: isDevelopment ? '.' : 'https://a8c-jetpack-e2e-reports.s3.amazonaws.com',
+	dataSourceURL: '.',
+	archivedDate: '2026-10-29',
+	s3URL: 'https://a8c-jetpack-e2e-reports.s3.amazonaws.com',
 	reportDeepUrl: 'http://a8c-jetpack-e2e-reports.s3-website-us-east-1.amazonaws.com/reports',
 };
 

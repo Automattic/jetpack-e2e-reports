@@ -2,7 +2,7 @@ import React from 'react';
 import StatusBadge from './StatusBadge';
 import TestResultTimeline from './TestResultTimeline';
 
-const TestCard = React.memo( ( { test, reportDeepUrl } ) => {
+const TestCard = React.memo( ( { test } ) => {
 	const getTotalsBadges = React.useMemo( () => {
 		const badges = [];
 
@@ -50,7 +50,7 @@ const TestCard = React.memo( ( { test, reportDeepUrl } ) => {
 				<div className="col-auto">{ getTotalsBadges }</div>
 			</div>
 			<div className="row">
-				<TestResultTimeline results={ test.results } reportDeepUrl={ reportDeepUrl } />
+				<TestResultTimeline results={ test.results } />
 			</div>
 		</div>
 	);

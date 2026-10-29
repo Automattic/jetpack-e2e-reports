@@ -154,30 +154,15 @@ export default function ErrorsView() {
 				{ results
 					.sort( ( a, b ) => b.time - a.time )
 					.map( ( result, id ) => {
-						let badge = moment( result.time ).format( 'MMM Do, h:mm a' );
-
-						let className = 'no-source';
-
-						if ( result.source ) {
-							const url = `${ config.reportDeepUrl }/${
-								result.report
-							}/report/#testresult/${ result.source.replace( /.json/, '' ) }`;
-							badge = (
-								<a href={ url } target="_blank" rel="noreferrer" className="report-link">
-									{ badge }
-								</a>
-							);
-
-							className = '';
-						} else {
-							// don't display results with no source,
-							// because it looks bad for some common errors that have a lot of results
+						// don't display results with no source,
+						// because it looks bad for some common errors that have a lot of results
+						if ( ! result.source ) {
 							return '';
 						}
 
 						return (
-							<span key={ id } className={ `failure-link ${ className }` }>
-								{ badge }
+							<span key={ id } className="failure-link">
+								{ moment( result.time ).format( 'MMM Do, h:mm a' ) }
 							</span>
 						);
 					} ) }
